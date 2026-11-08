@@ -1,5 +1,6 @@
 # Correction du logo officiel
-- [ ] Diagnostiquer les URL, vérifier le vrai logo sur les pages publiques et privées et aux huit largeurs, conserver le design et les données.
+- [x] Vérifier le fichier officiel : HTTP 200 image/jpeg dans l’aperçu et le site publié, aucun logo personnalisé enregistré ; erreur non reproduite. Réduire les espacements mobiles et rétablir le logo fourni si une image personnalisée échoue ; sécurité et menu testés.
+- [x] Vérifier accueil, contact, Président aux huit largeurs et administration sur ordinateur ; logo chargé, carré et sans débordement. Le logo administratif reste volontairement dans le menu fermé sur mobile ; appareils physiques non disponibles.
 
 # Navigation au clavier et petites largeurs
 - [x] Corriger Échap, le retour du focus, les menus fermés encore accessibles au clavier et les libellés des menus/dialogues sans changer leur apparence ; sélection des rôles annoncée et tableau de permissions accessible au clavier.

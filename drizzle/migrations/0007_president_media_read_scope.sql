@@ -1,0 +1,1 @@
+ALTER POLICY president_media_published_read ON storage.objects USING (bucket_id = 'president-media' AND EXISTS (SELECT 1 FROM public.president_message p WHERE p.published AND (p.photo_path = storage.objects.name OR p.signature_path = storage.objects.name)));

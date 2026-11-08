@@ -50,6 +50,13 @@
       "when": 1794155224151,
       "tag": "0006_president_message",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1794155492705,
+      "tag": "0007_president_media_read_scope",
+      "breakpoints": true
     }
   ]
 }

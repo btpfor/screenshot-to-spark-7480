@@ -43,7 +43,9 @@ export const MemberCard = forwardRef<HTMLDivElement, { member: CardMember }>(fun
       <div className="bg-gold-gradient absolute -right-24 -top-24 h-64 w-64 rounded-full opacity-15" />
       {/* En-tête */}
       <div className="flex items-center gap-4 px-10 pt-9">
-        <img src={s?.logo_data || officialLogo.url} alt="Logo du GIE" className="h-20 w-20 rounded-full bg-card object-contain" />
+        <img src={s?.logo_data || officialLogo.url} alt="Logo du GIE" className="h-20 w-20 rounded-full bg-card object-contain" onError={(event) => {
+          if (event.currentTarget.getAttribute("src") !== officialLogo.url) event.currentTarget.src = officialLogo.url;
+        }} />
         <div className="flex-1">
           <div className="font-display text-[26px] font-extrabold leading-tight tracking-tight">{s?.official_name ?? "GIE VIP BOK GUIS GUIS TRANSPORT SENEGAL"}</div>
           <div className="mt-1 text-[15px] italic text-gold">« {s?.slogan} »</div>

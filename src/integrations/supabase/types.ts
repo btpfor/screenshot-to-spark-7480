@@ -43,28 +43,46 @@ export type Database = {
       }
       contact_messages: {
         Row: {
+          ai_category: string | null
+          ai_draft: string | null
+          ai_generated_at: string | null
+          ai_summary: string | null
           created_at: string
           email: string | null
+          handled: boolean
           id: string
           message: string
           name: string
           phone: string | null
+          source: string
         }
         Insert: {
+          ai_category?: string | null
+          ai_draft?: string | null
+          ai_generated_at?: string | null
+          ai_summary?: string | null
           created_at?: string
           email?: string | null
+          handled?: boolean
           id?: string
           message: string
           name: string
           phone?: string | null
+          source?: string
         }
         Update: {
+          ai_category?: string | null
+          ai_draft?: string | null
+          ai_generated_at?: string | null
+          ai_summary?: string | null
           created_at?: string
           email?: string | null
+          handled?: boolean
           id?: string
           message?: string
           name?: string
           phone?: string | null
+          source?: string
         }
         Relationships: []
       }

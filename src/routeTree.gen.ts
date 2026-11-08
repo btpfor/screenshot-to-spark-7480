@@ -20,6 +20,7 @@ import { Route as AuthenticatedTableauRouteImport } from './routes/_authenticate
 import { Route as VerifierMatriculeRouteImport } from './routes/verifier.$matricule'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminMembresRouteImport } from './routes/_authenticated/admin.membres'
+import { Route as AuthenticatedAdminParametresRouteImport } from './routes/_authenticated/admin.parametres'
 import { Route as AuthenticatedAdminUtilisateursRouteImport } from './routes/_authenticated/admin.utilisateurs'
 
 const IndexRoute = IndexRouteImport.update({
@@ -78,6 +79,12 @@ const AuthenticatedAdminMembresRoute =
     path: '/membres',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminParametresRoute =
+  AuthenticatedAdminParametresRouteImport.update({
+    id: '/parametres',
+    path: '/parametres',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminUtilisateursRoute =
   AuthenticatedAdminUtilisateursRouteImport.update({
     id: '/utilisateurs',
@@ -95,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/tableau': typeof AuthenticatedTableauRoute
   '/verifier/$matricule': typeof VerifierMatriculeRoute
   '/admin/membres': typeof AuthenticatedAdminMembresRoute
+  '/admin/parametres': typeof AuthenticatedAdminParametresRoute
   '/admin/utilisateurs': typeof AuthenticatedAdminUtilisateursRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
 }
@@ -107,6 +115,7 @@ export interface FileRoutesByTo {
   '/tableau': typeof AuthenticatedTableauRoute
   '/verifier/$matricule': typeof VerifierMatriculeRoute
   '/admin/membres': typeof AuthenticatedAdminMembresRoute
+  '/admin/parametres': typeof AuthenticatedAdminParametresRoute
   '/admin/utilisateurs': typeof AuthenticatedAdminUtilisateursRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
 }
@@ -122,6 +131,7 @@ export interface FileRoutesById {
   '/_authenticated/tableau': typeof AuthenticatedTableauRoute
   '/verifier/$matricule': typeof VerifierMatriculeRoute
   '/_authenticated/admin/membres': typeof AuthenticatedAdminMembresRoute
+  '/_authenticated/admin/parametres': typeof AuthenticatedAdminParametresRoute
   '/_authenticated/admin/utilisateurs': typeof AuthenticatedAdminUtilisateursRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
 }
@@ -137,6 +147,7 @@ export interface FileRouteTypes {
     | '/tableau'
     | '/verifier/$matricule'
     | '/admin/membres'
+    | '/admin/parametres'
     | '/admin/utilisateurs'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
@@ -149,6 +160,7 @@ export interface FileRouteTypes {
     | '/tableau'
     | '/verifier/$matricule'
     | '/admin/membres'
+    | '/admin/parametres'
     | '/admin/utilisateurs'
     | '/admin'
   id:
@@ -163,6 +175,7 @@ export interface FileRouteTypes {
     | '/_authenticated/tableau'
     | '/verifier/$matricule'
     | '/_authenticated/admin/membres'
+    | '/_authenticated/admin/parametres'
     | '/_authenticated/admin/utilisateurs'
     | '/_authenticated/admin/'
   fileRoutesById: FileRoutesById
@@ -254,6 +267,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminMembresRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/parametres': {
+      id: '/_authenticated/admin/parametres'
+      path: '/parametres'
+      fullPath: '/admin/parametres'
+      preLoaderRoute: typeof AuthenticatedAdminParametresRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/utilisateurs': {
       id: '/_authenticated/admin/utilisateurs'
       path: '/utilisateurs'
@@ -266,12 +286,14 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminMembresRoute: typeof AuthenticatedAdminMembresRoute
+  AuthenticatedAdminParametresRoute: typeof AuthenticatedAdminParametresRoute
   AuthenticatedAdminUtilisateursRoute: typeof AuthenticatedAdminUtilisateursRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminMembresRoute: AuthenticatedAdminMembresRoute,
+  AuthenticatedAdminParametresRoute: AuthenticatedAdminParametresRoute,
   AuthenticatedAdminUtilisateursRoute: AuthenticatedAdminUtilisateursRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
 }

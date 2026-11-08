@@ -77,7 +77,7 @@ function Home() {
           <p>Le GIE VIP BOK GUIS GUIS rassemble les chauffeurs actifs sur les plateformes numériques comme Yango et dans le transport traditionnel.</p>
           <p>Notre objectif : digitaliser nos activités, faciliter la gestion administrative et ouvrir de nouvelles opportunités économiques à chaque membre.</p>
           <div className="grid grid-cols-3 gap-4 pt-4">
-            {[["300", "chauffeurs"], ["100%", "solidaires"], ["1", "union"]].map(([n, l]) => (
+            {[["300", "chauffeurs"], ["100%", "solidaires"], ["3", "responsables"]].map(([n, l]) => (
               <div key={l} className="rounded-xl border bg-card p-4">
                 <div className="font-display text-2xl font-bold text-primary">{n}</div>
                 <div className="text-xs">{l}</div>

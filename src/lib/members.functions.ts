@@ -27,9 +27,13 @@ export const bootstrapSuperAdmin = createServerFn({ method: "POST" })
     const a = await admin();
     const { count } = await a.from("user_roles").select("id", { count: "exact", head: true }).eq("role", "super_admin");
     if ((count ?? 0) > 0) throw new Error("Un administrateur existe déjà.");
-    const { data: u, error } = await a.auth.admin.createUser({ email: data.email, password: data.password, email_confirm: true });
+    const { data: u, error } = await a.auth.admin.createUser({ email: data.email, password: data.password, email_confirm: true, user_metadata: { must_change_password: true } });
     if (error || !u.user) throw new Error(error?.message ?? "Création impossible");
-    await a.from("user_roles").insert({ user_id: u.user.id, role: "super_admin" });
+    const { error: roleError } = await a.from("user_roles").insert({ user_id: u.user.id, role: "super_admin" });
+    if (roleError) {
+      await a.auth.admin.deleteUser(u.user.id);
+      throw new Error("Attribution du rôle impossible. Réessayez.");
+    }
     return { ok: true };
   });
 

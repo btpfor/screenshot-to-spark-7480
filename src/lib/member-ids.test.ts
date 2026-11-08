@@ -9,6 +9,9 @@ describe("member login ids", () => {
   it("keeps staff emails as-is", () => {
     expect(loginToEmail("admin@gie.sn")).toBe("admin@gie.sn");
   });
+  it("accepts the requested administrator identifier", () => {
+    expect(loginToEmail("admin@vipbgg.com")).toBe("admin@vipbgg.com");
+  });
   it("generates a strong temporary password", () => {
     expect(genTempPassword().length).toBeGreaterThanOrEqual(12);
   });

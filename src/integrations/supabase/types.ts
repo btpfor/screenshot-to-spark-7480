@@ -14,16 +14,276 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      audit_log: {
+        Row: {
+          action: string
+          created_at: string
+          id: number
+          record_id: string | null
+          table_name: string
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: never
+          record_id?: string | null
+          table_name: string
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: never
+          record_id?: string | null
+          table_name?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      drivers: {
+        Row: {
+          address: string | null
+          birth_date: string | null
+          cni_number: string | null
+          created_at: string
+          driver_type: string
+          email: string | null
+          first_name: string
+          id: string
+          join_date: string
+          last_name: string
+          license_expiry: string | null
+          license_number: string | null
+          matricule: string
+          notes: string | null
+          phone: string
+          photo_url: string | null
+          platform: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          birth_date?: string | null
+          cni_number?: string | null
+          created_at?: string
+          driver_type?: string
+          email?: string | null
+          first_name: string
+          id?: string
+          join_date?: string
+          last_name: string
+          license_expiry?: string | null
+          license_number?: string | null
+          matricule?: string
+          notes?: string | null
+          phone: string
+          photo_url?: string | null
+          platform?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          birth_date?: string | null
+          cni_number?: string | null
+          created_at?: string
+          driver_type?: string
+          email?: string | null
+          first_name?: string
+          id?: string
+          join_date?: string
+          last_name?: string
+          license_expiry?: string | null
+          license_number?: string | null
+          matricule?: string
+          notes?: string | null
+          phone?: string
+          photo_url?: string | null
+          platform?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string | null
+          driver_id: string | null
+          id: string
+          kind: string
+          paid_at: string
+          payment_method: string
+          period: string | null
+          receipt_number: string
+          recorded_by: string | null
+          status: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          description?: string | null
+          driver_id?: string | null
+          id?: string
+          kind: string
+          paid_at?: string
+          payment_method?: string
+          period?: string | null
+          receipt_number?: string
+          recorded_by?: string | null
+          status?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string | null
+          driver_id?: string | null
+          id?: string
+          kind?: string
+          paid_at?: string
+          payment_method?: string
+          period?: string | null
+          receipt_number?: string
+          recorded_by?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "drivers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      vehicles: {
+        Row: {
+          acquisition_date: string | null
+          brand: string
+          chassis_number: string | null
+          color: string | null
+          created_at: string
+          driver_id: string | null
+          fuel_type: string | null
+          id: string
+          inspection_expiry: string | null
+          insurance_expiry: string | null
+          model: string
+          next_maintenance: string | null
+          owner_name: string | null
+          plate: string
+          status: string
+          updated_at: string
+          year: number | null
+        }
+        Insert: {
+          acquisition_date?: string | null
+          brand: string
+          chassis_number?: string | null
+          color?: string | null
+          created_at?: string
+          driver_id?: string | null
+          fuel_type?: string | null
+          id?: string
+          inspection_expiry?: string | null
+          insurance_expiry?: string | null
+          model: string
+          next_maintenance?: string | null
+          owner_name?: string | null
+          plate: string
+          status?: string
+          updated_at?: string
+          year?: number | null
+        }
+        Update: {
+          acquisition_date?: string | null
+          brand?: string
+          chassis_number?: string | null
+          color?: string | null
+          created_at?: string
+          driver_id?: string | null
+          fuel_type?: string | null
+          id?: string
+          inspection_expiry?: string | null
+          insurance_expiry?: string | null
+          model?: string
+          next_maintenance?: string | null
+          owner_name?: string | null
+          plate?: string
+          status?: string
+          updated_at?: string
+          year?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vehicles_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "drivers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_any_role: {
+        Args: {
+          _roles: Database["public"]["Enums"]["app_role"][]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_staff: { Args: { _user_id: string }; Returns: boolean }
+      update_my_contact: {
+        Args: { _address: string; _phone: string }
+        Returns: undefined
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role:
+        | "super_admin"
+        | "president"
+        | "secretaire"
+        | "tresorier"
+        | "resp_chauffeurs"
+        | "resp_parc"
+        | "resp_partenariats"
+        | "chauffeur"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +410,17 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: [
+        "super_admin",
+        "president",
+        "secretaire",
+        "tresorier",
+        "resp_chauffeurs",
+        "resp_parc",
+        "resp_partenariats",
+        "chauffeur",
+      ],
+    },
   },
 } as const

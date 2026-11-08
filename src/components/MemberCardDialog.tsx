@@ -34,7 +34,7 @@ export function MemberCardView({ member }: { member: CardMember }) {
 
   return (
     <div className="space-y-3">
-      <div className="w-full overflow-hidden">
+      <div className="w-full overflow-hidden" style={{ height: "calc(540px * var(--card-scale))" }}>
         <div className="origin-top-left" style={{ width: 856, transform: "scale(var(--card-scale))" }}>
           <MemberCard ref={ref} member={member} />
         </div>
@@ -58,12 +58,11 @@ export function ScaledCard({ member }: { member: CardMember }) {
         update();
         const ro = new ResizeObserver(update);
         ro.observe(el);
+        return () => ro.disconnect();
       }}
       style={{ ["--card-scale" as string]: scale }}
     >
-      <div style={{ height: 540 * scale + 56 }}>
-        <MemberCardView member={member} />
-      </div>
+      <MemberCardView member={member} />
     </div>
   );
 }

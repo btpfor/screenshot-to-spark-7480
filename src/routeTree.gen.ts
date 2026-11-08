@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as MotDuPresidentRouteImport } from './routes/mot-du-president'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedChangerMotDePasseRouteImport } from './routes/_authenticated/changer-mot-de-passe'
 import { Route as AuthenticatedEspaceRouteImport } from './routes/_authenticated/espace'
@@ -41,6 +42,11 @@ const AuthRoute = AuthRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MotDuPresidentRoute = MotDuPresidentRouteImport.update({
+  id: '/mot-du-president',
+  path: '/mot-du-president',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
@@ -103,6 +109,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
+  '/mot-du-president': typeof MotDuPresidentRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/changer-mot-de-passe': typeof AuthenticatedChangerMotDePasseRoute
   '/espace': typeof AuthenticatedEspaceRoute
@@ -118,6 +125,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
+  '/mot-du-president': typeof MotDuPresidentRoute
   '/changer-mot-de-passe': typeof AuthenticatedChangerMotDePasseRoute
   '/espace': typeof AuthenticatedEspaceRoute
   '/tableau': typeof AuthenticatedTableauRoute
@@ -134,6 +142,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
+  '/mot-du-president': typeof MotDuPresidentRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/changer-mot-de-passe': typeof AuthenticatedChangerMotDePasseRoute
   '/_authenticated/espace': typeof AuthenticatedEspaceRoute
@@ -151,6 +160,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/contact'
+    | '/mot-du-president'
     | '/admin'
     | '/changer-mot-de-passe'
     | '/espace'
@@ -166,6 +176,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/contact'
+    | '/mot-du-president'
     | '/changer-mot-de-passe'
     | '/espace'
     | '/tableau'
@@ -181,6 +192,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/contact'
+    | '/mot-du-president'
     | '/_authenticated/admin'
     | '/_authenticated/changer-mot-de-passe'
     | '/_authenticated/espace'
@@ -198,6 +210,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ContactRoute: typeof ContactRoute
+  MotDuPresidentRoute: typeof MotDuPresidentRoute
   VerifierMatriculeRoute: typeof VerifierMatriculeRoute
 }
 
@@ -229,6 +242,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mot-du-president': {
+      id: '/mot-du-president'
+      path: '/mot-du-president'
+      fullPath: '/mot-du-president'
+      preLoaderRoute: typeof MotDuPresidentRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin': {
@@ -345,6 +365,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ContactRoute: ContactRoute,
+  MotDuPresidentRoute: MotDuPresidentRoute,
   VerifierMatriculeRoute: VerifierMatriculeRoute,
 }
 export const routeTree = rootRouteImport

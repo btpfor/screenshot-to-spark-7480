@@ -180,3 +180,13 @@
 }
 
 @utility bg-gold-gradient { background-image: var(--gradient-gold); }
+
+.president-reveal { animation: president-enter 600ms ease-out both; }
+.president-reveal h1, .president-reveal h2 { letter-spacing: 0; }
+@keyframes president-enter {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .president-reveal { animation: none; }
+}

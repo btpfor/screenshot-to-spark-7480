@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/Logo";
-import { loginToEmail } from "@/lib/member-ids";
+import { isMatricule, loginToEmail } from "@/lib/member-ids";
 import { bootstrapSuperAdmin, hasSuperAdmin } from "@/lib/members.functions";
 
 export const Route = createFileRoute("/auth")({
@@ -33,6 +33,7 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [forgot, setForgot] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     checkAdmin().then((ok) => setNeedsAdmin(!ok)).catch(() => {});
@@ -40,9 +41,13 @@ function AuthPage() {
   }, [checkAdmin, navigate]);
 
   const signIn = async (email: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-      toast.error(error.message.toLowerCase().includes("banned") ? "Ce compte est désactivé ou bloqué. Contactez l'administration." : "Matricule ou mot de passe incorrect.");
+    const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
+    if (authError) {
+      const msg = authError.message.toLowerCase().includes("banned")
+        ? "Ce compte est désactivé ou bloqué. Contactez l'administration."
+        : "Identifiant ou mot de passe incorrect. Vérifiez votre numéro matricule (ex. BGG-2026-0001) et votre mot de passe, puis réessayez.";
+      setError(msg);
+      toast.error(msg);
       return;
     }
     await supabase.rpc("record_login");
@@ -51,6 +56,11 @@ function AuthPage() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+    if (!id.includes("@") && !isMatricule(id)) {
+      setError("L'identifiant doit être un numéro matricule au format BGG-2026-0001 (ex. BGG-2026-0001).");
+      return;
+    }
     setBusy(true);
     try {
       if (needsAdmin) {
@@ -61,7 +71,9 @@ function AuthPage() {
         await signIn(email);
       } else await signIn(loginToEmail(id));
     } catch (err) {
-      toast.error((err as Error).message);
+      const msg = (err as Error).message;
+      setError(msg);
+      toast.error(msg);
     }
     setBusy(false);
   };
@@ -87,12 +99,15 @@ function AuthPage() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="id">Identifiant</Label>
-            <Input id="id" required autoComplete="username" type="text" value={id} onChange={(e) => setId(e.target.value)} placeholder="BGG-2026-0001" />
+            <Input id="id" required autoComplete="username" type="text" value={id} onChange={(e) => { setId(e.target.value); setError(""); }} placeholder="BGG-2026-0001" />
           </div>
           <div className="space-y-2">
             <Label htmlFor="pw">Mot de passe</Label>
-            <Input id="pw" type="password" required minLength={needsAdmin ? 8 : 6} autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
+            <Input id="pw" type="password" required minLength={needsAdmin ? 8 : 6} autoComplete="current-password" value={password} onChange={(e) => { setPassword(e.target.value); setError(""); }} />
           </div>
+          {error && (
+            <p role="alert" className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">{error}</p>
+          )}
           <Button type="submit" className="w-full" disabled={busy}>Se connecter</Button>
           {!needsAdmin && (
             <button type="button" className="w-full text-sm text-muted-foreground hover:text-foreground" onClick={() => setForgot(!forgot)}>Mot de passe oublié ?</button>

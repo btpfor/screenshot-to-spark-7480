@@ -6,6 +6,8 @@ export const matriculeToEmail = (m: string) =>
 
 export const loginToEmail = (id: string) => (id.includes("@") ? id.trim() : matriculeToEmail(id));
 
+export const isMatricule = (id: string) => /^BGG-\d{4}-\d{4}$/i.test(id.trim());
+
 export function genTempPassword() {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
   const bytes = crypto.getRandomValues(new Uint8Array(10));

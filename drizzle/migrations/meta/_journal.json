@@ -15,6 +15,13 @@
       "when": 1794114459619,
       "tag": "0001_member_accounts",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794114470347,
+      "tag": "0002_photos_private_read",
+      "breakpoints": true
     }
   ]
 }

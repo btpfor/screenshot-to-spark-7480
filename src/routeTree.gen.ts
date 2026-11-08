@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as MembresDuBureauRouteImport } from './routes/membres-du-bureau'
 import { Route as MotDuPresidentRouteImport } from './routes/mot-du-president'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedChangerMotDePasseRouteImport } from './routes/_authenticated/changer-mot-de-passe'
@@ -43,6 +44,11 @@ const AuthRoute = AuthRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MembresDuBureauRoute = MembresDuBureauRouteImport.update({
+  id: '/membres-du-bureau',
+  path: '/membres-du-bureau',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MotDuPresidentRoute = MotDuPresidentRouteImport.update({
@@ -116,6 +122,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
+  '/membres-du-bureau': typeof MembresDuBureauRoute
   '/mot-du-president': typeof MotDuPresidentRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/changer-mot-de-passe': typeof AuthenticatedChangerMotDePasseRoute
@@ -133,6 +140,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
+  '/membres-du-bureau': typeof MembresDuBureauRoute
   '/mot-du-president': typeof MotDuPresidentRoute
   '/changer-mot-de-passe': typeof AuthenticatedChangerMotDePasseRoute
   '/espace': typeof AuthenticatedEspaceRoute
@@ -151,6 +159,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
+  '/membres-du-bureau': typeof MembresDuBureauRoute
   '/mot-du-president': typeof MotDuPresidentRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/changer-mot-de-passe': typeof AuthenticatedChangerMotDePasseRoute
@@ -170,6 +179,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/contact'
+    | '/membres-du-bureau'
     | '/mot-du-president'
     | '/admin'
     | '/changer-mot-de-passe'
@@ -187,6 +197,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/contact'
+    | '/membres-du-bureau'
     | '/mot-du-president'
     | '/changer-mot-de-passe'
     | '/espace'
@@ -204,6 +215,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/contact'
+    | '/membres-du-bureau'
     | '/mot-du-president'
     | '/_authenticated/admin'
     | '/_authenticated/changer-mot-de-passe'
@@ -223,6 +235,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ContactRoute: typeof ContactRoute
+  MembresDuBureauRoute: typeof MembresDuBureauRoute
   MotDuPresidentRoute: typeof MotDuPresidentRoute
   VerifierMatriculeRoute: typeof VerifierMatriculeRoute
 }
@@ -255,6 +268,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/membres-du-bureau': {
+      id: '/membres-du-bureau'
+      path: '/membres-du-bureau'
+      fullPath: '/membres-du-bureau'
+      preLoaderRoute: typeof MembresDuBureauRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mot-du-president': {
@@ -387,6 +407,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ContactRoute: ContactRoute,
+  MembresDuBureauRoute: MembresDuBureauRoute,
   MotDuPresidentRoute: MotDuPresidentRoute,
   VerifierMatriculeRoute: VerifierMatriculeRoute,
 }

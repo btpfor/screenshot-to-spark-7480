@@ -17,6 +17,6 @@ export const Route = createFileRoute("/_authenticated/tableau")({
 function Dispatch() {
   const { loading, isStaff, user } = useAuth();
   if (loading) return <div className="grid min-h-screen place-items-center text-muted-foreground">Chargement…</div>;
-  if (user?.user_metadata?.must_change_password === true) return <Navigate to="/changer-mot-de-passe" />;
+  if (user?.user_metadata?.["must_change_password"] === true) return <Navigate to="/changer-mot-de-passe" />;
   return isStaff ? <Navigate to="/admin" /> : <Navigate to="/espace" />;
 }

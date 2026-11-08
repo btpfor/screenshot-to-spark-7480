@@ -26,7 +26,7 @@ function AdminLayout() {
   const [open, setOpen] = useState(false);
   if (loading) return <div className="grid min-h-screen place-items-center text-muted-foreground">Chargement…</div>;
   if (!isStaff) return <Navigate to="/espace" />;
-  if (user?.user_metadata?.must_change_password === true) return <Navigate to="/changer-mot-de-passe" />;
+  if (user?.user_metadata?.["must_change_password"] === true) return <Navigate to="/changer-mot-de-passe" />;
 
   const logout = async () => {
     await supabase.auth.signOut();

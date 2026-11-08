@@ -53,7 +53,7 @@ function AuthPage() {
       return;
     }
     await supabase.rpc("record_login");
-    navigate({ to: data.user?.user_metadata?.must_change_password === true ? "/changer-mot-de-passe" : "/tableau" });
+    navigate({ to: data.user?.user_metadata?.["must_change_password"] === true ? "/changer-mot-de-passe" : "/tableau" });
   };
 
   const submit = async (e: React.FormEvent) => {

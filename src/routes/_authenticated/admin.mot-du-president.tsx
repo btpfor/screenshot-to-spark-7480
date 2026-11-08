@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { ExternalLink, Save, Trash2 } from "lucide-react";
+import { ExternalLink, Save, Trash2, Upload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { canEditPresident } from "@/lib/president-rules";
@@ -54,6 +54,7 @@ function PresidentEditor() {
   });
   const [form, setForm] = useState<Row | null>(null);
   const [busy, setBusy] = useState(false);
+  const signatureInput = useRef<HTMLInputElement>(null);
   useEffect(() => { if (data) setForm(data); }, [data]);
 
   if (loading) return <p>Chargement…</p>;
@@ -101,7 +102,16 @@ function PresidentEditor() {
     <div className="grid gap-8 lg:grid-cols-[300px_minmax(0,1fr)]">
       <section className="space-y-6">
         <div className="space-y-3"><Label htmlFor="president-photo">Photographie du Président</Label><MediaPreview path={form.photo_path} /><Input id="president-photo" type="file" accept="image/png,image/jpeg,image/webp" disabled={busy} onChange={(e) => upload(e.target.files?.[0], "photo_path")} /></div>
-        <div className="space-y-3"><Label htmlFor="president-signature">Signature</Label><MediaPreview path={form.signature_path} signature /><Input id="president-signature" type="file" accept="image/png,image/jpeg,image/webp" disabled={busy} onChange={(e) => upload(e.target.files?.[0], "signature_path")} />{form.signature_path && <Button type="button" size="sm" variant="ghost" disabled={busy} onClick={() => setForm({ ...form, signature_path: null })}><Trash2 />Retirer la signature</Button>}</div>
+        <div className="space-y-3">
+          <Label htmlFor="president-signature">Signature du Président</Label>
+          <MediaPreview path={form.signature_path} signature />
+          {!form.signature_path && <p className="text-sm text-muted-foreground">Aucune signature enregistrée.</p>}
+          <Input ref={signatureInput} id="president-signature" className="hidden" tabIndex={-1} type="file" accept="image/png,image/jpeg,image/webp" disabled={busy} onChange={(e) => { const file = e.target.files?.[0]; e.target.value = ""; void upload(file, "signature_path"); }} />
+          <div className="flex flex-wrap gap-2">
+            <Button type="button" size="sm" variant="outline" disabled={busy} onClick={() => signatureInput.current?.click()}><Upload />{form.signature_path ? "Remplacer la signature" : "Ajouter la signature"}</Button>
+            {form.signature_path && <Button type="button" size="sm" variant="ghost" disabled={busy} onClick={() => setForm({ ...form, signature_path: null })}><Trash2 />Retirer la signature</Button>}
+          </div>
+        </div>
       </section>
       <section className="space-y-5">
         <div className="space-y-2"><Label htmlFor="president-name">Nom du Président</Label><Input id="president-name" value={form.name} required maxLength={150} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>

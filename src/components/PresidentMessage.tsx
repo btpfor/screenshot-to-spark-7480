@@ -21,8 +21,8 @@ export function PresidentMessage({ message, full = false }: { message: Message; 
         <div className="mt-7 space-y-5 text-base leading-8">
           {visible.map((paragraph, index) => <p key={index} className={`whitespace-pre-line break-words ${index === 0 ? "font-semibold text-primary" : "text-muted-foreground"}`}>{paragraph}</p>)}
         </div>
+        {message.signatureUrl && <img src={message.signatureUrl} alt={`Signature de ${message.name}`} className="mt-8 h-20 max-w-full object-contain object-left" />}
         {full ? <div className="mt-8 border-t pt-6">
-          {message.signatureUrl && <img src={message.signatureUrl} alt={`Signature de ${message.name}`} className="mb-4 h-20 max-w-full object-contain object-left" />}
           <p className="font-display text-lg font-bold">{message.name}</p>
           <p className="mt-1 text-sm text-muted-foreground">{message.role_label}</p>
         </div> : <Button asChild className="mt-7 h-auto min-h-11 max-w-full whitespace-normal py-3 text-left"><Link to="/mot-du-president">Lire le message du Président <ArrowRight className="shrink-0" /></Link></Button>}

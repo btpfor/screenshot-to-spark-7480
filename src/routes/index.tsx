@@ -11,9 +11,13 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { presidentQuery } from "@/lib/president";
 import { PresidentMessage } from "@/components/PresidentMessage";
 import { countAtProgress, missionStats } from "@/lib/mission-stats";
+import { bureauQuery } from "@/lib/bureau";
 
 export const Route = createFileRoute("/")({
-  loader: ({ context }) => context.queryClient.ensureQueryData(presidentQuery),
+  loader: ({ context }) => Promise.all([
+    context.queryClient.ensureQueryData(presidentQuery),
+    context.queryClient.ensureQueryData(bureauQuery),
+  ]),
   head: () => ({
     meta: [
       { title: "GIE VIP BOK GUIS GUIS — Transport Sénégal" },
@@ -91,6 +95,7 @@ function Home() {
     return () => observer.disconnect();
   }, []);
   const { data: president } = useSuspenseQuery(presidentQuery);
+  const { data: bureau } = useSuspenseQuery(bureauQuery);
   return (
     <div className="min-h-screen bg-background">
       <Collapsible asChild open={menuOpen} onOpenChange={setMenuOpen}>
@@ -105,6 +110,7 @@ function Home() {
             <a href="#mission" className="opacity-80 hover:opacity-100">Mission</a>
             {president && <Link to="/mot-du-president" className="opacity-80 hover:opacity-100">Le mot du Président</Link>}
             <a href="#services" className="opacity-80 hover:opacity-100">Services</a>
+            <Link to="/membres-du-bureau" className="opacity-80 hover:opacity-100">Le bureau</Link>
             <a href="#responsables" className="opacity-80 hover:opacity-100">Responsables</a>
             <Link to="/contact" className="opacity-80 hover:opacity-100">Contact</Link>
           </nav>
@@ -119,7 +125,7 @@ function Home() {
             const section = document.getElementById(href.slice(1));
             section?.focus({ preventScroll: true });
           } else menuTrigger.current?.focus();
-        }}><Button asChild variant="ghost" className="justify-start"><a href="#mission">Mission</a></Button>{president && <Button asChild variant="ghost" className="justify-start"><Link to="/mot-du-president">Le mot du Président</Link></Button>}<Button asChild variant="ghost" className="justify-start"><a href="#services">Services</a></Button><Button asChild variant="ghost" className="justify-start"><a href="#responsables">Responsables</a></Button><Button asChild variant="ghost" className="justify-start"><Link to="/contact">Contact</Link></Button><Button asChild variant="secondary"><Link to="/auth">Espace membre</Link></Button></nav></CollapsibleContent>
+        }}><Button asChild variant="ghost" className="justify-start"><a href="#mission">Mission</a></Button>{president && <Button asChild variant="ghost" className="justify-start"><Link to="/mot-du-president">Le mot du Président</Link></Button>}<Button asChild variant="ghost" className="justify-start"><a href="#services">Services</a></Button><Button asChild variant="ghost" className="justify-start"><Link to="/membres-du-bureau">Le bureau</Link></Button><Button asChild variant="ghost" className="justify-start"><a href="#responsables">Responsables</a></Button><Button asChild variant="ghost" className="justify-start"><Link to="/contact">Contact</Link></Button><Button asChild variant="secondary"><Link to="/auth">Espace membre</Link></Button></nav></CollapsibleContent>
       </header>
       </Collapsible>
 

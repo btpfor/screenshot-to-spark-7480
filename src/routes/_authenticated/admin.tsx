@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Navigate, Outlet, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Inbox, KeyRound, LayoutDashboard, LogOut, Menu, Settings, ShieldCheck, Users, X, Quote } from "lucide-react";
+import { Inbox, KeyRound, LayoutDashboard, LogOut, Menu, Settings, ShieldCheck, Users, UsersRound, X, Quote } from "lucide-react";
 import { useAuth, ROLE_LABELS } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Logo } from "@/components/Logo";
@@ -27,6 +27,7 @@ const nav = [
   { to: "/admin/utilisateurs", label: "Utilisateurs & rôles", icon: ShieldCheck, superOnly: true },
   { to: "/admin/messages", label: "Messages reçus", icon: Inbox },
   { to: "/admin/parametres", label: "Paramètres du GIE", icon: Settings },
+  { to: "/admin/bureau", label: "Gestion du bureau", icon: UsersRound },
   { to: "/admin/mot-du-president", label: "Le mot du Président", icon: Quote, presidentOnly: true },
 ] as const;
 

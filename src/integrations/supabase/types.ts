@@ -41,6 +41,57 @@ export type Database = {
         }
         Relationships: []
       }
+      bureau_members: {
+        Row: {
+          full_name: string | null
+          id: string
+          phone: string | null
+          photo_path: string | null
+          published: boolean
+          role_label: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          photo_path?: string | null
+          published?: boolean
+          role_label: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          photo_path?: string | null
+          published?: boolean
+          role_label?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      bureau_settings: {
+        Row: {
+          group_photo_path: string | null
+          id: number
+          updated_at: string
+        }
+        Insert: {
+          group_photo_path?: string | null
+          id?: number
+          updated_at?: string
+        }
+        Update: {
+          group_photo_path?: string | null
+          id?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       contact_messages: {
         Row: {
           ai_category: string | null

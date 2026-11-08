@@ -204,6 +204,25 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
   .president-reveal { animation: none; }
 }
 
+.bureau-photo-reveal { animation: bureau-photo-enter 700ms ease-out both; }
+@keyframes bureau-photo-enter {
+  from { opacity: 0; transform: perspective(1200px) translateY(20px) rotateX(6deg) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) rotateX(0deg) scale(1); }
+}
+.bureau-card { animation: service-enter 600ms ease-out both; transition: transform 350ms ease, border-color 350ms ease, box-shadow 350ms ease; }
+@media (hover: hover) and (pointer: fine) {
+  .bureau-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--gold);
+    box-shadow: 0 18px 32px -18px color-mix(in oklch, var(--gold) 30%, transparent), var(--shadow-card);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bureau-photo-reveal, .bureau-card { animation: none; }
+  .bureau-card { transition: none; }
+  .bureau-card:hover { transform: none; }
+}
+
 .service-item { perspective: 1000px; }
 .mission-stat { perspective: 900px; }
 .mission-stat-surface {

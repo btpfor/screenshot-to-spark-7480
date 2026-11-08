@@ -57,6 +57,13 @@
       "when": 1794155492705,
       "tag": "0007_president_media_read_scope",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1794173103425,
+      "tag": "0008_bureau_members",
+      "breakpoints": true
     }
   ]
 }

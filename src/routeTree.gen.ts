@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as MembresDuBureauRouteImport } from './routes/membres-du-bureau'
 import { Route as MotDuPresidentRouteImport } from './routes/mot-du-president'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedChangerMotDePasseRouteImport } from './routes/_authenticated/changer-mot-de-passe'
@@ -20,6 +21,7 @@ import { Route as AuthenticatedEspaceRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedTableauRouteImport } from './routes/_authenticated/tableau'
 import { Route as VerifierMatriculeRouteImport } from './routes/verifier.$matricule'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
+import { Route as AuthenticatedAdminBureauRouteImport } from './routes/_authenticated/admin.bureau'
 import { Route as AuthenticatedAdminMembresRouteImport } from './routes/_authenticated/admin.membres'
 import { Route as AuthenticatedAdminMessagesRouteImport } from './routes/_authenticated/admin.messages'
 import { Route as AuthenticatedAdminMotDuPresidentRouteImport } from './routes/_authenticated/admin.mot-du-president'
@@ -43,6 +45,11 @@ const AuthRoute = AuthRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MembresDuBureauRoute = MembresDuBureauRouteImport.update({
+  id: '/membres-du-bureau',
+  path: '/membres-du-bureau',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MotDuPresidentRoute = MotDuPresidentRouteImport.update({
@@ -81,6 +88,12 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminBureauRoute =
+  AuthenticatedAdminBureauRouteImport.update({
+    id: '/bureau',
+    path: '/bureau',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminMembresRoute =
   AuthenticatedAdminMembresRouteImport.update({
     id: '/membres',
@@ -116,12 +129,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
+  '/membres-du-bureau': typeof MembresDuBureauRoute
   '/mot-du-president': typeof MotDuPresidentRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/changer-mot-de-passe': typeof AuthenticatedChangerMotDePasseRoute
   '/espace': typeof AuthenticatedEspaceRoute
   '/tableau': typeof AuthenticatedTableauRoute
   '/verifier/$matricule': typeof VerifierMatriculeRoute
+  '/admin/bureau': typeof AuthenticatedAdminBureauRoute
   '/admin/membres': typeof AuthenticatedAdminMembresRoute
   '/admin/messages': typeof AuthenticatedAdminMessagesRoute
   '/admin/mot-du-president': typeof AuthenticatedAdminMotDuPresidentRoute
@@ -133,11 +148,13 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
+  '/membres-du-bureau': typeof MembresDuBureauRoute
   '/mot-du-president': typeof MotDuPresidentRoute
   '/changer-mot-de-passe': typeof AuthenticatedChangerMotDePasseRoute
   '/espace': typeof AuthenticatedEspaceRoute
   '/tableau': typeof AuthenticatedTableauRoute
   '/verifier/$matricule': typeof VerifierMatriculeRoute
+  '/admin/bureau': typeof AuthenticatedAdminBureauRoute
   '/admin/membres': typeof AuthenticatedAdminMembresRoute
   '/admin/messages': typeof AuthenticatedAdminMessagesRoute
   '/admin/mot-du-president': typeof AuthenticatedAdminMotDuPresidentRoute
@@ -151,12 +168,14 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
+  '/membres-du-bureau': typeof MembresDuBureauRoute
   '/mot-du-president': typeof MotDuPresidentRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/changer-mot-de-passe': typeof AuthenticatedChangerMotDePasseRoute
   '/_authenticated/espace': typeof AuthenticatedEspaceRoute
   '/_authenticated/tableau': typeof AuthenticatedTableauRoute
   '/verifier/$matricule': typeof VerifierMatriculeRoute
+  '/_authenticated/admin/bureau': typeof AuthenticatedAdminBureauRoute
   '/_authenticated/admin/membres': typeof AuthenticatedAdminMembresRoute
   '/_authenticated/admin/messages': typeof AuthenticatedAdminMessagesRoute
   '/_authenticated/admin/mot-du-president': typeof AuthenticatedAdminMotDuPresidentRoute
@@ -170,12 +189,14 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/contact'
+    | '/membres-du-bureau'
     | '/mot-du-president'
     | '/admin'
     | '/changer-mot-de-passe'
     | '/espace'
     | '/tableau'
     | '/verifier/$matricule'
+    | '/admin/bureau'
     | '/admin/membres'
     | '/admin/messages'
     | '/admin/mot-du-president'
@@ -187,11 +208,13 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/contact'
+    | '/membres-du-bureau'
     | '/mot-du-president'
     | '/changer-mot-de-passe'
     | '/espace'
     | '/tableau'
     | '/verifier/$matricule'
+    | '/admin/bureau'
     | '/admin/membres'
     | '/admin/messages'
     | '/admin/mot-du-president'
@@ -204,12 +227,14 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/contact'
+    | '/membres-du-bureau'
     | '/mot-du-president'
     | '/_authenticated/admin'
     | '/_authenticated/changer-mot-de-passe'
     | '/_authenticated/espace'
     | '/_authenticated/tableau'
     | '/verifier/$matricule'
+    | '/_authenticated/admin/bureau'
     | '/_authenticated/admin/membres'
     | '/_authenticated/admin/messages'
     | '/_authenticated/admin/mot-du-president'
@@ -223,6 +248,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ContactRoute: typeof ContactRoute
+  MembresDuBureauRoute: typeof MembresDuBureauRoute
   MotDuPresidentRoute: typeof MotDuPresidentRoute
   VerifierMatriculeRoute: typeof VerifierMatriculeRoute
 }
@@ -255,6 +281,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/membres-du-bureau': {
+      id: '/membres-du-bureau'
+      path: '/membres-du-bureau'
+      fullPath: '/membres-du-bureau'
+      preLoaderRoute: typeof MembresDuBureauRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mot-du-president': {
@@ -306,6 +339,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/bureau': {
+      id: '/_authenticated/admin/bureau'
+      path: '/bureau'
+      fullPath: '/admin/bureau'
+      preLoaderRoute: typeof AuthenticatedAdminBureauRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/membres': {
       id: '/_authenticated/admin/membres'
       path: '/membres'
@@ -345,6 +385,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminBureauRoute: typeof AuthenticatedAdminBureauRoute
   AuthenticatedAdminMembresRoute: typeof AuthenticatedAdminMembresRoute
   AuthenticatedAdminMessagesRoute: typeof AuthenticatedAdminMessagesRoute
   AuthenticatedAdminMotDuPresidentRoute: typeof AuthenticatedAdminMotDuPresidentRoute
@@ -354,6 +395,7 @@ interface AuthenticatedAdminRouteChildren {
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminBureauRoute: AuthenticatedAdminBureauRoute,
   AuthenticatedAdminMembresRoute: AuthenticatedAdminMembresRoute,
   AuthenticatedAdminMessagesRoute: AuthenticatedAdminMessagesRoute,
   AuthenticatedAdminMotDuPresidentRoute: AuthenticatedAdminMotDuPresidentRoute,
@@ -387,6 +429,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ContactRoute: ContactRoute,
+  MembresDuBureauRoute: MembresDuBureauRoute,
   MotDuPresidentRoute: MotDuPresidentRoute,
   VerifierMatriculeRoute: VerifierMatriculeRoute,
 }

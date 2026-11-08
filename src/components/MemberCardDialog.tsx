@@ -10,8 +10,10 @@ export function MemberCardView({ member }: { member: CardMember }) {
   const [busy, setBusy] = useState(false);
 
   const toPng = async () => {
+    const card = ref.current;
+    if (!card) throw new Error("Carte indisponible");
     const { toPng } = await import("html-to-image");
-    return toPng(ref.current ?? (() => { throw new Error("Carte indisponible"); })(), { pixelRatio: 2.5, cacheBust: true });
+    return toPng(card, { pixelRatio: 2.5, cacheBust: true });
   };
   const file = `carte-${member.matricule}`;
   const png = async () => {

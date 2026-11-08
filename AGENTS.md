@@ -28,3 +28,5 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+- Staff password replacement uses the shared password-change page; initial accounts carry a user-metadata reminder, never a role claim, so credentials remain solely in Auth and roles in user_roles.

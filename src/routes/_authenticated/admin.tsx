@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Navigate, Outlet, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Inbox, LayoutDashboard, LogOut, Menu, Settings, ShieldCheck, Users, X } from "lucide-react";
+import { Inbox, KeyRound, LayoutDashboard, LogOut, Menu, Settings, ShieldCheck, Users, X } from "lucide-react";
 import { useAuth, ROLE_LABELS } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Logo } from "@/components/Logo";
@@ -26,6 +26,7 @@ function AdminLayout() {
   const [open, setOpen] = useState(false);
   if (loading) return <div className="grid min-h-screen place-items-center text-muted-foreground">Chargement…</div>;
   if (!isStaff) return <Navigate to="/espace" />;
+  if (user?.user_metadata?.["must_change_password"] === true) return <Navigate to="/changer-mot-de-passe" />;
 
   const logout = async () => {
     await supabase.auth.signOut();
@@ -58,6 +59,7 @@ function AdminLayout() {
           <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setOpen(true)} aria-label="Menu"><Menu className="h-5 w-5" /></Button>
           <div className="hidden text-sm text-muted-foreground md:block">Espace administration</div>
           <div className="flex items-center gap-1">
+            <Button asChild variant="ghost" size="sm"><Link to="/changer-mot-de-passe"><KeyRound className="h-4 w-4" />Changer mon mot de passe</Link></Button>
             <Button asChild variant="ghost" size="sm"><Link to="/espace">Mon espace membre</Link></Button>
             <ThemeToggle />
           </div>

@@ -15,7 +15,7 @@ export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
       { title: "Connexion — GIE VIP BOK GUIS GUIS" },
-      { name: "description", content: "Connexion à l'espace membre avec votre numéro matricule." },
+      { name: "description", content: "Connexion à l'espace membre et administrateur avec votre identifiant." },
       { property: "og:title", content: "Connexion — GIE VIP BOK GUIS GUIS" },
       { property: "og:description", content: "Espace membre et administration du GIE." },
       { property: "og:type", content: "website" },
@@ -43,24 +43,24 @@ function AuthPage() {
   }, [checkAdmin, navigate]);
 
   const signIn = async (email: string) => {
-    const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error: authError } = await supabase.auth.signInWithPassword({ email, password });
     if (authError) {
       const msg = authError.message.toLowerCase().includes("banned")
         ? "Ce compte est désactivé ou bloqué. Contactez l'administration."
-        : "Identifiant ou mot de passe incorrect. Vérifiez votre numéro matricule (ex. BGG-2026-0001) et votre mot de passe, puis réessayez.";
+        : "Identifiant ou mot de passe incorrect. Vérifiez votre identifiant et votre mot de passe, puis réessayez.";
       setError(msg);
       toast.error(msg);
       return;
     }
     await supabase.rpc("record_login");
-    navigate({ to: "/tableau" });
+    navigate({ to: data.user?.user_metadata?.["must_change_password"] === true ? "/changer-mot-de-passe" : "/tableau" });
   };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     if (!id.includes("@") && !isMatricule(id)) {
-      setError("L'identifiant doit être un numéro matricule au format BGG-2026-0001 (ex. BGG-2026-0001).");
+      setError("Saisissez votre adresse email ou un matricule au format BGG-2026-0001.");
       return;
     }
     setBusy(true);
@@ -96,7 +96,7 @@ function AuthPage() {
           <div>
             <h1 className="text-2xl font-bold">{needsAdmin ? "Configuration initiale" : "Connexion"}</h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              {needsAdmin ? "Créez le compte du super administrateur. Cette étape n'apparaît qu'une seule fois." : "Saisissez votre numéro matricule (ex. BGG-2026-0001)."}
+              {needsAdmin ? "Créez le compte du super administrateur. Cette étape n'apparaît qu'une seule fois." : "Saisissez votre identifiant : adresse email ou numéro matricule."}
             </p>
           </div>
           <div className="space-y-2">

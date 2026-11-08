@@ -1,12 +1,13 @@
 import { createFileRoute, Link, Navigate, Outlet, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Inbox, KeyRound, LayoutDashboard, LogOut, Menu, Settings, ShieldCheck, Users, X } from "lucide-react";
+import { Inbox, KeyRound, LayoutDashboard, LogOut, Menu, Settings, ShieldCheck, Users, X, Quote } from "lucide-react";
 import { useAuth, ROLE_LABELS } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { InstallAppButton } from "@/components/InstallApp";
+import { canEditPresident } from "@/lib/president-rules";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({ meta: [
@@ -26,6 +27,7 @@ const nav = [
   { to: "/admin/utilisateurs", label: "Utilisateurs & rôles", icon: ShieldCheck, superOnly: true },
   { to: "/admin/messages", label: "Messages reçus", icon: Inbox },
   { to: "/admin/parametres", label: "Paramètres du GIE", icon: Settings },
+  { to: "/admin/mot-du-president", label: "Le mot du Président", icon: Quote, presidentOnly: true },
 ] as const;
 
 function AdminLayout() {
@@ -49,7 +51,7 @@ function AdminLayout() {
           <button className="md:hidden" onClick={() => setOpen(false)} aria-label="Fermer"><X className="h-5 w-5" /></button>
         </div>
         <nav className="flex-1 space-y-1 px-3">
-          {nav.filter((n) => !("superOnly" in n) || roles.includes("super_admin")).map((n) => (
+          {nav.filter((n) => (!("superOnly" in n) || roles.includes("super_admin")) && (!("presidentOnly" in n) || canEditPresident(roles))).map((n) => (
             <Link key={n.to} to={n.to} activeOptions={{ exact: "exact" in n }} onClick={() => setOpen(false)}
               className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium opacity-80 transition hover:bg-sidebar-accent hover:opacity-100 data-[status=active]:bg-sidebar-accent data-[status=active]:text-sidebar-primary data-[status=active]:opacity-100">
               <n.icon className="h-4 w-4" /> {n.label}

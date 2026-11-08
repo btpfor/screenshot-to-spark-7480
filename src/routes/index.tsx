@@ -5,8 +5,12 @@ import { Logo } from "@/components/Logo";
 import { Leaders } from "@/components/Leaders";
 import { InstallAppButton } from "@/components/InstallApp";
 import hero from "@/assets/hero-dakar.jpg";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { presidentQuery } from "@/lib/president";
+import { PresidentMessage } from "@/components/PresidentMessage";
 
 export const Route = createFileRoute("/")({
+  loader: ({ context }) => context.queryClient.ensureQueryData(presidentQuery),
   head: () => ({
     meta: [
       { title: "GIE VIP BOK GUIS GUIS — Transport Sénégal" },
@@ -30,6 +34,7 @@ const pillars = [
 ];
 
 function Home() {
+  const { data: president } = useSuspenseQuery(presidentQuery);
   return (
     <div className="min-h-screen bg-background">
       <header className="absolute inset-x-0 top-0 z-20 text-primary-foreground">
@@ -37,6 +42,7 @@ function Home() {
           <Logo />
           <nav className="hidden items-center gap-5 text-sm font-medium lg:flex">
             <a href="#mission" className="opacity-80 hover:opacity-100">Mission</a>
+            {president && <Link to="/mot-du-president" className="opacity-80 hover:opacity-100">Le mot du Président</Link>}
             <a href="#services" className="opacity-80 hover:opacity-100">Services</a>
             <a href="#responsables" className="opacity-80 hover:opacity-100">Responsables</a>
             <Link to="/contact" className="opacity-80 hover:opacity-100">Contact</Link>
@@ -45,6 +51,7 @@ function Home() {
           <Button asChild variant="secondary" size="sm"><Link to="/auth">Espace membre</Link></Button>
         </div>
       </header>
+      {president && <div className="absolute inset-x-0 top-24 z-20 px-5 lg:hidden"><Link to="/mot-du-president" className="text-sm font-semibold text-primary-foreground underline underline-offset-4">Le mot du Président</Link></div>}
 
       <section className="relative min-h-[88vh] overflow-hidden">
         <img src={hero} alt="Chauffeur du GIE à Dakar" width={1600} height={1008} className="absolute inset-0 h-full w-full object-cover" />
@@ -89,6 +96,8 @@ function Home() {
           </div>
         </div>
       </section>
+
+      {president && <section className="border-y bg-card py-16 md:py-20"><div className="mx-auto max-w-7xl px-5"><PresidentMessage message={president} /></div></section>}
 
       <section id="services" className="bg-sidebar py-24 text-sidebar-foreground">
         <div className="mx-auto max-w-7xl px-5">

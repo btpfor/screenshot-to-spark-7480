@@ -1,3 +1,8 @@
+# Le mot du Président
+- [x] Ajouter le portrait intact, la rubrique d’accueil, le menu et la page indépendante.
+- [x] Permettre aux responsables autorisés de modifier et publier/dépublier le message, le nom, la fonction, la photo et la signature (Lovable Cloud existant, photos privées ; signature réelle à fournir).
+- [x] Vérifier l’enregistrement authentifié, le remplacement de photo, la dépublication publique, la republication et l’affichage sur ordinateur/mobile ; 3 tests réussis, aucune erreur navigateur.
+
 # Accès administrateur
 - [x] Créer le compte administrateur demandé avec un mot de passe accepté.
 - [x] Proposer le changement du mot de passe après connexion.

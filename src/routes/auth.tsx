@@ -86,7 +86,7 @@ function AuthPage() {
             </p>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="id">{needsAdmin ? "Numéro matricule de l'administrateur" : "Numéro matricule"}</Label>
+            <Label htmlFor="id">Identifiant</Label>
             <Input id="id" required autoComplete="username" type="text" value={id} onChange={(e) => setId(e.target.value)} placeholder="BGG-2026-0001" />
           </div>
           <div className="space-y-2">

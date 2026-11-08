@@ -43,7 +43,9 @@ export type Database = {
       }
       drivers: {
         Row: {
+          account_status: string
           address: string | null
+          allow_shared_phone: boolean
           birth_date: string | null
           cni_number: string | null
           created_at: string
@@ -52,19 +54,24 @@ export type Database = {
           first_name: string
           id: string
           join_date: string
+          last_login_at: string | null
           last_name: string
           license_expiry: string | null
           license_number: string | null
           matricule: string
+          must_change_password: boolean
           notes: string | null
           phone: string
           photo_url: string | null
           platform: string
           status: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
+          account_status?: string
           address?: string | null
+          allow_shared_phone?: boolean
           birth_date?: string | null
           cni_number?: string | null
           created_at?: string
@@ -73,19 +80,24 @@ export type Database = {
           first_name: string
           id?: string
           join_date?: string
+          last_login_at?: string | null
           last_name: string
           license_expiry?: string | null
           license_number?: string | null
           matricule?: string
+          must_change_password?: boolean
           notes?: string | null
           phone: string
           photo_url?: string | null
           platform?: string
           status?: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
+          account_status?: string
           address?: string | null
+          allow_shared_phone?: boolean
           birth_date?: string | null
           cni_number?: string | null
           created_at?: string
@@ -94,16 +106,37 @@ export type Database = {
           first_name?: string
           id?: string
           join_date?: string
+          last_login_at?: string | null
           last_name?: string
           license_expiry?: string | null
           license_number?: string | null
           matricule?: string
+          must_change_password?: boolean
           notes?: string | null
           phone?: string
           photo_url?: string | null
           platform?: string
           status?: string
           updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      login_log: {
+        Row: {
+          created_at: string
+          id: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: never
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: never
+          user_id?: string
         }
         Relationships: []
       }
@@ -269,6 +302,8 @@ export type Database = {
         Returns: boolean
       }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
+      mark_password_changed: { Args: never; Returns: undefined }
+      record_login: { Args: never; Returns: undefined }
       update_my_contact: {
         Args: { _address: string; _phone: string }
         Returns: undefined

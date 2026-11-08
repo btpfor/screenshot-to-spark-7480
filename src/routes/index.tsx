@@ -10,13 +10,14 @@ import hero from "@/assets/hero-dakar.jpg";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { presidentQuery } from "@/lib/president";
 import { PresidentMessage } from "@/components/PresidentMessage";
+import { countAtProgress, missionStats } from "@/lib/mission-stats";
 
 export const Route = createFileRoute("/")({
   loader: ({ context }) => context.queryClient.ensureQueryData(presidentQuery),
   head: () => ({
     meta: [
       { title: "GIE VIP BOK GUIS GUIS — Transport Sénégal" },
-      { name: "description", content: "300 chauffeurs unis pour moderniser le transport au Sénégal : solidarité, financement automobile et partenariats." },
+      { name: "description", content: "Plus de 300 chauffeurs unis pour moderniser le transport au Sénégal : solidarité, financement automobile et partenariats." },
       { property: "og:title", content: "GIE VIP BOK GUIS GUIS — Transport Sénégal" },
       { property: "og:description", content: "Solidarité, financement automobile et professionnalisation des chauffeurs au Sénégal." },
       { property: "og:type", content: "website" },
@@ -39,17 +40,31 @@ function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuTrigger = useRef<HTMLButtonElement>(null);
   const missionStatsRef = useRef<HTMLDivElement>(null);
+  const [countProgress, setCountProgress] = useState(1);
   useEffect(() => {
     const stats = missionStatsRef.current;
     if (!stats || !('IntersectionObserver' in window)) return;
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let frame = 0;
+    const stop = () => { cancelAnimationFrame(frame); setCountProgress(1); };
+    motion.addEventListener('change', stop);
     const observer = new IntersectionObserver(([entry]) => {
       if (entry?.isIntersecting) {
         stats.setAttribute("data-revealed", "true");
         observer.disconnect();
+        if (motion.matches) return;
+        const start = performance.now();
+        setCountProgress(0);
+        const tick = (now: number) => {
+          const progress = Math.min(1, (now - start) / 1600);
+          setCountProgress(progress);
+          if (progress < 1) frame = requestAnimationFrame(tick);
+        };
+        frame = requestAnimationFrame(tick);
       }
     }, { threshold: 0.25 });
     observer.observe(stats);
-    return () => observer.disconnect();
+    return () => { observer.disconnect(); cancelAnimationFrame(frame); motion.removeEventListener('change', stop); };
   }, []);
   const servicesRef = useRef<HTMLElement>(null);
   const [servicesVisible, setServicesVisible] = useState(false);
@@ -119,7 +134,7 @@ function Home() {
             Moderniser le transport au Sénégal, <span className="text-accent">ensemble.</span>
           </h1>
           <p className="mt-6 max-w-xl text-lg opacity-85">
-            Près de 300 chauffeurs unis pour la solidarité, l'accès au financement automobile et la professionnalisation du métier.
+            Plus de 300 chauffeurs unis pour la solidarité, l'accès au financement automobile et la professionnalisation du métier.
           </p>
           <div className="mt-9 grid gap-3 sm:flex sm:flex-wrap">
             <InstallAppButton className="min-h-10 px-5" />
@@ -142,11 +157,11 @@ function Home() {
           <p>Le GIE VIP BOK GUIS GUIS rassemble les chauffeurs actifs sur les plateformes numériques comme Yango et dans le transport traditionnel.</p>
           <p>Notre objectif : digitaliser nos activités, faciliter la gestion administrative et ouvrir de nouvelles opportunités économiques à chaque membre.</p>
           <div ref={missionStatsRef} className="mission-stats grid grid-cols-1 gap-3 pt-4 min-[375px]:grid-cols-3 sm:gap-4">
-            {[["300", "chauffeurs"], ["100%", "solidaires"], ["3", "responsables"]].map(([n, l]) => (
-              <div key={l} className="mission-stat min-w-0">
+            {missionStats.map(({ value, prefix, suffix, label }) => (
+              <div key={label} className="mission-stat min-w-0">
                 <div className="mission-stat-surface flex min-h-28 flex-col justify-center gap-2 rounded-lg border bg-card px-2 py-5 text-center shadow-card sm:px-4">
-                  <div className="mission-stat-number font-display text-3xl font-bold leading-none tabular-nums text-primary">{n}</div>
-                  <div className="text-xs font-semibold leading-relaxed text-muted-foreground">{l}</div>
+                  <div className="mission-stat-number font-display text-3xl font-bold leading-none tabular-nums text-primary" aria-label={`${prefix}${value}${suffix}`}><span aria-hidden="true">{prefix}{countAtProgress(value, countProgress)}{suffix}</span></div>
+                  <div className="text-xs font-semibold leading-relaxed text-muted-foreground">{label}</div>
                   <span aria-hidden="true" className="mx-auto mt-1 h-0.5 w-6 bg-gold" />
                 </div>
               </div>

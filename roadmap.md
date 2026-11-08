@@ -9,3 +9,9 @@
 - [x] Accepter les nouveaux identifiants à la connexion sans modifier les anciens comptes (tests réussis).
 - [x] Vérifier l’affichage automatique dans le formulaire administrateur.
 - [ ] Vérifier un compte membre réel et sa première connexion : en attente des informations du premier membre ; aucun compte fictif créé.
+
+# Application installable
+- [ ] Ajouter les icônes, le manifeste et les boutons d’installation avec guide iPhone/iPad.
+- [ ] Ajouter une ouverture hors connexion sans mise en cache des données privées, avec protection de l’aperçu.
+- [ ] Préparer les points d’extension des notifications, sans Firebase ni envoi activé.
+- [ ] Vérifier les menus, les fenêtres d’installation et les règles de sécurité ; installation réelle à valider après publication sur appareils physiques.

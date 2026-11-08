@@ -25,7 +25,7 @@ export const getPublicPresident = createServerFn({ method: "GET" }).handler(asyn
     const signed = await client.storage.from("president-media").createSignedUrl(path, 3600);
     if (signed.error || !signed.data) return null;
     // Browser storage links must use the browser-reachable Cloud origin.
-    const browserOrigin = import.meta.env.VITE_SUPABASE_URL;
+    const browserOrigin = import.meta.env["VITE_SUPABASE_URL"];
     return signed.data.signedUrl.replace(url, browserOrigin);
   };
   const [photoUrl, signatureUrl] = await Promise.all([mediaUrl(data.photo_path), mediaUrl(data.signature_path)]);

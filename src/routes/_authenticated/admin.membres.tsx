@@ -74,7 +74,7 @@ function Members() {
 
   const memberActions = (d: DriverRow) => (
                   <DropdownMenu>
-                    <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" aria-label="Actions"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
+                    <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" aria-label={`Actions pour ${d.first_name} ${d.last_name}`}><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem onClick={() => setView(d.id)}>Voir le profil</DropdownMenuItem>
                       {manager && <>
@@ -107,7 +107,7 @@ function Members() {
 
       <div className="relative max-w-sm">
         <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-        <Input className="pl-9" placeholder="Matricule, nom ou téléphone" value={q} onChange={(e) => setQ(e.target.value)} />
+        <Input aria-label="Rechercher un membre par matricule, nom ou téléphone" className="pl-9" placeholder="Matricule, nom ou téléphone" value={q} onChange={(e) => setQ(e.target.value)} />
       </div>
 
       <div className="space-y-3 md:hidden">
@@ -297,7 +297,7 @@ function ImportMembers({ onClose, onDone }: { onClose: () => void; onDone: (c: C
           Colonnes obligatoires : <b>prenom, nom, telephone, cni</b>. Facultatives : adresse, plateforme, naissance, adhesion.
         </p>
         <Button variant="outline" size="sm" className="w-fit" onClick={() => downloadCsv("modele-import.csv", [{ prenom: "", nom: "", telephone: "", adresse: "", cni: "", plateforme: "Yango", naissance: "", adhesion: "" }])}>Télécharger le modèle</Button>
-        <Input type="file" accept=".csv,text/csv" onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />
+        <Input aria-label="Fichier CSV des membres à importer" type="file" accept=".csv,text/csv" onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />
         {rows.length > 0 && (
           <>
             <div className="text-sm"><b>{valid.length}</b> ligne(s) valide(s), <b className="text-destructive">{rows.length - valid.length}</b> erreur(s)</div>

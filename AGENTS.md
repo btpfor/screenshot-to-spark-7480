@@ -38,3 +38,4 @@ use the editor.
 - Public Cloud reads select a complete runtime configuration pair, falling back only to bundled publishable configuration for external deployments; never use privileged keys for public reads.
 - Router dehydration restores the request-local Query cache before browser rendering to preserve SSR data and signed media URLs.
 - Responsive member/user cards reuse desktop data and action handlers; dialogs use dynamic viewport bounds, and membership-card exports retain fixed ID-1 geometry.
+- Mobile admin navigation uses a Radix Sheet and public navigation a disclosure; shared dialogs restore their opener without stealing focus from another dialog, preserving keyboard access and existing visuals.

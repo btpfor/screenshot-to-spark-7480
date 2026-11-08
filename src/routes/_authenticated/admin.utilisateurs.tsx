@@ -60,7 +60,7 @@ function UsersPage() {
       <div className="flex flex-wrap items-center gap-4">
         <div className="relative w-full max-w-sm">
           <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input className="pl-9" placeholder="Nom, email ou matricule" value={q} onChange={(e) => setQ(e.target.value)} />
+          <Input aria-label="Rechercher un utilisateur par nom, email ou matricule" className="pl-9" placeholder="Nom, email ou matricule" value={q} onChange={(e) => setQ(e.target.value)} />
         </div>
         <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={staffOnly} onChange={(e) => setStaffOnly(e.target.checked)} /> Personnel uniquement</label>
       </div>
@@ -122,14 +122,14 @@ function RolePicker({ value, onChange }: { value: AppRole[]; onChange: (r: AppRo
       {ALL_ROLES.map((r) => {
         const on = value.includes(r);
         return (
-          <button type="button" key={r} onClick={() => onChange(on ? value.filter((x) => x !== r) : [...value, r])}
-            className={`flex w-full items-start gap-3 rounded-lg border p-3 text-left transition ${on ? "border-primary bg-primary/5" : "hover:bg-muted/50"}`}>
+          <Button variant="ghost" type="button" key={r} aria-pressed={on} onClick={() => onChange(on ? value.filter((x) => x !== r) : [...value, r])}
+            className={`flex h-auto w-full items-start justify-start gap-3 whitespace-normal rounded-lg border p-3 text-left font-normal transition hover:text-inherit ${on ? "border-primary bg-primary/5 hover:bg-primary/5" : "hover:bg-muted/50"}`}>
             <span className={`mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded border ${on ? "border-primary bg-primary text-primary-foreground" : ""}`}>{on && <Check className="h-3.5 w-3.5" />}</span>
             <span>
               <span className="block text-sm font-semibold">{ROLE_LABELS[r]}</span>
               <span className="block text-xs text-muted-foreground">{ROLE_PERMISSIONS[r]}</span>
             </span>
-          </button>
+          </Button>
         );
       })}
     </div>
@@ -201,7 +201,7 @@ function PermissionsMatrix() {
   return (
     <div className="rounded-xl border bg-card p-5 shadow-card">
       <h2 className="mb-4 flex items-center gap-2 font-semibold"><ShieldCheck className="h-4 w-4 text-primary" /> Permissions par rôle</h2>
-      <div className="overflow-x-auto">
+      <div tabIndex={0} role="region" aria-label="Permissions par rôle, tableau défilant horizontalement" className="overflow-x-auto">
         <table className="w-full min-w-[640px] text-xs">
           <thead><tr><th className="p-2 text-left" />{cols.map((r) => <th key={r} className="p-2 text-center font-semibold">{ROLE_LABELS[r]}</th>)}</tr></thead>
           <tbody className="divide-y">

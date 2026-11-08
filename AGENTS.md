@@ -39,3 +39,4 @@ use the editor.
 - Router dehydration restores the request-local Query cache before browser rendering to preserve SSR data and signed media URLs.
 - Responsive member/user cards reuse desktop data and action handlers; dialogs use dynamic viewport bounds, and membership-card exports retain fixed ID-1 geometry.
 - Mobile admin navigation uses a Radix Sheet and public navigation a disclosure; shared dialogs restore their opener without stealing focus from another dialog, preserving keyboard access and existing visuals.
+- Shared branding and membership cards use the bundled official logo asset when settings have no override; installed-app icons derive from the same source so branding stays consistent.

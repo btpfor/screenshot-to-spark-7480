@@ -11,19 +11,19 @@
   "background_color": "#172d52",
   "icons": [
     {
-      "src": "/icons/app-192.png",
+      "src": "/__l5e/assets-v1/eafd1a98-7816-4a70-9801-f8b02dfd2a77/logo-app-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/app-512.png",
+      "src": "/__l5e/assets-v1/c318bb10-c551-401f-bcd2-8e2f215b425a/logo-app-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/app-maskable-512.png",
+      "src": "/__l5e/assets-v1/ab09da89-5ae6-49f8-b783-42c80ab2ac49/logo-app-maskable-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"

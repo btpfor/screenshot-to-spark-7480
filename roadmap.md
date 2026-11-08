@@ -37,4 +37,4 @@
 - [x] Préparer les points d’extension des notifications, sans Firebase ni envoi activé.
 - [x] Vérifier les menus et guides sur ordinateur/téléphone, le contrôle du déclenchement natif et les règles de protection (13 tests, administration authentifiée, aucune erreur navigateur).
 - [ ] Valider l’installation native, l’ouverture hors connexion et les mises à jour sur appareils physiques : attend la publication et les appareils Android/iOS/Edge, indisponibles dans l’aperçu.
-- [ ] Remplacer l’emblème provisoire par le logo officiel : attend le logo du GIE, absent des paramètres.
+- [x] Remplacer l’emblème provisoire par le logo officiel fourni sur le site, les cartes, le favicon et les icônes d’installation.

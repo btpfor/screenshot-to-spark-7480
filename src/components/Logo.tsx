@@ -1,14 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { gieQuery } from "@/lib/gie";
-import officialLogo from "@/assets/logo-gie-vip-transport.jpeg.asset.json";
+import { officialLogoUrl } from "@/lib/branding";
 
 export function Logo({ compact = false }: { compact?: boolean }) {
   const { data } = useQuery(gieQuery);
-  const logo = data?.settings?.logo_data || officialLogo.url;
+  const logo = data?.settings?.logo_data || officialLogoUrl;
   return (
     <div className="flex min-w-0 items-center gap-2 sm:gap-2.5">
       <img src={logo} alt="Logo officiel du GIE VIP Transport Sénégal" width={56} height={56} className="h-12 w-12 shrink-0 rounded-full object-contain sm:h-14 sm:w-14" onError={(event) => {
-        if (event.currentTarget.getAttribute("src") !== officialLogo.url) event.currentTarget.src = officialLogo.url;
+        if (event.currentTarget.getAttribute("src") !== officialLogoUrl) event.currentTarget.src = officialLogoUrl;
       }} />
       {!compact && (
         <div className="min-w-0 break-words leading-tight">

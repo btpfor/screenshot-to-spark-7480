@@ -23,7 +23,7 @@ export default defineConfig({
       integration: { closeBundleOrder: "post" },
       workbox: {
         globDirectory: "dist/client",
-        globPatterns: ["assets/**/*.{js,css,woff2}", "icons/*.png", "offline.{html,css,js}", "manifest.webmanifest"],
+        globPatterns: ["assets/**/*.{js,css,woff2}", "icons/*.png", "images/logo-gie.png", "offline.{html,css,js}", "manifest.webmanifest"],
         navigateFallback: null,
         cleanupOutdatedCaches: true,
         runtimeCaching: [

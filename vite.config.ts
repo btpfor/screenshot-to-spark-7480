@@ -24,7 +24,7 @@ export default defineConfig({
       workbox: {
         globDirectory: "dist/client",
         globPatterns: ["assets/**/*.{js,css,woff2}", "icons/*.png", "offline.{html,css,js}", "manifest.webmanifest"],
-        navigateFallback: undefined,
+        navigateFallback: null,
         cleanupOutdatedCaches: true,
         runtimeCaching: [
           {

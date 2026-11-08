@@ -105,7 +105,17 @@ function AuthPage() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="pw">Mot de passe</Label>
-            <Input id="pw" type="password" required minLength={needsAdmin ? 8 : 6} autoComplete="current-password" value={password} onChange={(e) => { setPassword(e.target.value); setError(""); }} />
+            <div className="relative">
+              <Input id="pw" type={showPassword ? "text" : "password"} required minLength={needsAdmin ? 8 : 6} autoComplete="current-password" value={password} onChange={(e) => { setPassword(e.target.value); setError(""); }} className="pr-10" />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
           </div>
           {error && (
             <p role="alert" className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">{error}</p>

@@ -5,6 +5,7 @@ import { Fragment, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Download, FileUp, KeyRound, MoreHorizontal, Plus, Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -216,7 +217,7 @@ function AddMember({ onClose, onCreated }: { onClose: () => void; onCreated: (c:
   );
 }
 
-type Row = { first_name: string; last_name: string; phone: string; matricule?: string; address?: string; cni_number?: string; platform: string; birth_date?: string; join_date?: string; status: "actif" };
+type Row = { first_name: string; last_name: string; phone: string; matricule?: string | undefined; address?: string | undefined; cni_number?: string | undefined; platform: string; birth_date?: string | undefined; join_date?: string | undefined; status: "actif" };
 
 function ImportMembers({ onClose, onDone }: { onClose: () => void; onDone: (c: Creds) => void }) {
   const run = useServerFn(importMembers);
@@ -281,7 +282,8 @@ function ImportMembers({ onClose, onDone }: { onClose: () => void; onDone: (c: C
   );
 }
 
-function Profile({ driver: d, onClose }: { driver: { id: string; [k: string]: any }; onClose: () => void }) {
+type DriverRow = Database["public"]["Tables"]["drivers"]["Row"];
+function Profile({ driver: d, onClose }: { driver: DriverRow; onClose: () => void }) {
   const { data: history = [] } = useQuery({
     queryKey: ["history", d.id],
     queryFn: async () => (await supabase.from("audit_log").select("*").eq("record_id", d.id).order("created_at", { ascending: false }).limit(30)).data ?? [],

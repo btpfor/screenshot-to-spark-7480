@@ -62,8 +62,8 @@ async function createOne(a: Awaited<ReturnType<typeof admin>>, m: MemberInput) {
     platform: m.platform || "Yango", status: m.status, photo_url: clean(m.photo_url),
     allow_shared_phone: m.allow_shared_phone, must_change_password: true,
   };
-  if (clean(m.join_date)) row.join_date = clean(m.join_date);
-  if (clean(m.matricule)) row.matricule = clean(m.matricule)!.toUpperCase();
+  if (clean(m.join_date)) row["join_date"] = clean(m.join_date);
+  if (clean(m.matricule)) row["matricule"] = clean(m.matricule)!.toUpperCase();
 
   const { data: d, error } = await a.from("drivers").insert(row as never).select("id, matricule").single();
   if (error) {

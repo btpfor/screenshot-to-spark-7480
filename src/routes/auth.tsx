@@ -34,7 +34,6 @@ function AuthPage() {
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
-  const [forgot, setForgot] = useState(false);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
@@ -127,14 +126,6 @@ function AuthPage() {
           )}
           <Button type="submit" className="w-full" disabled={busy}>Se connecter</Button>
           <InstallAppButton className="w-full" />
-          {!needsAdmin && (
-            <button type="button" className="w-full text-sm text-muted-foreground hover:text-foreground" onClick={() => setForgot(!forgot)}>Mot de passe oublié ?</button>
-          )}
-          {forgot && (
-            <p className="rounded-lg bg-muted p-3 text-sm text-muted-foreground">
-              Contactez le secrétariat du GIE : un administrateur réinitialisera votre mot de passe et vous remettra un mot de passe temporaire.
-            </p>
-          )}
         </form>
       </div>
     </div>

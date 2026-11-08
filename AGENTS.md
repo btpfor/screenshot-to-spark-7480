@@ -30,3 +30,4 @@ use the editor.
 <!-- LOVABLE:END -->
 
 - Staff password replacement uses the shared password-change page; initial accounts carry a user-metadata reminder, never a role claim, so credentials remain solely in Auth and roles in user_roles.
+- Member identifier derivation and validation live in member-ids.ts and run server-side for both individual creation and imports; store the resulting identifier in matricule to preserve existing card and login paths, and reject collisions via its unique constraint.

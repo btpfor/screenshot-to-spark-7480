@@ -60,7 +60,7 @@ function AuthPage() {
     e.preventDefault();
     setError("");
     if (!id.includes("@") && !isMatricule(id)) {
-      setError("Saisissez votre adresse email ou un matricule au format BGG-2026-0001.");
+      setError("Saisissez votre adresse email, votre identifiant vipbgg-123 ou votre ancien matricule BGG-2026-0001.");
       return;
     }
     setBusy(true);
@@ -101,7 +101,7 @@ function AuthPage() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="id">Identifiant</Label>
-            <Input id="id" required autoComplete="username" type="text" value={id} onChange={(e) => { setId(e.target.value); setError(""); }} placeholder="BGG-2026-0001" />
+            <Input id="id" required autoComplete="username" type="text" value={id} onChange={(e) => { setId(e.target.value); setError(""); }} placeholder="vipbgg-123 ou email" />
           </div>
           <div className="space-y-2">
             <Label htmlFor="pw">Mot de passe</Label>

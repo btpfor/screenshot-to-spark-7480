@@ -17,8 +17,18 @@ import { ScaledCard } from "@/components/MemberCardDialog";
 import { createMember, importMembers, resetMemberPassword, setAccountStatus } from "@/lib/members.functions";
 import { dateFr, downloadCsv, parseCsv } from "@/lib/format";
 import { useAuth, CAN } from "@/lib/auth";
+import { memberIdentifierFromCni } from "@/lib/member-ids";
 
 export const Route = createFileRoute("/_authenticated/admin/membres")({
+  head: () => ({ meta: [
+    { title: "Gestion des membres — GIE VIP BOK GUIS GUIS" },
+    { name: "description", content: "Administration des comptes et identifiants des membres du GIE VIP BOK GUIS GUIS." },
+    { property: "og:title", content: "Gestion des membres — GIE VIP BOK GUIS GUIS" },
+    { property: "og:description", content: "Gestion des membres et de leurs accès personnels." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+    { name: "robots", content: "noindex" },
+  ] }),
   component: Members,
 });
 
@@ -137,7 +147,7 @@ function Members() {
             {creds?.list.map((c) => (
               <div key={c.matricule} className="rounded-lg border bg-muted/40 p-3 text-sm">
                 <div className="font-semibold">{c.name}</div>
-                <div>Matricule : <span className="font-mono font-bold">{c.matricule}</span></div>
+                <div>Identifiant : <span className="font-mono font-bold">{c.matricule}</span></div>
                 <div>Mot de passe : <span className="font-mono font-bold">{c.password}</span></div>
               </div>
             ))}
@@ -159,6 +169,9 @@ function Field({ label, name, type = "text", required = false, defaultValue }: {
 function AddMember({ onClose, onCreated }: { onClose: () => void; onCreated: (c: Creds) => void }) {
   const create = useServerFn(createMember);
   const [busy, setBusy] = useState(false);
+  const [cni, setCni] = useState("");
+  let identifier = "";
+  try { identifier = memberIdentifierFromCni(cni); } catch { /* Incomplete number. */ }
   const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const f = new FormData(e.currentTarget);
@@ -175,7 +188,7 @@ function AddMember({ onClose, onCreated }: { onClose: () => void; onCreated: (c:
       }
       const r = await create({ data: {
         first_name: g("first_name"), last_name: g("last_name"), phone: g("phone"), address: g("address"), cni_number: g("cni_number"),
-        birth_date: g("birth_date"), join_date: g("join_date"), matricule: g("matricule"), platform: g("platform") || "Yango",
+        birth_date: g("birth_date"), join_date: g("join_date"), platform: g("platform") || "Yango",
         status: g("status") as "actif", license_number: g("license_number"), license_expiry: g("license_expiry"), photo_url,
         allow_shared_phone: f.get("allow_shared_phone") === "on",
         vehicle: { brand: g("v_brand"), model: g("v_model"), plate: g("v_plate") },
@@ -194,10 +207,10 @@ function AddMember({ onClose, onCreated }: { onClose: () => void; onCreated: (c:
             <Field label="Nom" name="last_name" required />
             <Field label="Téléphone" name="phone" required />
             <Field label="Adresse" name="address" />
-            <Field label="Numéro CNI" name="cni_number" />
+            <div className="space-y-1.5"><Label htmlFor="cni_number">Numéro de carte d’identité *</Label><Input id="cni_number" name="cni_number" required minLength={3} maxLength={40} pattern="[A-Za-z0-9]{3,40}" value={cni} onChange={(e) => setCni(e.target.value)} /></div>
             <Field label="Date de naissance" name="birth_date" type="date" />
             <Field label="Date d'adhésion" name="join_date" type="date" defaultValue={new Date().toISOString().slice(0, 10)} />
-            <div className="space-y-1.5"><Label htmlFor="matricule">Matricule</Label><Input id="matricule" name="matricule" placeholder="Automatique si vide" /></div>
+            <div className="space-y-1.5"><Label htmlFor="matricule">Identifiant</Label><Input id="matricule" readOnly value={identifier} placeholder="vipbgg-123" /></div>
             <div className="space-y-1.5"><Label htmlFor="platform">Plateforme</Label>
               <select id="platform" name="platform" className="h-9 w-full rounded-md border bg-background px-3 text-sm"><option>Yango</option><option>Heetch</option><option>Taxi traditionnel</option><option>Autre</option></select></div>
             <div className="space-y-1.5"><Label htmlFor="status">Statut</Label>
@@ -231,9 +244,11 @@ function ImportMembers({ onClose, onDone }: { onClose: () => void; onDone: (c: C
     setRows(raw.map((r) => {
       const row: Row & { error?: string } = {
         first_name: r["prenom"] ?? r["prénom"] ?? "", last_name: r["nom"] ?? "", phone: (r["telephone"] ?? r["téléphone"] ?? "").replace(/\s/g, ""),
-        matricule: r["matricule"] || undefined, address: r["adresse"], cni_number: r["cni"], platform: r["plateforme"] || "Yango",
+        address: r["adresse"], cni_number: r["cni"]?.trim() ?? "", platform: r["plateforme"] || "Yango",
         birth_date: r["naissance"] || undefined, join_date: r["adhesion"] || undefined, status: "actif",
       };
+      try { row.matricule = memberIdentifierFromCni(row.cni_number ?? ""); }
+      catch { row.error = "Numéro CNI manquant ou invalide"; }
       if (!row.first_name || !row.last_name) row.error = "Nom ou prénom manquant";
       else if (!/^\+?[0-9]{7,20}$/.test(row.phone)) row.error = "Téléphone invalide";
       else if (seenPhone.has(row.phone)) row.error = "Téléphone en double dans le fichier";
@@ -246,10 +261,10 @@ function ImportMembers({ onClose, onDone }: { onClose: () => void; onDone: (c: C
   const confirm = async () => {
     setBusy(true);
     try {
-      const res = await run({ data: { rows: valid.map(({ error: _e, ...r }) => r) } });
+      const res = await run({ data: { rows: valid.map(({ error: _e, ...r }) => ({ ...r, cni_number: r.cni_number ?? "" })) } });
       const failed = res.filter((r) => !r.ok);
       if (failed.length) toast.error(`${failed.length} ligne(s) refusée(s) : ${failed.map((f) => `${f.name} (${f.error})`).join(", ")}`, { duration: 15000 });
-      onDone({ title: `${res.length - failed.length} membre(s) importé(s)`, list: res.filter((r) => r.ok).map((r) => ({ name: r.name, matricule: r.matricule!, password: r.password! })) });
+      onDone({ title: `${res.length - failed.length} membre(s) importé(s)`, list: res.flatMap((r) => r.ok && r.matricule && r.password ? [{ name: r.name, matricule: r.matricule, password: r.password }] : []) });
     } catch (e) { toast.error((e as Error).message); }
     setBusy(false);
   };
@@ -259,9 +274,9 @@ function ImportMembers({ onClose, onDone }: { onClose: () => void; onDone: (c: C
       <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
         <DialogHeader><DialogTitle>Importer des membres</DialogTitle></DialogHeader>
         <p className="text-sm text-muted-foreground">
-          Depuis Excel, enregistrez le fichier au format CSV avec les colonnes : <b>prenom, nom, telephone</b>, et en option matricule, adresse, cni, plateforme, naissance, adhesion. Les matricules manquants sont générés automatiquement.
+          Colonnes obligatoires : <b>prenom, nom, telephone, cni</b>. Facultatives : adresse, plateforme, naissance, adhesion.
         </p>
-        <Button variant="outline" size="sm" className="w-fit" onClick={() => downloadCsv("modele-import.csv", [{ prenom: "Moussa", nom: "Diop", telephone: "771234567", matricule: "", adresse: "Dakar", cni: "", plateforme: "Yango", naissance: "1990-01-31", adhesion: "" }])}>Télécharger le modèle</Button>
+        <Button variant="outline" size="sm" className="w-fit" onClick={() => downloadCsv("modele-import.csv", [{ prenom: "", nom: "", telephone: "", adresse: "", cni: "", plateforme: "Yango", naissance: "", adhesion: "" }])}>Télécharger le modèle</Button>
         <Input type="file" accept=".csv,text/csv" onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />
         {rows.length > 0 && (
           <>

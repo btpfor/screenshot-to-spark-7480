@@ -3,11 +3,11 @@ import { MessageCircle, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { gieQuery, telHref, waHref } from "@/lib/gie";
 
-export function Leaders() {
+export function Leaders({ excludedContactIds = [] }: { excludedContactIds?: string[] }) {
   const { data } = useQuery(gieQuery);
-  const contacts = data?.contacts ?? [];
+  const contacts = (data?.contacts ?? []).filter((contact) => !excludedContactIds.includes(contact.id));
   return (
-    <div className="grid gap-4 md:grid-cols-3">
+    <div className={`grid gap-4 ${contacts.length === 2 ? "md:grid-cols-2" : "md:grid-cols-3"}`}>
       {contacts.map((c) => (
         <div key={c.id} className="relative overflow-hidden rounded-2xl border bg-card p-6 shadow-card">
           <div className="bg-gold-gradient absolute inset-x-0 top-0 h-1" />

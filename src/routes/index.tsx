@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Banknote, Car, Globe2, HandHeart, ShieldCheck, Users, ArrowRight, Menu, X } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
@@ -38,6 +38,17 @@ const pillars = [
 function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuTrigger = useRef<HTMLButtonElement>(null);
+  const servicesRef = useRef<HTMLElement>(null);
+  const [servicesVisible, setServicesVisible] = useState(false);
+  useEffect(() => {
+    const section = servicesRef.current;
+    if (!section || !('IntersectionObserver' in window)) { setServicesVisible(true); return; }
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry?.isIntersecting) { setServicesVisible(true); observer.disconnect(); }
+    }, { threshold: 0.08 });
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
   const { data: president } = useSuspenseQuery(presidentQuery);
   return (
     <div className="min-h-screen bg-background">
@@ -117,17 +128,25 @@ function Home() {
 
       {president && <section className="border-y bg-card py-16 md:py-20"><div className="mx-auto max-w-7xl px-5"><PresidentMessage message={president} /></div></section>}
 
-      <section id="services" tabIndex={-1} aria-label="Nos services" className="bg-sidebar py-24 text-sidebar-foreground">
+      <section ref={servicesRef} id="services" tabIndex={-1} aria-label="Nos services" data-revealed={servicesVisible} className="services-section bg-sidebar py-16 text-sidebar-foreground md:py-24">
         <div className="mx-auto max-w-7xl px-5">
-          <p className="text-sm font-bold uppercase tracking-widest text-sidebar-primary">Nos services</p>
-          <h2 className="mt-3 max-w-2xl text-3xl font-bold text-sidebar-accent-foreground sm:text-4xl">Ce que le GIE apporte à ses membres</h2>
-          <div className="mt-12 grid gap-px overflow-hidden rounded-2xl bg-sidebar-border sm:grid-cols-2 lg:grid-cols-3">
-            {pillars.map((p) => (
-              <div key={p.title} className="bg-sidebar p-8 transition-colors hover:bg-sidebar-accent">
-                <p.icon className="h-7 w-7 text-sidebar-primary" />
-                <h3 className="mt-5 text-lg font-semibold text-sidebar-accent-foreground">{p.title}</h3>
-                <p className="mt-2 text-sm opacity-75">{p.text}</p>
-              </div>
+          <div className="border-b border-sidebar-border pb-8 md:pb-10">
+            <p className="flex items-center gap-3 text-sm font-bold uppercase text-sidebar-primary"><span aria-hidden="true" className="h-px w-8 bg-sidebar-primary" />Nos services</p>
+            <h2 className="mt-4 max-w-3xl text-3xl font-bold leading-tight text-sidebar-accent-foreground sm:text-4xl">Ce que le GIE apporte à ses membres</h2>
+          </div>
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 md:mt-10 md:gap-5">
+            {pillars.map((p, index) => (
+              <article key={p.title} className="service-item group min-w-0">
+                <div className="service-surface relative flex h-full min-h-64 flex-col overflow-hidden rounded-lg border border-sidebar-border bg-card p-6 text-card-foreground shadow-card md:p-7">
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="service-icon grid h-12 w-12 shrink-0 place-items-center rounded-lg bg-secondary text-primary"><p.icon aria-hidden="true" className="h-6 w-6" strokeWidth={1.6} /></span>
+                    <span aria-hidden="true" className="font-display text-sm font-medium text-muted-foreground">0{index + 1}</span>
+                  </div>
+                  <h3 className="mt-6 text-lg font-semibold leading-snug">{p.title}</h3>
+                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{p.text}</p>
+                  <span aria-hidden="true" className="service-rule absolute inset-x-0 bottom-0 h-0.5 bg-gold" />
+                </div>
+              </article>
             ))}
           </div>
         </div>

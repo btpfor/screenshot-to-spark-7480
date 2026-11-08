@@ -168,7 +168,16 @@
 }
 
 @layer base {
-  h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.02em; }
+  h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: 0; overflow-wrap: anywhere; }
+}
+
+html { scroll-padding-top: 1rem; }
+body { min-width: 320px; }
+.safe-top { padding-top: max(1.25rem, env(safe-area-inset-top)); }
+.safe-bottom { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
+@media (pointer: coarse) {
+  button, a[data-slot="button"], input:not([type="checkbox"]):not([type="radio"]), select { min-height: 44px; }
+  input, textarea, select { font-size: 16px; }
 }
 
 @utility bg-hero { background-image: var(--gradient-hero); }

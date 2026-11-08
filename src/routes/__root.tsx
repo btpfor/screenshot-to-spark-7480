@@ -82,7 +82,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     // twitter:image here: every page without its own would inherit the root's preview image.
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { title: "GIE VIP BOK GUIS GUIS Transport Sénégal" },
       { name: "description", content: "Plateforme de gestion du GIE des chauffeurs VIP BOK GUIS GUIS." },
       { name: "author", content: "GIE VIP BOK GUIS GUIS" },

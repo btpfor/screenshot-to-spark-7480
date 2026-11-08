@@ -1,6 +1,6 @@
 # Navigation au clavier et petites largeurs
-- [ ] Corriger Échap, le retour du focus, les menus fermés encore accessibles au clavier et les libellés des menus/dialogues sans changer leur apparence.
-- [ ] Vérifier les pages et dialogues existants aux huit largeurs, corriger uniquement les débordements constatés, sans modifier les données.
+- [x] Corriger Échap, le retour du focus, les menus fermés encore accessibles au clavier et les libellés des menus/dialogues sans changer leur apparence ; sélection des rôles annoncée et tableau de permissions accessible au clavier.
+- [x] Vérifier les 13 pages existantes et fenêtres ajout/import/personnel/message aux huit largeurs : aucun débordement de page constaté ; tableau de permissions défilant localement conservé. Tabulation, Échap et retour du focus vérifiés en session administrative, 25 tests réussis, aucune donnée modifiée.
 
 # Affichage tous écrans
 - [x] Adapter navigation publique, administration, listes, formulaires et fenêtres pour téléphone/tablette/ordinateur sans changement de données.

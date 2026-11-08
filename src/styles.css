@@ -216,7 +216,7 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
 }
 .service-icon svg { filter: drop-shadow(1px 2px 1px color-mix(in oklch, var(--primary) 18%, transparent)); }
 .service-rule { transform: scaleX(0.12); transform-origin: left; transition: transform 350ms ease; }
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .service-item:hover .service-surface {
     transform: translateY(-6px) rotateX(var(--service-rotate-x, 0deg)) rotateY(var(--service-rotate-y, 0deg));
     border-color: var(--gold);
@@ -238,8 +238,26 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
   from { opacity: 0; transform: perspective(1000px) translateY(24px) rotateX(8deg); }
   to { opacity: 1; transform: translateY(0); }
 }
-@media (prefers-reduced-motion: reduce) {
+@media (hover: none), (pointer: coarse) {
   .services-section[data-revealed="true"] .service-item { animation: none; }
+  .services-section .service-item[data-visible="true"] {
+    animation: service-enter 500ms ease-out both;
+    animation-delay: 0ms;
+  }
+  .service-item[data-visible="true"] .service-icon {
+    animation: service-touch-depth 700ms ease-out both;
+  }
+  .service-rule { transform: scaleX(1); }
+}
+@keyframes service-touch-depth {
+  0% { transform: perspective(400px) rotateY(-20deg) rotateX(12deg); }
+  55% { transform: perspective(400px) translateY(-3px) rotateY(8deg) rotateX(-4deg); }
+  100% { transform: perspective(400px) rotateY(-12deg) rotateX(8deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .services-section[data-revealed="true"] .service-item,
+  .services-section .service-item[data-visible="true"],
+  .service-item[data-visible="true"] .service-icon { animation: none; }
   .service-surface, .service-icon, .service-rule { transition: none; }
   .service-icon { transform: none; }
   .service-item:hover .service-surface, .service-item:hover .service-icon { transform: none; }

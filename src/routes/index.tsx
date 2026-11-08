@@ -49,6 +49,19 @@ function Home() {
     observer.observe(section);
     return () => observer.disconnect();
   }, []);
+  useEffect(() => {
+    const section = servicesRef.current;
+    if (!section || !('IntersectionObserver' in window)) return;
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        entry.target.setAttribute("data-visible", "true");
+        observer.unobserve(entry.target);
+      }
+    }, { threshold: 0.25 });
+    section.querySelectorAll(".service-item").forEach((card) => observer.observe(card));
+    return () => observer.disconnect();
+  }, []);
   const { data: president } = useSuspenseQuery(presidentQuery);
   return (
     <div className="min-h-screen bg-background">

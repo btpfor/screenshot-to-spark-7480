@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { matriculeToEmail, genTempPassword } from "./member-ids";
+import { matriculeToEmail, genTempPassword, memberIdentifierFromCni } from "./member-ids";
 
 const MANAGERS = ["super_admin", "president", "secretaire", "resp_chauffeurs"] as const;
 
@@ -46,7 +46,7 @@ const memberSchema = z.object({
   last_name: z.string().trim().min(1).max(80),
   phone: z.string().trim().regex(/^\+?[0-9 ]{7,20}$/, "Téléphone invalide"),
   address: z.string().max(200).optional().nullable(),
-  cni_number: z.string().max(40).optional().nullable(),
+  cni_number: z.string().trim().min(3).max(40).regex(/^[a-z0-9]+$/i, "Numéro de carte d’identité invalide"),
   birth_date: z.string().optional().nullable(),
   join_date: z.string().optional().nullable(),
   matricule: z.string().trim().max(30).optional().nullable(),
@@ -70,24 +70,30 @@ async function createOne(a: Awaited<ReturnType<typeof admin>>, m: MemberInput) {
     allow_shared_phone: m.allow_shared_phone, must_change_password: true,
   };
   if (clean(m.join_date)) row["join_date"] = clean(m.join_date);
-  if (clean(m.matricule)) row["matricule"] = clean(m.matricule)!.toUpperCase();
+  row["matricule"] = memberIdentifierFromCni(m.cni_number);
 
   const { data: d, error } = await a.from("drivers").insert(row as never).select("id, matricule").single();
   if (error) {
-    if (error.message.includes("matricule")) throw new Error("Ce matricule est déjà attribué.");
+    if (error.message.includes("matricule")) throw new Error("Cet identifiant est déjà attribué : une autre carte d’identité se termine par les mêmes trois caractères. Aucun compte n’a été créé.");
     if (error.message.includes("phone")) throw new Error("Ce numéro de téléphone est déjà utilisé.");
     throw new Error(error.message);
   }
   const password = genTempPassword();
   const { data: u, error: ue } = await a.auth.admin.createUser({
     email: matriculeToEmail(d.matricule), password, email_confirm: true,
-    app_metadata: { gie_role: "chauffeur" }, user_metadata: { matricule: d.matricule },
+    user_metadata: { matricule: d.matricule, must_change_password: true },
   });
   if (ue || !u.user) {
     await a.from("drivers").delete().eq("id", d.id);
     throw new Error(ue?.message ?? "Création du compte impossible");
   }
-  await a.from("drivers").update({ user_id: u.user.id }).eq("id", d.id);
+  const { error: linkError } = await a.from("drivers").update({ user_id: u.user.id }).eq("id", d.id);
+  const { error: roleError } = linkError ? { error: linkError } : await a.from("user_roles").upsert({ user_id: u.user.id, role: "chauffeur" }, { onConflict: "user_id,role" });
+  if (roleError) {
+    await a.auth.admin.deleteUser(u.user.id);
+    await a.from("drivers").delete().eq("id", d.id);
+    throw new Error("Création de l’accès membre impossible. Réessayez.");
+  }
   const v = m.vehicle;
   if (v?.plate && v.brand && v.model) {
     await a.from("vehicles").insert({ brand: v.brand, model: v.model, plate: v.plate.toUpperCase(), driver_id: d.id, status: "en_circulation" });

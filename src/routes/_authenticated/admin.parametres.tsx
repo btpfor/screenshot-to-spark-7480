@@ -12,6 +12,14 @@ import { gieQuery } from "@/lib/gie";
 import { useAuth, type AppRole } from "@/lib/auth";
 
 export const Route = createFileRoute("/_authenticated/admin/parametres")({
+  head: () => ({ meta: [
+    { title: "Paramètres du GIE — VIP BOK GUIS GUIS" },
+    { name: "description", content: "Identité et coordonnées officielles du GIE VIP BOK GUIS GUIS." },
+    { property: "og:title", content: "Paramètres du GIE — VIP BOK GUIS GUIS" },
+    { property: "og:description", content: "Coordonnées et identité du GIE." },
+    { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
+    { name: "robots", content: "noindex" },
+  ] }),
   component: Settings,
 });
 

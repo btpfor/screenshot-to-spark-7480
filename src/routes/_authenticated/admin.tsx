@@ -8,7 +8,14 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/admin")({
-  head: () => ({ meta: [{ title: "Administration — GIE VIP BOK GUIS GUIS" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [
+    { title: "Administration — GIE VIP BOK GUIS GUIS" },
+    { name: "description", content: "Espace sécurisé des responsables du GIE." },
+    { property: "og:title", content: "Administration — GIE VIP BOK GUIS GUIS" },
+    { property: "og:description", content: "Administration des activités du GIE." },
+    { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
+    { name: "robots", content: "noindex" },
+  ] }),
   component: AdminLayout,
 });
 

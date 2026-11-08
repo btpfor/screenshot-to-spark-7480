@@ -16,6 +16,14 @@ import { analyzeMessage } from "@/lib/messages.functions";
 import { waHref } from "@/lib/gie";
 
 export const Route = createFileRoute("/_authenticated/admin/messages")({
+  head: () => ({ meta: [
+    { title: "Messages reçus — GIE VIP BOK GUIS GUIS" },
+    { name: "description", content: "Demandes reçues et brouillons de réponse du GIE." },
+    { property: "og:title", content: "Messages reçus — GIE VIP BOK GUIS GUIS" },
+    { property: "og:description", content: "Gestion des demandes adressées au GIE." },
+    { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
+    { name: "robots", content: "noindex" },
+  ] }),
   component: Messages,
 });
 

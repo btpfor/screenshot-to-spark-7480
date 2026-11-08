@@ -6,6 +6,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { fcfa, daysUntil } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
+  head: () => ({ meta: [
+    { title: "Tableau de bord — GIE VIP BOK GUIS GUIS" },
+    { name: "description", content: "Suivi des membres, véhicules et finances du GIE." },
+    { property: "og:title", content: "Tableau de bord — GIE VIP BOK GUIS GUIS" },
+    { property: "og:description", content: "Suivi de l’activité du GIE." },
+    { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
+    { name: "robots", content: "noindex" },
+  ] }),
   component: Dashboard,
 });
 

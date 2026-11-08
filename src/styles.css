@@ -205,6 +205,32 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
 }
 
 .service-item { perspective: 1000px; }
+.mission-stat { perspective: 900px; }
+.mission-stat-surface {
+  transform-style: preserve-3d;
+  transition: transform 350ms ease, border-color 350ms ease;
+}
+.mission-stat-number { transform: translateZ(12px); }
+.mission-stats[data-revealed="true"] .mission-stat {
+  animation: mission-stat-enter 700ms ease-out both;
+}
+.mission-stats[data-revealed="true"] .mission-stat:nth-child(2) { animation-delay: 100ms; }
+.mission-stats[data-revealed="true"] .mission-stat:nth-child(3) { animation-delay: 200ms; }
+@keyframes mission-stat-enter {
+  from { transform: translateY(16px) rotateX(12deg); }
+  to { transform: translateY(0) rotateX(0deg); }
+}
+@media (hover: hover) and (pointer: fine) {
+  .mission-stat:hover .mission-stat-surface {
+    transform: translateY(-4px) rotateX(4deg) rotateY(-4deg);
+    border-color: var(--gold);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mission-stats[data-revealed="true"] .mission-stat { animation: none; }
+  .mission-stat-surface { transition: none; }
+  .mission-stat-number, .mission-stat:hover .mission-stat-surface { transform: none; }
+}
 .service-surface {
   transform-style: preserve-3d;
   transition: transform 350ms ease, border-color 350ms ease, box-shadow 350ms ease;

@@ -9,6 +9,7 @@ import { MemberPhoto } from "@/components/MemberPhoto";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { ScaledCard } from "@/components/MemberCardDialog";
+import { InstallAppButton } from "@/components/InstallApp";
 
 export const Route = createFileRoute("/_authenticated/espace")({
   head: () => ({ meta: [
@@ -52,7 +53,7 @@ function Espace() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-6 p-5">
-      <div className="no-print flex items-center justify-between">
+      <div className="no-print flex flex-wrap items-center justify-between gap-3">
         <Logo />
         <div className="flex items-center gap-1">
           {isStaff && <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/admin" })}>Administration</Button>}
@@ -60,6 +61,7 @@ function Espace() {
           <Button variant="ghost" size="sm" onClick={logout}>Déconnexion</Button>
         </div>
       </div>
+      <div className="no-print"><InstallAppButton /></div>
       {isLoading ? <p className="text-muted-foreground">Chargement…</p> : !d ? (
         <p className="rounded-xl border bg-card p-6 text-muted-foreground">Aucun dossier membre n'est lié à ce compte.</p>
       ) : (

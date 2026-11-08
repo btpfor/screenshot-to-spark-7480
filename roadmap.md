@@ -4,7 +4,7 @@
 - [x] Vérifier les règles de mot de passe et l’accès authentifié à l’administration.
 
 # Identifiants membres
-- [ ] Refuser les doublons de CNI et signaler clairement les collisions d’identifiants, à la création et à l’import.
+- [x] Refuser les doublons de CNI et signaler clairement les collisions d’identifiants, à la création et à l’import (12 tests réussis ; deux refus vérifiés depuis le formulaire administrateur).
 - [x] Générer vipbgg- suivi des trois derniers caractères de la CNI lors de la création et de l’import.
 - [x] Accepter les nouveaux identifiants à la connexion sans modifier les anciens comptes (tests réussis).
 - [x] Vérifier l’affichage automatique dans le formulaire administrateur.

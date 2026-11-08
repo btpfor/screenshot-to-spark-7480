@@ -40,3 +40,4 @@ use the editor.
 - Responsive member/user cards reuse desktop data and action handlers; dialogs use dynamic viewport bounds, and membership-card exports retain fixed ID-1 geometry.
 - Mobile admin navigation uses a Radix Sheet and public navigation a disclosure; shared dialogs restore their opener without stealing focus from another dialog, preserving keyboard access and existing visuals.
 - Shared branding and membership cards use the public asset URL from branding.ts when settings have no override or fail to load; keep the official logo in public/images so external deployments do not depend on Lovable's asset proxy. Installed-app icons derive from the same source.
+- Mission counter definitions and interpolation live in mission-stats.ts; animate once on visibility while keeping final values accessible and respecting reduced motion.

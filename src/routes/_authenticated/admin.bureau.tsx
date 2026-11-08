@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { ImagePlus, Plus, Trash2, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -152,10 +152,13 @@ function MemberEditor({ member: m, busy, onUpdate, onPhoto, onRemove }: {
   const photoInput = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState({ full_name: m.full_name ?? "", role_label: m.role_label, phone: m.phone ?? "", sort_order: m.sort_order });
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
-  useState(() => {
-    if (m.photo_path?.startsWith("/__l5e/")) setPhotoUrl(m.photo_path);
-    else if (m.photo_path) supabase.storage.from("president-media").createSignedUrl(m.photo_path, 3600).then(({ data }) => setPhotoUrl(data?.signedUrl ?? null));
-  });
+  useEffect(() => {
+    if (!m.photo_path) { setPhotoUrl(null); return; }
+    if (m.photo_path.startsWith("/__l5e/")) { setPhotoUrl(m.photo_path); return; }
+    let active = true;
+    supabase.storage.from("president-media").createSignedUrl(m.photo_path, 3600).then(({ data }) => { if (active) setPhotoUrl(data?.signedUrl ?? null); });
+    return () => { active = false; };
+  }, [m.photo_path]);
 
   const dirty = form.full_name !== (m.full_name ?? "") || form.role_label !== m.role_label || form.phone !== (m.phone ?? "") || form.sort_order !== m.sort_order;
 

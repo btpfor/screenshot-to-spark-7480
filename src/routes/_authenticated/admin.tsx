@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Navigate, Outlet, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { LayoutDashboard, LogOut, Menu, ShieldCheck, Users, X } from "lucide-react";
+import { LayoutDashboard, LogOut, Menu, Settings, ShieldCheck, Users, X } from "lucide-react";
 import { useAuth, ROLE_LABELS } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Logo } from "@/components/Logo";
@@ -16,6 +16,7 @@ const nav = [
   { to: "/admin", label: "Tableau de bord", icon: LayoutDashboard, exact: true },
   { to: "/admin/membres", label: "Gestion des membres", icon: Users },
   { to: "/admin/utilisateurs", label: "Utilisateurs & rôles", icon: ShieldCheck, superOnly: true },
+  { to: "/admin/parametres", label: "Paramètres du GIE", icon: Settings },
 ] as const;
 
 function AdminLayout() {

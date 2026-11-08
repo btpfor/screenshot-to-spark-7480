@@ -41,6 +41,33 @@ export type Database = {
         }
         Relationships: []
       }
+      contact_messages: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          message: string
+          name: string
+          phone: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          message: string
+          name: string
+          phone?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          message?: string
+          name?: string
+          phone?: string | null
+        }
+        Relationships: []
+      }
       drivers: {
         Row: {
           account_status: string
@@ -119,6 +146,66 @@ export type Database = {
           status?: string
           updated_at?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      gie_contacts: {
+        Row: {
+          id: string
+          person_name: string | null
+          phone: string
+          role_label: string
+          sort_order: number
+        }
+        Insert: {
+          id?: string
+          person_name?: string | null
+          phone: string
+          role_label: string
+          sort_order?: number
+        }
+        Update: {
+          id?: string
+          person_name?: string | null
+          phone?: string
+          role_label?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      gie_settings: {
+        Row: {
+          id: number
+          logo_data: string | null
+          official_name: string
+          opening_hours: string
+          president_name: string
+          signature_data: string | null
+          slogan: string
+          updated_at: string
+          whatsapp_phone: string
+        }
+        Insert: {
+          id?: number
+          logo_data?: string | null
+          official_name?: string
+          opening_hours?: string
+          president_name?: string
+          signature_data?: string | null
+          slogan?: string
+          updated_at?: string
+          whatsapp_phone?: string
+        }
+        Update: {
+          id?: number
+          logo_data?: string | null
+          official_name?: string
+          opening_hours?: string
+          president_name?: string
+          signature_data?: string | null
+          slogan?: string
+          updated_at?: string
+          whatsapp_phone?: string
         }
         Relationships: []
       }
@@ -307,6 +394,16 @@ export type Database = {
       update_my_contact: {
         Args: { _address: string; _phone: string }
         Returns: undefined
+      }
+      verify_member: {
+        Args: { _matricule: string }
+        Returns: {
+          first_name: string
+          join_date: string
+          last_name: string
+          matricule: string
+          status: string
+        }[]
       }
     }
     Enums: {

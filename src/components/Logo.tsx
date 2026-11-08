@@ -1,20 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
-import { Bus } from "lucide-react";
 import { gieQuery } from "@/lib/gie";
+import officialLogo from "@/assets/logo-gie-vip-transport.jpeg.asset.json";
 
 export function Logo({ compact = false }: { compact?: boolean }) {
   const { data } = useQuery(gieQuery);
-  const logo = data?.settings?.logo_data;
+  const logo = data?.settings?.logo_data || officialLogo.url;
   return (
     <div className="flex min-w-0 items-center gap-2.5">
-      {logo ? (
-        <img src={logo} alt="Logo du GIE" width={40} height={40} className="h-10 w-10 shrink-0 rounded-lg object-contain" />
-      ) : (
-        <div className="relative grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-lg bg-primary text-gold">
-          <Bus className="h-5 w-5" />
-          <span className="flag-bar absolute inset-x-0 bottom-0 h-1" />
-        </div>
-      )}
+      <img src={logo} alt="Logo officiel du GIE VIP Transport Sénégal" width={56} height={56} className="h-14 w-14 shrink-0 rounded-full object-contain" />
       {!compact && (
         <div className="min-w-0 break-words leading-tight">
           <div className="font-display text-sm font-bold tracking-tight">GIE VIP BOK GUIS GUIS</div>

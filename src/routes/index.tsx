@@ -215,6 +215,29 @@ function Home() {
         </div>
       </section>
 
+      {bureau.groupPhotoUrl && (
+        <section aria-label="Notre bureau" className="border-y bg-card py-16 md:py-20">
+          <div className="mx-auto grid max-w-7xl items-center gap-10 px-5 md:grid-cols-2">
+            <figure className="bureau-photo-reveal">
+              <div className="bg-gold-gradient rounded-2xl p-1.5 shadow-card">
+                <img src={bureau.groupPhotoUrl} alt="Photographie officielle des membres du bureau du GIE" className="w-full rounded-xl object-cover" loading="lazy" />
+              </div>
+            </figure>
+            <div>
+              <p className="flex items-center gap-3 text-sm font-bold uppercase tracking-widest text-gold"><span aria-hidden="true" className="h-px w-8 bg-gold" />Notre bureau</p>
+              <h2 className="mt-4 text-3xl font-bold leading-tight sm:text-4xl">Une équipe dirigeante engagée</h2>
+              <p className="mt-4 leading-relaxed text-muted-foreground">
+                Le GIE VIP BOK GUIS GUIS TRANSPORT SENEGAL est dirigé par une équipe engagée qui œuvre pour la défense des intérêts de ses membres, le développement des partenariats et la modernisation du secteur du transport.
+              </p>
+              <p className="mt-4 text-sm font-semibold">Président : <span className="text-primary">{data?.settings?.president_name ?? "Badara Ndiaye"}</span></p>
+              <Button asChild size="lg" className="mt-7 bg-accent text-accent-foreground hover:bg-accent/90">
+                <Link to="/membres-du-bureau">Découvrir les membres du bureau <ArrowRight className="ml-1 h-4 w-4" /></Link>
+              </Button>
+            </div>
+          </div>
+        </section>
+      )}
+
       <section id="responsables" tabIndex={-1} aria-label="Nos responsables" className="mx-auto max-w-7xl px-5 py-24">
         <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
           <div>

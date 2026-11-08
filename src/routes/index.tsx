@@ -136,7 +136,20 @@ function Home() {
           </div>
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 md:mt-10 md:gap-5">
             {pillars.map((p, index) => (
-              <article key={p.title} className="service-item group min-w-0">
+              <article key={p.title} className="service-item group min-w-0"
+                onPointerMove={(event) => {
+                  if (event.pointerType !== "mouse" || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+                  const card = event.currentTarget;
+                  const bounds = card.getBoundingClientRect();
+                  const x = (event.clientX - bounds.left) / bounds.width - 0.5;
+                  const y = (event.clientY - bounds.top) / bounds.height - 0.5;
+                  card.style.setProperty("--service-rotate-x", `${-y * 10}deg`);
+                  card.style.setProperty("--service-rotate-y", `${x * 10}deg`);
+                }}
+                onPointerLeave={(event) => {
+                  event.currentTarget.style.removeProperty("--service-rotate-x");
+                  event.currentTarget.style.removeProperty("--service-rotate-y");
+                }}>
                 <div className="service-surface relative flex h-full min-h-64 flex-col overflow-hidden rounded-lg border border-sidebar-border bg-card p-6 text-card-foreground shadow-card md:p-7">
                   <div className="flex items-center justify-between gap-4">
                     <span className="service-icon grid h-12 w-12 shrink-0 place-items-center rounded-lg bg-secondary text-primary"><p.icon aria-hidden="true" className="h-6 w-6" strokeWidth={1.6} /></span>

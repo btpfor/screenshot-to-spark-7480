@@ -35,3 +35,5 @@ use the editor.
 - PWA installation is shared through InstallAppProvider; only pwa.ts registers the generated app-shell worker, refusing dev, iframe and preview hosts. Cache static public assets only; NetworkFirst navigations never write responses and fall back to a public offline document, so authenticated SSR and API data remain uncached.
 - Future push notifications must use opt-in Web Push subscriptions with VAPID and authenticated server authorization; capability detection alone must never request permission or send notifications.
 - President content uses a singleton with publication-filtered public reads and separate editor reads; database and media policies restrict edits to institutional editors so drafts remain editable but invisible publicly. New media stays private and receives signed URLs only when published or accessed by an editor.
+- Public Cloud reads select a complete runtime configuration pair, falling back only to bundled publishable configuration for external deployments; never use privileged keys for public reads.
+- Router dehydration restores the request-local Query cache before browser rendering to preserve SSR data and signed media URLs.

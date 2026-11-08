@@ -4,6 +4,6 @@ import { getPublicPresident } from "./president.functions";
 export const presidentQuery = queryOptions({
   queryKey: ["president-public"],
   queryFn: () => getPublicPresident(),
-  staleTime: 0,
+  staleTime: 60_000,
 });
 export type PresidentMessage = NonNullable<Awaited<ReturnType<typeof getPublicPresident>>>;

@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX drivers_cni_unique ON public.drivers (lower(btrim(cni_number))) WHERE nullif(btrim(cni_number), '') IS NOT NULL;

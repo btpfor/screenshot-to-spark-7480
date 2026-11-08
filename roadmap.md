@@ -1,7 +1,8 @@
 # Diagnostic du chargement
-- [ ] Reproduire et corriger le refus de chargement des pages publiques sans changer Lovable Cloud, les comptes ou les données.
-- [ ] Vérifier les pages existantes, les accès administratifs, les lectures/enregistrements et les images sur ordinateur et tailles mobiles.
-- [ ] Identifier les limites de vérification du déploiement externe et des comptes membres réels.
+- [x] Reproduire le refus de chargement de l’accueil et du Président sur le déploiement externe ; corriger la sélection de configuration publique et la transmission initiale des données dans le projet, sans changer Lovable Cloud.
+- [x] Vérifier toutes les pages existantes dans l’aperçu, les accès administratifs par session authentifiée, les lectures/enregistrements du message et les images sur ordinateur, téléphone et tablette ; tests réussis.
+- [x] Identifier les limites : aucun membre réel enregistré ; aucune gestion séparée des véhicules/cotisations/partenaires ; authentification par mot de passe non retestée car aucun nouveau mot de passe fourni.
+- [ ] Appliquer et revérifier la correction sur l’adresse externe workers.dev : déploiement externe non accessible depuis les outils du projet ; l’adresse officielle Lovable répond déjà en HTTP 200.
 
 # Le mot du Président
 - [x] Vérifier les boutons d’ajout/remplacement/retrait de signature, leur enregistrement et l’affichage sur l’accueil et la page dédiée (images temporaires supprimées, téléphone sans débordement).

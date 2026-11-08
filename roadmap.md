@@ -1,5 +1,5 @@
 # Le mot du Président
-- [ ] Vérifier les boutons d’ajout/remplacement/retrait de signature, leur enregistrement et l’affichage sur l’accueil et la page dédiée.
+- [x] Vérifier les boutons d’ajout/remplacement/retrait de signature, leur enregistrement et l’affichage sur l’accueil et la page dédiée (images temporaires supprimées, téléphone sans débordement).
 - [x] Ajouter le portrait intact, la rubrique d’accueil, le menu et la page indépendante.
 - [x] Permettre aux responsables autorisés de modifier et publier/dépublier le message, le nom, la fonction, la photo et la signature (Lovable Cloud existant, photos privées ; signature réelle à fournir).
 - [x] Vérifier l’enregistrement authentifié, le remplacement de photo, la dépublication publique, la republication et l’affichage sur ordinateur/mobile ; 3 tests réussis, aucune erreur navigateur.

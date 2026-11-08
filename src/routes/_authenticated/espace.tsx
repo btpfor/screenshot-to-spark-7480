@@ -9,7 +9,6 @@ import { MemberPhoto } from "@/components/MemberPhoto";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { ScaledCard } from "@/components/MemberCardDialog";
-import { InstallAppButton } from "@/components/InstallApp";
 
 export const Route = createFileRoute("/_authenticated/espace")({
   head: () => ({ meta: [
@@ -61,7 +60,6 @@ function Espace() {
           <Button variant="ghost" size="sm" onClick={logout}>Déconnexion</Button>
         </div>
       </div>
-      <div className="no-print"><InstallAppButton /></div>
       {isLoading ? <p className="text-muted-foreground">Chargement…</p> : !d ? (
         <p className="rounded-xl border bg-card p-6 text-muted-foreground">Aucun dossier membre n'est lié à ce compte.</p>
       ) : (

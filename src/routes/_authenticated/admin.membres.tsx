@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { MemberPhoto } from "@/components/MemberPhoto";
+import { ScaledCard } from "@/components/MemberCardDialog";
 import { createMember, importMembers, resetMemberPassword, setAccountStatus } from "@/lib/members.functions";
 import { dateFr, downloadCsv, parseCsv } from "@/lib/format";
 import { useAuth, CAN } from "@/lib/auth";
@@ -295,10 +296,12 @@ function Profile({ driver: d, onClose }: { driver: DriverRow; onClose: () => voi
   ];
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto">
+      <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
         <DialogHeader><DialogTitle>{d.first_name} {d.last_name}</DialogTitle></DialogHeader>
         <MemberPhoto path={d.photo_url} className="h-20 w-20" />
         <dl className="grid grid-cols-3 gap-y-2 text-sm">{rows.map(([k, v]) => <Fragment key={k}><dt className="text-muted-foreground">{k}</dt><dd className="col-span-2">{v}</dd></Fragment>)}</dl>
+        <h3 className="mt-2 font-semibold">Carte de membre</h3>
+        <ScaledCard member={d} />
         <h3 className="mt-2 font-semibold">Historique</h3>
         <ul className="space-y-1 text-xs text-muted-foreground">
           {history.length === 0 && <li>Aucune opération visible.</li>}

@@ -1,7 +1,6 @@
 import { createFileRoute, Navigate, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { QRCodeSVG } from "qrcode.react";
-import { Car, Printer } from "lucide-react";
+import { Car } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { fcfa, dateFr } from "@/lib/format";
@@ -9,6 +8,7 @@ import { Logo } from "@/components/Logo";
 import { MemberPhoto } from "@/components/MemberPhoto";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
+import { ScaledCard } from "@/components/MemberCardDialog";
 
 export const Route = createFileRoute("/_authenticated/espace")({
   head: () => ({ meta: [{ title: "Mon espace — GIE VIP BOK GUIS GUIS" }, { name: "robots", content: "noindex" }] }),
@@ -57,7 +57,7 @@ function Espace() {
         <p className="rounded-xl border bg-card p-6 text-muted-foreground">Aucun dossier membre n'est lié à ce compte.</p>
       ) : (
         <>
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-4">
             <div className="no-print rounded-xl border bg-card p-6 shadow-card">
               <div className="flex items-center gap-4">
                 <MemberPhoto path={d.photo_url} className="h-16 w-16" />
@@ -73,25 +73,10 @@ function Espace() {
                 <dt className="text-muted-foreground">Plateforme</dt><dd>{d.platform}</dd>
               </dl>
             </div>
-            {/* Carte de membre */}
-            <div className="space-y-2">
-              <div className="relative overflow-hidden rounded-2xl bg-sidebar p-5 text-sidebar-foreground shadow-card">
-                <div className="flag-bar absolute inset-x-0 top-0 h-1.5" />
-                <div className="flex items-start justify-between">
-                  <Logo />
-                  <div className="rounded-lg bg-card p-1.5"><QRCodeSVG value={`GIE-BGG|${d.matricule}|${d.last_name}`} size={72} /></div>
-                </div>
-                <div className="mt-4 flex items-center gap-3">
-                  <MemberPhoto path={d.photo_url} className="h-14 w-14" />
-                  <div>
-                    <div className="text-lg font-bold text-sidebar-accent-foreground">{d.first_name} {d.last_name}</div>
-                    <div className="font-mono text-sm text-sidebar-primary">{d.matricule}</div>
-                    <div className="text-xs opacity-70">Membre depuis {dateFr(d.join_date)}</div>
-                  </div>
-                </div>
-              </div>
-              <Button variant="outline" size="sm" className="no-print" onClick={() => window.print()}><Printer className="mr-1 h-4 w-4" /> Télécharger / imprimer ma carte</Button>
-            </div>
+          </div>
+          <div className="rounded-xl border bg-card p-5 shadow-card">
+            <h2 className="mb-3 font-semibold">Ma carte de membre</h2>
+            <ScaledCard member={d} />
           </div>
 
           <div className="no-print grid gap-4 sm:grid-cols-2">

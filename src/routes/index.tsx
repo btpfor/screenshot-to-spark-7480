@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Banknote, Car, Globe2, HandHeart, ShieldCheck, Users, ArrowRight, Phone, Mail, MapPin } from "lucide-react";
+import { Banknote, Car, Globe2, HandHeart, ShieldCheck, Users, ArrowRight} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
+import { Leaders } from "@/components/Leaders";
 import hero from "@/assets/hero-dakar.jpg";
 
 export const Route = createFileRoute("/")({
@@ -36,7 +37,8 @@ function Home() {
           <nav className="hidden items-center gap-7 text-sm font-medium md:flex">
             <a href="#mission" className="opacity-80 hover:opacity-100">Mission</a>
             <a href="#services" className="opacity-80 hover:opacity-100">Services</a>
-            <a href="#contact" className="opacity-80 hover:opacity-100">Contact</a>
+            <a href="#responsables" className="opacity-80 hover:opacity-100">Responsables</a>
+            <Link to="/contact" className="opacity-80 hover:opacity-100">Contact</Link>
           </nav>
           <Button asChild variant="secondary" size="sm"><Link to="/auth">Espace membre</Link></Button>
         </div>
@@ -75,7 +77,7 @@ function Home() {
           <p>Le GIE VIP BOK GUIS GUIS rassemble les chauffeurs actifs sur les plateformes numériques comme Yango et dans le transport traditionnel.</p>
           <p>Notre objectif : digitaliser nos activités, faciliter la gestion administrative et ouvrir de nouvelles opportunités économiques à chaque membre.</p>
           <div className="grid grid-cols-3 gap-4 pt-4">
-            {[["300", "chauffeurs"], ["100%", "solidaires"], ["14", "régions"]].map(([n, l]) => (
+            {[["300", "chauffeurs"], ["100%", "solidaires"], ["1", "union"]].map(([n, l]) => (
               <div key={l} className="rounded-xl border bg-card p-4">
                 <div className="font-display text-2xl font-bold text-primary">{n}</div>
                 <div className="text-xs">{l}</div>
@@ -101,18 +103,15 @@ function Home() {
         </div>
       </section>
 
-      <section id="contact" className="mx-auto max-w-7xl px-5 py-24">
-        <div className="grid gap-10 rounded-3xl border bg-card p-10 shadow-card md:grid-cols-2">
+      <section id="responsables" className="mx-auto max-w-7xl px-5 py-24">
+        <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h2 className="text-3xl font-bold">Rejoindre ou contacter le GIE</h2>
-            <p className="mt-3 text-muted-foreground">Vous êtes chauffeur et souhaitez adhérer ? Contactez le secrétariat.</p>
+            <p className="text-sm font-bold uppercase tracking-widest text-gold">Nos responsables</p>
+            <h2 className="mt-3 text-3xl font-bold sm:text-4xl">Une équipe joignable directement</h2>
           </div>
-          <ul className="space-y-4 text-sm">
-            <li className="flex items-center gap-3"><MapPin className="h-5 w-5 text-primary" /> Dakar, Sénégal</li>
-            <li className="flex items-center gap-3"><Phone className="h-5 w-5 text-primary" /> À renseigner</li>
-            <li className="flex items-center gap-3"><Mail className="h-5 w-5 text-primary" /> À renseigner</li>
-          </ul>
+          <Button asChild variant="outline"><Link to="/contact">Page contact <ArrowRight className="ml-1 h-4 w-4" /></Link></Button>
         </div>
+        <Leaders />
       </section>
 
       <footer className="border-t py-8">

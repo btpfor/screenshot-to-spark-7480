@@ -93,7 +93,7 @@ function AuthPage() {
             <Label htmlFor="pw">Mot de passe</Label>
             <Input id="pw" type="password" required minLength={needsAdmin ? 8 : 6} autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
           </div>
-          <Button type="submit" className="w-full" disabled={busy}>{needsAdmin ? "Créer et se connecter" : "Se connecter"}</Button>
+          <Button type="submit" className="w-full" disabled={busy}>Se connecter</Button>
           {!needsAdmin && (
             <button type="button" className="w-full text-sm text-muted-foreground hover:text-foreground" onClick={() => setForgot(!forgot)}>Mot de passe oublié ?</button>
           )}

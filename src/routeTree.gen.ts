@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedEspaceRouteImport } from './routes/_authenticated/espace'
 import { Route as AuthenticatedTableauRouteImport } from './routes/_authenticated/tableau'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 
@@ -35,6 +36,11 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedEspaceRoute = AuthenticatedEspaceRouteImport.update({
+  id: '/espace',
+  path: '/espace',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedTableauRoute = AuthenticatedTableauRouteImport.update({
   id: '/tableau',
   path: '/tableau',
@@ -50,12 +56,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/espace': typeof AuthenticatedEspaceRoute
   '/tableau': typeof AuthenticatedTableauRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/espace': typeof AuthenticatedEspaceRoute
   '/tableau': typeof AuthenticatedTableauRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
 }
@@ -65,20 +73,22 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/_authenticated/espace': typeof AuthenticatedEspaceRoute
   '/_authenticated/tableau': typeof AuthenticatedTableauRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/admin' | '/tableau' | '/admin/'
+  fullPaths: '/' | '/auth' | '/admin' | '/espace' | '/tableau' | '/admin/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/tableau' | '/admin'
+  to: '/' | '/auth' | '/espace' | '/tableau' | '/admin'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/admin'
+    | '/_authenticated/espace'
     | '/_authenticated/tableau'
     | '/_authenticated/admin/'
   fileRoutesById: FileRoutesById
@@ -119,6 +129,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/espace': {
+      id: '/_authenticated/espace'
+      path: '/espace'
+      fullPath: '/espace'
+      preLoaderRoute: typeof AuthenticatedEspaceRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/tableau': {
       id: '/_authenticated/tableau'
       path: '/tableau'
@@ -149,11 +166,13 @@ const AuthenticatedAdminRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
+  AuthenticatedEspaceRoute: typeof AuthenticatedEspaceRoute
   AuthenticatedTableauRoute: typeof AuthenticatedTableauRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
+  AuthenticatedEspaceRoute: AuthenticatedEspaceRoute,
   AuthenticatedTableauRoute: AuthenticatedTableauRoute,
 }
 

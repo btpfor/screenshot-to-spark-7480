@@ -23,7 +23,7 @@ export default defineConfig({
       integration: { closeBundleOrder: "post" },
       workbox: {
         globDirectory: "dist/client",
-        globPatterns: ["assets/**/*.{js,css,woff2}", "icons/*.png", "offline.html", "manifest.webmanifest"],
+        globPatterns: ["assets/**/*.{js,css,woff2}", "icons/*.png", "offline.{html,css,js}", "manifest.webmanifest"],
         navigateFallback: undefined,
         cleanupOutdatedCaches: true,
         runtimeCaching: [

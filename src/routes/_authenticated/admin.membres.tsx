@@ -72,6 +72,23 @@ function Members() {
   };
   const selected = drivers.find((d) => d.id === view);
 
+  const memberActions = (d: DriverRow) => (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" aria-label="Actions"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => setView(d.id)}>Voir le profil</DropdownMenuItem>
+                      {manager && <>
+                        <DropdownMenuItem onClick={() => doReset(d.id, `${d.first_name} ${d.last_name}`)}>Réinitialiser le mot de passe</DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => act(d.id, "actif", "actif")}>Réactiver</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => act(d.id, "inactif", "desactive")}>Désactiver</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => act(d.id, "suspendu", "actif")}>Suspendre</DropdownMenuItem>
+                        <DropdownMenuItem className="text-destructive" onClick={() => act(d.id, "suspendu", "bloque")}>Bloquer le compte</DropdownMenuItem>
+                      </>}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+  );
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
@@ -79,12 +96,12 @@ function Members() {
           <h1 className="text-2xl font-bold md:text-3xl">Gestion des membres</h1>
           <p className="text-sm text-muted-foreground">{drivers.length} membres enregistrés</p>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:flex-wrap">
           <Button variant="outline" onClick={() => downloadCsv("membres.csv", drivers.map((d) => ({
             matricule: d.matricule, prenom: d.first_name, nom: d.last_name, telephone: d.phone, adhesion: d.join_date, statut: d.status, plateforme: d.platform,
           })))}><Download className="mr-1 h-4 w-4" /> Exporter</Button>
           {manager && <Button variant="outline" onClick={() => setImporting(true)}><FileUp className="mr-1 h-4 w-4" /> Importer</Button>}
-          {manager && <Button onClick={() => setAdding(true)}><Plus className="mr-1 h-4 w-4" /> Ajouter un membre</Button>}
+          {manager && <Button className="col-span-2" onClick={() => setAdding(true)}><Plus className="mr-1 h-4 w-4" /> Ajouter un membre</Button>}
         </div>
       </div>
 
@@ -93,7 +110,17 @@ function Members() {
         <Input className="pl-9" placeholder="Matricule, nom ou téléphone" value={q} onChange={(e) => setQ(e.target.value)} />
       </div>
 
-      <div className="overflow-x-auto rounded-xl border bg-card shadow-card">
+      <div className="space-y-3 md:hidden">
+        {filtered.map((d) => <article key={d.id} className="min-w-0 rounded-lg border bg-card p-4 shadow-card">
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2"><div className="flex min-w-0 items-center gap-3"><MemberPhoto path={d.photo_url} className="h-11 w-11 shrink-0" /><div className="min-w-0"><h2 className="break-words font-semibold">{d.first_name} {d.last_name}</h2><p className="break-all font-mono text-xs">{d.matricule}</p></div></div>{memberActions(d)}</div>
+          <div className="my-3 flex flex-wrap gap-2"><Badge variant="outline">{d.status}</Badge><Badge variant={d.account_status === "bloque" ? "destructive" : "secondary"}>{d.account_status}</Badge></div>
+          <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-2 text-sm"><dt>Téléphone</dt><dd className="break-words">{d.phone}</dd><dt>Adhésion</dt><dd>{dateFr(d.join_date)}</dd><dt>Connexion</dt><dd className="break-words">{d.last_login_at ? new Date(d.last_login_at).toLocaleString("fr-FR") : "Jamais"}</dd></dl>
+          <Button className="mt-3 w-full" variant="outline" onClick={() => setView(d.id)}>Voir le profil</Button>
+        </article>)}
+        {filtered.length === 0 && <p className="py-8 text-center text-muted-foreground">Aucun membre.</p>}
+      </div>
+
+      <div className="hidden overflow-x-auto rounded-xl border bg-card shadow-card md:block">
         <table className="w-full text-sm">
           <thead className="border-b bg-muted/50 text-left text-xs uppercase text-muted-foreground">
             <tr>{["Photo", "Matricule", "Prénom", "Nom", "Téléphone", "Adhésion", "Statut", "Dernière connexion", ""].map((h) => <th key={h} className="px-4 py-3 font-semibold">{h}</th>)}</tr>
@@ -114,20 +141,7 @@ function Members() {
                 </td>
                 <td className="px-4 py-2 text-xs text-muted-foreground">{d.last_login_at ? new Date(d.last_login_at).toLocaleString("fr-FR") : "Jamais"}</td>
                 <td className="px-4 py-2 text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" aria-label="Actions"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => setView(d.id)}>Voir le profil</DropdownMenuItem>
-                      {manager && <>
-                        <DropdownMenuItem onClick={() => doReset(d.id, `${d.first_name} ${d.last_name}`)}>Réinitialiser le mot de passe</DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => act(d.id, "actif", "actif")}>Réactiver</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => act(d.id, "inactif", "desactive")}>Désactiver</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => act(d.id, "suspendu", "actif")}>Suspendre</DropdownMenuItem>
-                        <DropdownMenuItem className="text-destructive" onClick={() => act(d.id, "suspendu", "bloque")}>Bloquer le compte</DropdownMenuItem>
-                      </>}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  {memberActions(d)}
                 </td>
               </tr>
             ))}
@@ -148,8 +162,8 @@ function Members() {
             {creds?.list.map((c) => (
               <div key={c.matricule} className="rounded-lg border bg-muted/40 p-3 text-sm">
                 <div className="font-semibold">{c.name}</div>
-                <div>Identifiant : <span className="font-mono font-bold">{c.matricule}</span></div>
-                <div>Mot de passe : <span className="font-mono font-bold">{c.password}</span></div>
+                <div>Identifiant : <span className="break-all font-mono font-bold">{c.matricule}</span></div>
+                <div>Mot de passe : <span className="break-all font-mono font-bold">{c.password}</span></div>
               </div>
             ))}
           </div>
@@ -202,13 +216,13 @@ function AddMember({ onClose, onCreated }: { onClose: () => void; onCreated: (c:
   };
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
+      <DialogContent className="max-h-[calc(100dvh-2rem)] max-w-2xl overflow-y-auto">
         <DialogHeader><DialogTitle>Ajouter un membre</DialogTitle></DialogHeader>
         <form onSubmit={submit} onChange={() => setError(null)} className="space-y-5">
           <div className="grid gap-3 sm:grid-cols-2">
             <Field label="Prénom" name="first_name" required />
             <Field label="Nom" name="last_name" required />
-            <Field label="Téléphone" name="phone" required />
+            <Field label="Téléphone" name="phone" type="tel" required />
             <Field label="Adresse" name="address" />
             <div className="space-y-1.5"><Label htmlFor="cni_number">Numéro de carte d’identité *</Label><Input id="cni_number" name="cni_number" required minLength={3} maxLength={40} pattern="[A-Za-z0-9]{3,40}" value={cni} onChange={(e) => setCni(e.target.value)} /></div>
             <Field label="Date de naissance" name="birth_date" type="date" />
@@ -277,7 +291,7 @@ function ImportMembers({ onClose, onDone }: { onClose: () => void; onDone: (c: C
 
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
+      <DialogContent className="max-h-[calc(100dvh-2rem)] max-w-3xl overflow-y-auto">
         <DialogHeader><DialogTitle>Importer des membres</DialogTitle></DialogHeader>
         <p className="text-sm text-muted-foreground">
           Colonnes obligatoires : <b>prenom, nom, telephone, cni</b>. Facultatives : adresse, plateforme, naissance, adhesion.
@@ -287,8 +301,8 @@ function ImportMembers({ onClose, onDone }: { onClose: () => void; onDone: (c: C
         {rows.length > 0 && (
           <>
             <div className="text-sm"><b>{valid.length}</b> ligne(s) valide(s), <b className="text-destructive">{rows.length - valid.length}</b> erreur(s)</div>
-            <div className="max-h-64 overflow-y-auto rounded border text-xs">
-              <table className="w-full">
+            <div className="max-h-64 overflow-auto rounded border text-xs">
+              <table className="w-full min-w-[560px]">
                 <tbody className="divide-y">{rows.map((r, i) => (
                   <tr key={i} className={r.error ? "bg-destructive/10" : ""}>
                     <td className="px-2 py-1">{i + 2}</td><td className="px-2 py-1">{r.first_name} {r.last_name}</td><td className="px-2 py-1">{r.phone}</td>
@@ -317,10 +331,10 @@ function Profile({ driver: d, onClose }: { driver: DriverRow; onClose: () => voi
   ];
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
+      <DialogContent className="max-h-[calc(100dvh-2rem)] max-w-2xl overflow-y-auto">
         <DialogHeader><DialogTitle>{d.first_name} {d.last_name}</DialogTitle></DialogHeader>
         <MemberPhoto path={d.photo_url} className="h-20 w-20" />
-        <dl className="grid grid-cols-3 gap-y-2 text-sm">{rows.map(([k, v]) => <Fragment key={k}><dt className="text-muted-foreground">{k}</dt><dd className="col-span-2">{v}</dd></Fragment>)}</dl>
+        <dl className="grid grid-cols-1 gap-x-4 gap-y-1 text-sm sm:grid-cols-3 sm:gap-y-2">{rows.map(([k, v]) => <Fragment key={k}><dt className="text-muted-foreground">{k}</dt><dd className="min-w-0 break-words pb-2 sm:col-span-2 sm:pb-0">{v}</dd></Fragment>)}</dl>
         <h3 className="mt-2 font-semibold">Carte de membre</h3>
         <ScaledCard member={d} />
         <h3 className="mt-2 font-semibold">Historique</h3>

@@ -80,25 +80,25 @@ function Dashboard() {
         <h1 className="text-2xl font-bold md:text-3xl">Tableau de bord</h1>
         <p className="text-sm text-muted-foreground">Vue d'ensemble des activités du GIE</p>
       </div>
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-6">
+      <div className="grid grid-cols-1 gap-3 min-[360px]:grid-cols-2 xl:grid-cols-6">
         {stats.map((s) => (
-          <div key={s.label} className="rounded-xl border bg-card p-4 shadow-card">
+          <div key={s.label} className="min-w-0 break-words rounded-lg border bg-card p-4 shadow-card">
             <s.icon className="h-4 w-4 text-primary" />
             <div className="mt-3 font-display text-2xl font-bold">{s.value}</div>
             <div className="text-xs text-muted-foreground">{s.label}</div>
           </div>
         ))}
       </div>
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {money.map((s, i) => (
-          <div key={s.label} className={`rounded-xl p-5 shadow-card ${i === 2 ? "bg-primary text-primary-foreground" : "border bg-card"}`}>
+          <div key={s.label} className={`min-w-0 break-words rounded-lg p-5 shadow-card ${i === 2 ? "bg-primary text-primary-foreground" : "border bg-card"}`}>
             <div className="flex items-center justify-between text-xs opacity-80">{s.label}<s.icon className="h-4 w-4" /></div>
             <div className="mt-3 font-display text-xl font-bold">{fcfa(s.value)}</div>
           </div>
         ))}
       </div>
       <div className="grid gap-4 lg:grid-cols-3">
-        <div className="rounded-xl border bg-card p-5 shadow-card lg:col-span-2">
+        <div className="min-w-0 break-words rounded-lg border bg-card p-5 shadow-card lg:col-span-2">
           <h3 className="mb-4 font-semibold">Entrées et dépenses — 6 derniers mois</h3>
           <div className="h-64">
             <ResponsiveContainer>
@@ -113,7 +113,7 @@ function Dashboard() {
             </ResponsiveContainer>
           </div>
         </div>
-        <div className="rounded-xl border bg-card p-5 shadow-card">
+        <div className="min-w-0 break-words rounded-lg border bg-card p-5 shadow-card">
           <h3 className="mb-4 font-semibold">Parc par statut</h3>
           {byStatus.length ? (
             <div className="h-64">
@@ -129,12 +129,12 @@ function Dashboard() {
           ) : <p className="text-sm text-muted-foreground">Aucun véhicule enregistré.</p>}
         </div>
       </div>
-      <div className="rounded-xl border bg-card p-5 shadow-card">
+      <div className="min-w-0 break-words rounded-lg border bg-card p-5 shadow-card">
         <h3 className="mb-3 flex items-center gap-2 font-semibold"><AlertTriangle className="h-4 w-4 text-warning" /> Alertes véhicules (30 jours)</h3>
         {alerts.length === 0 ? <p className="text-sm text-muted-foreground">Aucune échéance proche.</p> : (
           <ul className="divide-y text-sm">
             {alerts.map((a, i) => (
-              <li key={i} className="flex justify-between py-2">
+              <li key={i} className="flex flex-wrap justify-between gap-x-3 gap-y-1 py-2">
                 <span><b>{a.plate}</b> — {a.label}</span>
                 <span className={a.days < 0 ? "font-semibold text-destructive" : "text-warning"}>{a.days < 0 ? `expiré depuis ${-a.days} j` : `dans ${a.days} j`}</span>
               </li>

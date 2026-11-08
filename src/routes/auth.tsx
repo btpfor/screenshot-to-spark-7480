@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/Logo";
-import { InstallAppButton } from "@/components/InstallApp";
 import { isMatricule, loginToEmail } from "@/lib/member-ids";
 import { bootstrapSuperAdmin, hasSuperAdmin } from "@/lib/members.functions";
 
@@ -125,7 +124,6 @@ function AuthPage() {
             <p role="alert" className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">{error}</p>
           )}
           <Button type="submit" className="w-full" disabled={busy}>Se connecter</Button>
-          <InstallAppButton className="w-full" />
         </form>
       </div>
     </div>

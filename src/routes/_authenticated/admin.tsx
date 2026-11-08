@@ -6,7 +6,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
-import { InstallAppButton } from "@/components/InstallApp";
 import { canEditPresident } from "@/lib/president-rules";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -58,7 +57,6 @@ function AdminLayout() {
             </Link>
           ))}
         </nav>
-        <div className="px-4 pb-4"><InstallAppButton className="w-full" /></div>
         <div className="border-t border-sidebar-border p-4 text-xs">
           <div className="truncate font-semibold text-sidebar-accent-foreground">{user?.email}</div>
           <div className="opacity-70">{roles.filter((r) => r !== "chauffeur").map((r) => ROLE_LABELS[r]).join(", ")}</div>

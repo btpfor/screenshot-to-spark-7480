@@ -46,7 +46,6 @@ function Home() {
             <a href="#services" className="opacity-80 hover:opacity-100">Services</a>
             <a href="#responsables" className="opacity-80 hover:opacity-100">Responsables</a>
             <Link to="/contact" className="opacity-80 hover:opacity-100">Contact</Link>
-            <InstallAppButton />
           </nav>
           <Button asChild variant="secondary" size="sm"><Link to="/auth">Espace membre</Link></Button>
         </div>

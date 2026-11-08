@@ -99,12 +99,15 @@ function AuthPage() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="id">Identifiant</Label>
-            <Input id="id" required autoComplete="username" type="text" value={id} onChange={(e) => setId(e.target.value)} placeholder="BGG-2026-0001" />
+            <Input id="id" required autoComplete="username" type="text" value={id} onChange={(e) => { setId(e.target.value); setError(""); }} placeholder="BGG-2026-0001" />
           </div>
           <div className="space-y-2">
             <Label htmlFor="pw">Mot de passe</Label>
-            <Input id="pw" type="password" required minLength={needsAdmin ? 8 : 6} autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
+            <Input id="pw" type="password" required minLength={needsAdmin ? 8 : 6} autoComplete="current-password" value={password} onChange={(e) => { setPassword(e.target.value); setError(""); }} />
           </div>
+          {error && (
+            <p role="alert" className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">{error}</p>
+          )}
           <Button type="submit" className="w-full" disabled={busy}>Se connecter</Button>
           {!needsAdmin && (
             <button type="button" className="w-full text-sm text-muted-foreground hover:text-foreground" onClick={() => setForgot(!forgot)}>Mot de passe oublié ?</button>

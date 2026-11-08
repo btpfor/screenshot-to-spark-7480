@@ -33,6 +33,7 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [forgot, setForgot] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     checkAdmin().then((ok) => setNeedsAdmin(!ok)).catch(() => {});
@@ -40,9 +41,13 @@ function AuthPage() {
   }, [checkAdmin, navigate]);
 
   const signIn = async (email: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-      toast.error(error.message.toLowerCase().includes("banned") ? "Ce compte est désactivé ou bloqué. Contactez l'administration." : "Matricule ou mot de passe incorrect.");
+    const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
+    if (authError) {
+      const msg = authError.message.toLowerCase().includes("banned")
+        ? "Ce compte est désactivé ou bloqué. Contactez l'administration."
+        : "Identifiant ou mot de passe incorrect. Vérifiez votre numéro matricule (ex. BGG-2026-0001) et votre mot de passe, puis réessayez.";
+      setError(msg);
+      toast.error(msg);
       return;
     }
     await supabase.rpc("record_login");
@@ -51,6 +56,11 @@ function AuthPage() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+    if (!id.includes("@") && !isMatricule(id)) {
+      setError("L'identifiant doit être un numéro matricule au format BGG-2026-0001 (ex. BGG-2026-0001).");
+      return;
+    }
     setBusy(true);
     try {
       if (needsAdmin) {
@@ -61,7 +71,9 @@ function AuthPage() {
         await signIn(email);
       } else await signIn(loginToEmail(id));
     } catch (err) {
-      toast.error((err as Error).message);
+      const msg = (err as Error).message;
+      setError(msg);
+      toast.error(msg);
     }
     setBusy(false);
   };

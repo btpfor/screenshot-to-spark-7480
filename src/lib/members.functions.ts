@@ -28,7 +28,10 @@ export const bootstrapSuperAdmin = createServerFn({ method: "POST" })
     const { count } = await a.from("user_roles").select("id", { count: "exact", head: true }).eq("role", "super_admin");
     if ((count ?? 0) > 0) throw new Error("Un administrateur existe déjà.");
     const { data: u, error } = await a.auth.admin.createUser({ email: data.email, password: data.password, email_confirm: true, user_metadata: { must_change_password: true } });
-    if (error || !u.user) throw new Error(error?.message ?? "Création impossible");
+    if (error || !u.user) {
+      if (error?.code === "weak_password") throw new Error("Ce mot de passe est trop facile à deviner ou déjà compromis. Choisissez un autre mot de passe pour sécuriser le compte administrateur.");
+      throw new Error(error?.message ?? "Création impossible");
+    }
     const { error: roleError } = await a.from("user_roles").insert({ user_id: u.user.id, role: "super_admin" });
     if (roleError) {
       await a.auth.admin.deleteUser(u.user.id);

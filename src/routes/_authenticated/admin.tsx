@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Navigate, Outlet, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { LayoutDashboard, LogOut, Menu, Users, X } from "lucide-react";
+import { LayoutDashboard, LogOut, Menu, ShieldCheck, Users, X } from "lucide-react";
 import { useAuth, ROLE_LABELS } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Logo } from "@/components/Logo";
@@ -15,6 +15,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
 const nav = [
   { to: "/admin", label: "Tableau de bord", icon: LayoutDashboard, exact: true },
   { to: "/admin/membres", label: "Gestion des membres", icon: Users },
+  { to: "/admin/utilisateurs", label: "Utilisateurs & rôles", icon: ShieldCheck, superOnly: true },
 ] as const;
 
 function AdminLayout() {
@@ -37,7 +38,7 @@ function AdminLayout() {
           <button className="md:hidden" onClick={() => setOpen(false)} aria-label="Fermer"><X className="h-5 w-5" /></button>
         </div>
         <nav className="flex-1 space-y-1 px-3">
-          {nav.map((n) => (
+          {nav.filter((n) => !("superOnly" in n) || roles.includes("super_admin")).map((n) => (
             <Link key={n.to} to={n.to} activeOptions={{ exact: "exact" in n }} onClick={() => setOpen(false)}
               className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium opacity-80 transition hover:bg-sidebar-accent hover:opacity-100 data-[status=active]:bg-sidebar-accent data-[status=active]:text-sidebar-primary data-[status=active]:opacity-100">
               <n.icon className="h-4 w-4" /> {n.label}

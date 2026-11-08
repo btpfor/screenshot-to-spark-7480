@@ -16,6 +16,17 @@ export const ROLE_LABELS: Record<AppRole, string> = {
   chauffeur: "Chauffeur",
 };
 
+export const ROLE_PERMISSIONS: Record<AppRole, string> = {
+  super_admin: "Accès complet, y compris l'attribution des rôles.",
+  president: "Supervision générale : membres, véhicules, finances, journal d'audit.",
+  secretaire: "Gestion administrative : création et modification des membres.",
+  tresorier: "Gestion financière : cotisations, recettes, dépenses, dettes.",
+  resp_chauffeurs: "Gestion des membres : ajout, modification, comptes.",
+  resp_parc: "Gestion du parc automobile et des alertes véhicules.",
+  resp_partenariats: "Gestion des partenaires (module à venir) et consultation.",
+  chauffeur: "Accès à son espace personnel uniquement.",
+};
+
 export const CAN = {
   manageDrivers: ["super_admin", "president", "secretaire", "resp_chauffeurs"] as AppRole[],
   deleteDrivers: ["super_admin", "president"] as AppRole[],

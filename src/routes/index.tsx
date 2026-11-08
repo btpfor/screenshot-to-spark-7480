@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Banknote, Car, Globe2, HandHeart, ShieldCheck, Users, ArrowRight} from "lucide-react";
+import { Banknote, Car, Globe2, HandHeart, ShieldCheck, Users, ArrowRight, Menu, X } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
 import { Leaders } from "@/components/Leaders";
@@ -34,11 +35,12 @@ const pillars = [
 ];
 
 function Home() {
+  const [menuOpen, setMenuOpen] = useState(false);
   const { data: president } = useSuspenseQuery(presidentQuery);
   return (
     <div className="min-h-screen bg-background">
       <header className="absolute inset-x-0 top-0 z-20 text-primary-foreground">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-5">
+        <div className="safe-top mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-5 py-5 lg:flex lg:justify-between">
           <Logo />
           <nav className="hidden items-center gap-5 text-sm font-medium lg:flex">
             <a href="#mission" className="opacity-80 hover:opacity-100">Mission</a>
@@ -47,25 +49,25 @@ function Home() {
             <a href="#responsables" className="opacity-80 hover:opacity-100">Responsables</a>
             <Link to="/contact" className="opacity-80 hover:opacity-100">Contact</Link>
           </nav>
-          <Button asChild variant="secondary" size="sm"><Link to="/auth">Espace membre</Link></Button>
+          <div className="flex shrink-0 items-center gap-2"><Button asChild variant="secondary" size="sm" className="hidden sm:inline-flex"><Link to="/auth">Espace membre</Link></Button><Button variant="secondary" size="icon" className="lg:hidden" aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"} aria-expanded={menuOpen} aria-controls="home-menu" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X /> : <Menu />}</Button></div>
         </div>
+        {menuOpen && <nav id="home-menu" className="mx-4 grid rounded-lg border bg-sidebar p-3 text-sidebar-foreground shadow-card lg:hidden" onClick={() => setMenuOpen(false)}><Button asChild variant="ghost" className="justify-start"><a href="#mission">Mission</a></Button>{president && <Button asChild variant="ghost" className="justify-start"><Link to="/mot-du-president">Le mot du Président</Link></Button>}<Button asChild variant="ghost" className="justify-start"><a href="#services">Services</a></Button><Button asChild variant="ghost" className="justify-start"><a href="#responsables">Responsables</a></Button><Button asChild variant="ghost" className="justify-start"><Link to="/contact">Contact</Link></Button><Button asChild variant="secondary"><Link to="/auth">Espace membre</Link></Button></nav>}
       </header>
-      {president && <div className="absolute inset-x-0 top-24 z-20 px-5 lg:hidden"><Link to="/mot-du-president" className="text-sm font-semibold text-primary-foreground underline underline-offset-4">Le mot du Président</Link></div>}
 
-      <section className="relative min-h-[88vh] overflow-hidden">
+      <section className="relative min-h-[88svh] overflow-hidden">
         <img src={hero} alt="Chauffeur du GIE à Dakar" width={1600} height={1008} className="absolute inset-0 h-full w-full object-cover" />
         <div className="bg-hero absolute inset-0" />
-        <div className="relative mx-auto flex min-h-[88vh] max-w-7xl flex-col justify-center px-5 pt-24 text-primary-foreground">
+        <div className="relative mx-auto flex min-h-[88svh] max-w-7xl flex-col justify-center px-5 pb-10 pt-32 text-primary-foreground">
           <span className="mb-5 inline-flex w-fit items-center gap-2 rounded-full border border-primary-foreground/25 px-3 py-1 text-xs font-semibold uppercase tracking-widest">
             <span className="flag-bar h-2 w-6 rounded-full" /> Groupement d'Intérêt Économique
           </span>
-          <h1 className="max-w-3xl text-4xl font-extrabold leading-[1.05] sm:text-6xl">
+          <h1 className="max-w-3xl text-3xl font-extrabold leading-tight min-[375px]:text-4xl sm:text-6xl">
             Moderniser le transport au Sénégal, <span className="text-accent">ensemble.</span>
           </h1>
           <p className="mt-6 max-w-xl text-lg opacity-85">
             Près de 300 chauffeurs unis pour la solidarité, l'accès au financement automobile et la professionnalisation du métier.
           </p>
-          <div className="mt-9 flex flex-wrap gap-3">
+          <div className="mt-9 grid gap-3 sm:flex sm:flex-wrap">
             <InstallAppButton className="min-h-10 px-5" />
             <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
               <Link to="/auth">Accéder à mon espace <ArrowRight className="ml-1 h-4 w-4" /></Link>
@@ -85,7 +87,7 @@ function Home() {
         <div className="space-y-4 text-muted-foreground">
           <p>Le GIE VIP BOK GUIS GUIS rassemble les chauffeurs actifs sur les plateformes numériques comme Yango et dans le transport traditionnel.</p>
           <p>Notre objectif : digitaliser nos activités, faciliter la gestion administrative et ouvrir de nouvelles opportunités économiques à chaque membre.</p>
-          <div className="grid grid-cols-3 gap-4 pt-4">
+          <div className="grid grid-cols-1 gap-4 pt-4 min-[375px]:grid-cols-3">
             {[["300", "chauffeurs"], ["100%", "solidaires"], ["3", "responsables"]].map(([n, l]) => (
               <div key={l} className="rounded-xl border bg-card p-4">
                 <div className="font-display text-2xl font-bold text-primary">{n}</div>

@@ -9,7 +9,7 @@ export function PresidentMessage({ message, full = false }: { message: Message; 
   return (
     <div className="president-reveal grid items-start gap-9 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.3fr)] lg:gap-16">
       <figure className="mx-auto w-full max-w-lg lg:sticky lg:top-8">
-        {message.photoUrl && <div className="overflow-hidden rounded-lg border border-gold/60 p-2 shadow-card"><img src={message.photoUrl} alt={`Portrait officiel de ${message.name}`} width={768} height={768} className="h-auto w-full rounded object-contain" /></div>}
+        {message.photoUrl && <div className="overflow-hidden rounded-lg border border-gold/60 p-2 shadow-card"><img src={message.photoUrl} alt={`Portrait officiel de ${message.name}`} width={768} height={768} loading={full ? "eager" : "lazy"} decoding="async" className="h-auto w-full rounded object-contain" /></div>}
         <figcaption className="mt-5 border-l-2 border-gold pl-4">
           <p className="font-display text-xl font-bold">{message.name}</p>
           <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{message.role_label}</p>

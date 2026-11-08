@@ -44,10 +44,11 @@ function AdminLayout() {
 
   return (
     <div className="flex min-h-screen bg-background">
-      <aside className={`no-print fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-sidebar text-sidebar-foreground transition-transform md:static md:translate-x-0 ${open ? "translate-x-0" : "-translate-x-full"}`}>
+      {open && <Button variant="ghost" className="fixed inset-0 z-30 h-full w-full rounded-none bg-foreground/40 lg:hidden" aria-label="Fermer le menu administratif" onClick={() => setOpen(false)} />}
+      <aside className={`safe-bottom no-print fixed inset-y-0 left-0 z-40 flex w-64 shrink-0 flex-col overflow-y-auto bg-sidebar text-sidebar-foreground transition-transform lg:sticky lg:top-0 lg:h-dvh lg:w-56 lg:translate-x-0 xl:w-64 ${open ? "translate-x-0" : "-translate-x-full"}`}>
         <div className="flex items-center justify-between p-5">
           <Logo />
-          <button className="md:hidden" onClick={() => setOpen(false)} aria-label="Fermer"><X className="h-5 w-5" /></button>
+          <Button variant="ghost" size="icon" className="shrink-0 lg:hidden" onClick={() => setOpen(false)} aria-label="Fermer"><X className="h-5 w-5" /></Button>
         </div>
         <nav className="flex-1 space-y-1 px-3">
           {nav.filter((n) => (!("superOnly" in n) || roles.includes("super_admin")) && (!("presidentOnly" in n) || canEditPresident(roles))).map((n) => (
@@ -64,16 +65,16 @@ function AdminLayout() {
         </div>
       </aside>
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="no-print flex min-h-14 flex-wrap items-center justify-between gap-2 border-b bg-card px-4 py-2">
-          <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setOpen(true)} aria-label="Menu"><Menu className="h-5 w-5" /></Button>
-          <div className="hidden text-sm text-muted-foreground md:block">Espace administration</div>
-          <div className="flex flex-wrap items-center gap-1">
-            <Button asChild variant="ghost" size="sm"><Link to="/changer-mot-de-passe"><KeyRound className="h-4 w-4" />Changer mon mot de passe</Link></Button>
+        <header className="safe-top no-print grid grid-cols-[auto_minmax(0,1fr)] min-h-14 items-center gap-2 border-b bg-card px-4 py-2 lg:flex lg:justify-between">
+          <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setOpen(true)} aria-label="Menu" aria-expanded={open}><Menu className="h-5 w-5" /></Button>
+          <div className="hidden text-sm text-muted-foreground lg:block">Espace administration</div>
+          <div className="flex min-w-0 flex-wrap items-center justify-end gap-1">
+            <Button asChild variant="ghost" size="sm" className="h-auto min-h-11 whitespace-normal"><Link to="/changer-mot-de-passe"><KeyRound className="h-4 w-4 shrink-0" />Changer mon mot de passe</Link></Button>
             <Button asChild variant="ghost" size="sm"><Link to="/espace">Mon espace membre</Link></Button>
             <ThemeToggle />
           </div>
         </header>
-        <main className="flex-1 p-4 md:p-8"><Outlet /></main>
+        <main className="safe-bottom min-w-0 flex-1 p-4 md:p-6 xl:p-8"><Outlet /></main>
       </div>
     </div>
   );

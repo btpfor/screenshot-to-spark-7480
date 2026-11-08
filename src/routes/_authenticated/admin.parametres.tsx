@@ -92,23 +92,23 @@ function Settings() {
         <p className="text-sm text-muted-foreground">Coordonnées officielles — reprises automatiquement sur le site public et les cartes de membre.</p>
       </div>
 
-      <section className="space-y-4 rounded-xl border bg-card p-6 shadow-card">
+      <section className="space-y-4 rounded-xl border bg-card p-4 shadow-card sm:p-6">
         <h2 className="font-semibold">Identité</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1.5 sm:col-span-2"><Label>Nom officiel</Label><Input value={form.official_name} onChange={set("official_name")} /></div>
           <div className="space-y-1.5 sm:col-span-2"><Label>Slogan</Label><Input value={form.slogan} onChange={set("slogan")} /></div>
           <div className="space-y-1.5"><Label>Nom du président (signature)</Label><Input value={form.president_name} onChange={set("president_name")} /></div>
-          <div className="space-y-1.5"><Label>Numéro WhatsApp du GIE</Label><Input value={form.whatsapp_phone} onChange={set("whatsapp_phone")} /></div>
+          <div className="space-y-1.5"><Label>Numéro WhatsApp du GIE</Label><Input type="tel" value={form.whatsapp_phone} onChange={set("whatsapp_phone")} /></div>
           <div className="space-y-1.5">
             <Label>Logo officiel</Label>
-            <div className="flex items-center gap-3">
+            <div className="flex min-w-0 flex-col items-start gap-3">
               {form.logo_data && <img src={form.logo_data} alt="" className="h-14 w-14 rounded border object-contain" />}
               <Input type="file" accept="image/*" onChange={upload("logo_data")} />
             </div>
           </div>
           <div className="space-y-1.5">
             <Label>Signature du président (fond blanc)</Label>
-            <div className="flex items-center gap-3">
+            <div className="flex min-w-0 flex-col items-start gap-3">
               {form.signature_data && <img src={form.signature_data} alt="" className="h-14 w-28 rounded border bg-card object-contain" />}
               <Input type="file" accept="image/*" onChange={upload("signature_data")} />
             </div>
@@ -117,22 +117,22 @@ function Settings() {
         </div>
       </section>
 
-      <section className="space-y-4 rounded-xl border bg-card p-6 shadow-card">
-        <div className="flex items-center justify-between">
+      <section className="space-y-4 rounded-xl border bg-card p-4 shadow-card sm:p-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="font-semibold">Coordonnées des responsables</h2>
           <Button size="sm" variant="outline" onClick={() => setContacts([...contacts, { role_label: "", person_name: "", phone: "", sort_order: contacts.length + 1 }])}><Plus className="mr-1 h-4 w-4" /> Ajouter</Button>
         </div>
         {contacts.map((c, i) => (
-          <div key={c.id ?? `new-${i}`} className="grid items-end gap-3 sm:grid-cols-[1fr_1fr_1fr_auto]">
+          <div key={c.id ?? `new-${i}`} className="grid min-w-0 items-end gap-3 border-b pb-4 xl:grid-cols-[repeat(3,minmax(0,1fr))_auto]">
             <div className="space-y-1.5"><Label>Fonction</Label><Input value={c.role_label} onChange={(e) => setContacts(contacts.map((x, j) => j === i ? { ...x, role_label: e.target.value } : x))} /></div>
             <div className="space-y-1.5"><Label>Nom</Label><Input value={c.person_name ?? ""} onChange={(e) => setContacts(contacts.map((x, j) => j === i ? { ...x, person_name: e.target.value } : x))} /></div>
-            <div className="space-y-1.5"><Label>Téléphone</Label><Input value={c.phone} onChange={(e) => setContacts(contacts.map((x, j) => j === i ? { ...x, phone: e.target.value } : x))} /></div>
+            <div className="space-y-1.5"><Label>Téléphone</Label><Input type="tel" value={c.phone} onChange={(e) => setContacts(contacts.map((x, j) => j === i ? { ...x, phone: e.target.value } : x))} /></div>
             <Button variant="ghost" size="icon" aria-label="Supprimer" onClick={() => { if (c.id) setRemoved([...removed, c.id]); setContacts(contacts.filter((_, j) => j !== i)); }}><Trash2 className="h-4 w-4" /></Button>
           </div>
         ))}
       </section>
 
-      <Button size="lg" onClick={save} disabled={busy}>{busy ? "Enregistrement…" : "Enregistrer les modifications"}</Button>
+      <Button className="h-auto min-h-11 w-full whitespace-normal sm:w-auto" size="lg" onClick={save} disabled={busy}>{busy ? "Enregistrement…" : "Enregistrer les modifications"}</Button>
     </div>
   );
 }

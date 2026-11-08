@@ -10,8 +10,10 @@ export function MemberCardView({ member }: { member: CardMember }) {
   const [busy, setBusy] = useState(false);
 
   const toPng = async () => {
+    const card = ref.current;
+    if (!card) throw new Error("Carte indisponible");
     const { toPng } = await import("html-to-image");
-    return toPng(ref.current!, { pixelRatio: 2.5, cacheBust: true });
+    return toPng(card, { pixelRatio: 2.5, cacheBust: true });
   };
   const file = `carte-${member.matricule}`;
   const png = async () => {
@@ -33,7 +35,7 @@ export function MemberCardView({ member }: { member: CardMember }) {
   };
 
   return (
-    <div className="space-y-3">
+    <div className="min-w-0 space-y-3">
       <div className="w-full overflow-hidden" style={{ height: "calc(540px * var(--card-scale))" }}>
         <div className="origin-top-left" style={{ width: 856, transform: "scale(var(--card-scale))" }}>
           <MemberCard ref={ref} member={member} />
@@ -51,7 +53,7 @@ export function MemberCardView({ member }: { member: CardMember }) {
 export function ScaledCard({ member }: { member: CardMember }) {
   const [scale, setScale] = useState(0.5);
   return (
-    <div
+    <div className="min-w-0 w-full"
       ref={(el) => {
         if (!el) return;
         const update = () => setScale(Math.min(1, el.clientWidth / 856));

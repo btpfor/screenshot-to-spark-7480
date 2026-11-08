@@ -1,3 +1,8 @@
+# Affichage tous écrans
+- [x] Adapter navigation publique, administration, listes, formulaires et fenêtres pour téléphone/tablette/ordinateur sans changement de données.
+- [x] Vérifier toutes les pages aux largeurs 320, 375, 390, 430, 768, 1024, 1366 et 1920 ; menus tactiles, ajout membre/personnel/message, aucun débordement global et 14 tests réussis.
+- [ ] Vérifier carte et exports avec un membre réel et appareils physiques iOS/Android : aucun membre enregistré et appareils indisponibles ; dimensions d’export conservées.
+
 # Diagnostic du chargement
 - [x] Reproduire le refus de chargement de l’accueil et du Président sur le déploiement externe ; corriger la sélection de configuration publique et la transmission initiale des données dans le projet, sans changer Lovable Cloud.
 - [x] Vérifier toutes les pages existantes dans l’aperçu, les accès administratifs par session authentifiée, les lectures/enregistrements du message et les images sur ordinateur, téléphone et tablette ; tests réussis.

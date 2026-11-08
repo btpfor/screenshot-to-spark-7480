@@ -29,6 +29,13 @@
       "when": 1794115065327,
       "tag": "0003_gie_settings_contacts",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1794115768676,
+      "tag": "0004_contact_messages_ai",
+      "breakpoints": true
     }
   ]
 }

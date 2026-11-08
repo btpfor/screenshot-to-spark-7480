@@ -5,7 +5,7 @@ import { User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { gieQuery } from "@/lib/gie";
 import { dateFr } from "@/lib/format";
-import officialLogo from "@/assets/logo-gie-vip-transport.jpeg.asset.json";
+import { officialLogoUrl } from "@/lib/branding";
 
 export type CardMember = { first_name: string; last_name: string; matricule: string; join_date: string; photo_url: string | null };
 
@@ -43,8 +43,8 @@ export const MemberCard = forwardRef<HTMLDivElement, { member: CardMember }>(fun
       <div className="bg-gold-gradient absolute -right-24 -top-24 h-64 w-64 rounded-full opacity-15" />
       {/* En-tête */}
       <div className="flex items-center gap-4 px-10 pt-9">
-        <img src={s?.logo_data || officialLogo.url} alt="Logo du GIE" className="h-20 w-20 rounded-full bg-card object-contain" onError={(event) => {
-          if (event.currentTarget.getAttribute("src") !== officialLogo.url) event.currentTarget.src = officialLogo.url;
+        <img src={s?.logo_data || officialLogoUrl} alt="Logo du GIE" className="h-20 w-20 rounded-full bg-card object-contain" onError={(event) => {
+          if (event.currentTarget.getAttribute("src") !== officialLogoUrl) event.currentTarget.src = officialLogoUrl;
         }} />
         <div className="flex-1">
           <div className="font-display text-[26px] font-extrabold leading-tight tracking-tight">{s?.official_name ?? "GIE VIP BOK GUIS GUIS TRANSPORT SENEGAL"}</div>

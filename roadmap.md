@@ -1,4 +1,7 @@
 # Correction du logo officiel
+- [x] Reproduire le logo cassé sur Cloudflare : ancienne URL /__l5e/assets-v1 renvoie 404 ; intégrer le fichier original dans public/images/logo-gie.png et partager son chemin pour le site et les cartes sans changer les données.
+- [x] Vérifier le nouveau chemin dans l’aperçu : 200 image/png, accueil/pied de page/contact/Président aux huit largeurs sans débordement, administration desktop et menu mobile authentifié avec logo chargé ; compilation automatique réussie.
+- [ ] Redéployer et confirmer la nouvelle URL sur Cloudflare : https://screenshot-to-spark-7480.sheikhmbaake.workers.dev/images/logo-gie.png renvoie encore 404, aucun accès de déploiement Cloudflare disponible. Production externe et espace/carte d’un membre réel non validés.
 - [x] Vérifier le fichier officiel : HTTP 200 image/jpeg dans l’aperçu et le site publié, aucun logo personnalisé enregistré ; erreur non reproduite. Réduire les espacements mobiles et rétablir le logo fourni si une image personnalisée échoue ; sécurité et menu testés.
 - [x] Vérifier accueil, contact, Président aux huit largeurs et administration sur ordinateur ; logo chargé, carré et sans débordement. Le logo administratif reste volontairement dans le menu fermé sur mobile ; appareils physiques non disponibles.
 

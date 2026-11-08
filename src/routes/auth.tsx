@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/Logo";
+import { InstallAppButton } from "@/components/InstallApp";
 import { isMatricule, loginToEmail } from "@/lib/member-ids";
 import { bootstrapSuperAdmin, hasSuperAdmin } from "@/lib/members.functions";
 
@@ -59,6 +60,10 @@ function AuthPage() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    if (!navigator.onLine) {
+      setError("Vous êtes hors connexion. Connectez-vous à Internet pour accéder à votre compte.");
+      return;
+    }
     if (!id.includes("@") && !isMatricule(id)) {
       setError("Saisissez votre adresse email, votre identifiant vipbgg-123 ou votre ancien matricule BGG-2026-0001.");
       return;
@@ -121,6 +126,7 @@ function AuthPage() {
             <p role="alert" className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">{error}</p>
           )}
           <Button type="submit" className="w-full" disabled={busy}>Se connecter</Button>
+          <InstallAppButton className="w-full" />
           {!needsAdmin && (
             <button type="button" className="w-full text-sm text-muted-foreground hover:text-foreground" onClick={() => setForgot(!forgot)}>Mot de passe oublié ?</button>
           )}

@@ -3,6 +3,7 @@ import { Banknote, Car, Globe2, HandHeart, ShieldCheck, Users, ArrowRight} from 
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
 import { Leaders } from "@/components/Leaders";
+import { InstallAppButton } from "@/components/InstallApp";
 import hero from "@/assets/hero-dakar.jpg";
 
 export const Route = createFileRoute("/")({
@@ -34,11 +35,12 @@ function Home() {
       <header className="absolute inset-x-0 top-0 z-20 text-primary-foreground">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-5">
           <Logo />
-          <nav className="hidden items-center gap-7 text-sm font-medium md:flex">
+          <nav className="hidden items-center gap-5 text-sm font-medium lg:flex">
             <a href="#mission" className="opacity-80 hover:opacity-100">Mission</a>
             <a href="#services" className="opacity-80 hover:opacity-100">Services</a>
             <a href="#responsables" className="opacity-80 hover:opacity-100">Responsables</a>
             <Link to="/contact" className="opacity-80 hover:opacity-100">Contact</Link>
+            <InstallAppButton />
           </nav>
           <Button asChild variant="secondary" size="sm"><Link to="/auth">Espace membre</Link></Button>
         </div>
@@ -58,6 +60,7 @@ function Home() {
             Près de 300 chauffeurs unis pour la solidarité, l'accès au financement automobile et la professionnalisation du métier.
           </p>
           <div className="mt-9 flex flex-wrap gap-3">
+            <InstallAppButton className="min-h-10 px-5" />
             <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
               <Link to="/auth">Accéder à mon espace <ArrowRight className="ml-1 h-4 w-4" /></Link>
             </Button>

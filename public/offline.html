@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#172d52">
+  <title>Hors connexion — GIE VIP BOK GUIS GUIS</title>
+  <meta name="description" content="Ouverture hors connexion du GIE. Reconnectez-vous à Internet pour accéder à votre compte.">
+  <link rel="stylesheet" href="/offline.css">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <script src="/offline.js" defer></script>
+</head>
+<body>
+  <main>
+    <img src="/icons/app-192.png" alt="Emblème du GIE" width="80" height="80">
+    <h1>GIE VIP BOK GUIS GUIS</h1>
+    <p class="subtitle">TRANSPORT SENEGAL</p>
+    <div role="status" class="notice"><strong>Vous êtes hors connexion</strong><p>Connectez-vous à Internet pour accéder à votre compte. Aucune donnée personnelle n’est disponible hors connexion.</p></div>
+    <h2>Connexion</h2>
+    <form>
+      <label for="identifier">Identifiant</label>
+      <input id="identifier" placeholder="vipbgg-123 ou email" disabled>
+      <label for="password">Mot de passe</label>
+      <input id="password" type="password" disabled>
+    </form>
+    <a href="/auth">Réessayer la connexion</a>
+    <p class="footnote">L’union fait la force – Solidarité, Discipline et Entraide</p>
+  </main>
+</body>
+</html>

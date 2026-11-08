@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
+import { InstallAppButton } from "@/components/InstallApp";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({ meta: [
@@ -55,6 +56,7 @@ function AdminLayout() {
             </Link>
           ))}
         </nav>
+        <div className="px-4 pb-4"><InstallAppButton className="w-full" /></div>
         <div className="border-t border-sidebar-border p-4 text-xs">
           <div className="truncate font-semibold text-sidebar-accent-foreground">{user?.email}</div>
           <div className="opacity-70">{roles.filter((r) => r !== "chauffeur").map((r) => ROLE_LABELS[r]).join(", ")}</div>
@@ -62,10 +64,10 @@ function AdminLayout() {
         </div>
       </aside>
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="no-print flex h-14 items-center justify-between border-b bg-card px-4">
+        <header className="no-print flex min-h-14 flex-wrap items-center justify-between gap-2 border-b bg-card px-4 py-2">
           <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setOpen(true)} aria-label="Menu"><Menu className="h-5 w-5" /></Button>
           <div className="hidden text-sm text-muted-foreground md:block">Espace administration</div>
-          <div className="flex items-center gap-1">
+          <div className="flex flex-wrap items-center gap-1">
             <Button asChild variant="ghost" size="sm"><Link to="/changer-mot-de-passe"><KeyRound className="h-4 w-4" />Changer mon mot de passe</Link></Button>
             <Button asChild variant="ghost" size="sm"><Link to="/espace">Mon espace membre</Link></Button>
             <ThemeToggle />

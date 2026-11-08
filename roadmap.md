@@ -9,3 +9,11 @@
 - [x] Accepter les nouveaux identifiants à la connexion sans modifier les anciens comptes (tests réussis).
 - [x] Vérifier l’affichage automatique dans le formulaire administrateur.
 - [ ] Vérifier un compte membre réel et sa première connexion : en attente des informations du premier membre ; aucun compte fictif créé.
+
+# Application installable
+- [x] Ajouter les icônes, le manifeste et les boutons d’installation avec guide iPhone/iPad (emblème actuel provisoire).
+- [x] Ajouter une ouverture hors connexion sans mise en cache des données privées, avec protection de l’aperçu (génération Workbox contrôlée, aucun avertissement).
+- [x] Préparer les points d’extension des notifications, sans Firebase ni envoi activé.
+- [x] Vérifier les menus et guides sur ordinateur/téléphone, le contrôle du déclenchement natif et les règles de protection (13 tests, administration authentifiée, aucune erreur navigateur).
+- [ ] Valider l’installation native, l’ouverture hors connexion et les mises à jour sur appareils physiques : attend la publication et les appareils Android/iOS/Edge, indisponibles dans l’aperçu.
+- [ ] Remplacer l’emblème provisoire par le logo officiel : attend le logo du GIE, absent des paramètres.

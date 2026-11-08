@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Banknote, Car, Globe2, HandHeart, ShieldCheck, Users, ArrowRight, Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
 import { Leaders } from "@/components/Leaders";
@@ -36,23 +37,39 @@ const pillars = [
 
 function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuTrigger = useRef<HTMLButtonElement>(null);
   const { data: president } = useSuspenseQuery(presidentQuery);
   return (
     <div className="min-h-screen bg-background">
-      <header className="absolute inset-x-0 top-0 z-20 text-primary-foreground">
+      <Collapsible asChild open={menuOpen} onOpenChange={setMenuOpen}>
+      <header className="absolute inset-x-0 top-0 z-20 text-primary-foreground" onKeyDown={(event) => {
+        if (event.key === "Escape" && menuOpen) {
+          event.preventDefault(); setMenuOpen(false); menuTrigger.current?.focus();
+        }
+      }}>
         <div className="safe-top mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-5 py-5 lg:flex lg:justify-between">
           <Logo />
-          <nav className="hidden items-center gap-5 text-sm font-medium lg:flex">
+          <nav aria-label="Navigation principale" className="hidden items-center gap-5 text-sm font-medium lg:flex">
             <a href="#mission" className="opacity-80 hover:opacity-100">Mission</a>
             {president && <Link to="/mot-du-president" className="opacity-80 hover:opacity-100">Le mot du Président</Link>}
             <a href="#services" className="opacity-80 hover:opacity-100">Services</a>
             <a href="#responsables" className="opacity-80 hover:opacity-100">Responsables</a>
             <Link to="/contact" className="opacity-80 hover:opacity-100">Contact</Link>
           </nav>
-          <div className="flex shrink-0 items-center gap-2"><Button asChild variant="secondary" size="sm" className="hidden sm:inline-flex"><Link to="/auth">Espace membre</Link></Button><Button variant="secondary" size="icon" className="lg:hidden" aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"} aria-expanded={menuOpen} aria-controls="home-menu" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X /> : <Menu />}</Button></div>
+          <div className="flex shrink-0 items-center gap-2"><Button asChild variant="secondary" size="sm" className="hidden sm:inline-flex"><Link to="/auth">Espace membre</Link></Button><CollapsibleTrigger asChild><Button ref={menuTrigger} variant="secondary" size="icon" className="lg:hidden" aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"}>{menuOpen ? <X /> : <Menu />}</Button></CollapsibleTrigger></div>
         </div>
-        {menuOpen && <nav id="home-menu" className="mx-4 grid rounded-lg border bg-sidebar p-3 text-sidebar-foreground shadow-card lg:hidden" onClick={() => setMenuOpen(false)}><Button asChild variant="ghost" className="justify-start"><a href="#mission">Mission</a></Button>{president && <Button asChild variant="ghost" className="justify-start"><Link to="/mot-du-president">Le mot du Président</Link></Button>}<Button asChild variant="ghost" className="justify-start"><a href="#services">Services</a></Button><Button asChild variant="ghost" className="justify-start"><a href="#responsables">Responsables</a></Button><Button asChild variant="ghost" className="justify-start"><Link to="/contact">Contact</Link></Button><Button asChild variant="secondary"><Link to="/auth">Espace membre</Link></Button></nav>}
+        <CollapsibleContent asChild><nav aria-label="Navigation principale mobile" className="mx-4 grid rounded-lg border bg-sidebar p-3 text-sidebar-foreground shadow-card lg:hidden" onClick={(event) => {
+          const link = (event.target as HTMLElement).closest('a');
+          if (!link) return;
+          setMenuOpen(false);
+          const href = link.getAttribute('href');
+          if (href?.startsWith('#')) {
+            const section = document.getElementById(href.slice(1));
+            section?.focus({ preventScroll: true });
+          } else menuTrigger.current?.focus();
+        }}><Button asChild variant="ghost" className="justify-start"><a href="#mission">Mission</a></Button>{president && <Button asChild variant="ghost" className="justify-start"><Link to="/mot-du-president">Le mot du Président</Link></Button>}<Button asChild variant="ghost" className="justify-start"><a href="#services">Services</a></Button><Button asChild variant="ghost" className="justify-start"><a href="#responsables">Responsables</a></Button><Button asChild variant="ghost" className="justify-start"><Link to="/contact">Contact</Link></Button><Button asChild variant="secondary"><Link to="/auth">Espace membre</Link></Button></nav></CollapsibleContent>
       </header>
+      </Collapsible>
 
       <section className="relative min-h-[88svh] overflow-hidden">
         <img src={hero} alt="Chauffeur du GIE à Dakar" width={1600} height={1008} className="absolute inset-0 h-full w-full object-cover" />
@@ -79,7 +96,7 @@ function Home() {
         </div>
       </section>
 
-      <section id="mission" className="mx-auto grid max-w-7xl gap-12 px-5 py-24 md:grid-cols-2">
+      <section id="mission" tabIndex={-1} aria-label="Notre mission" className="mx-auto grid max-w-7xl gap-12 px-5 py-24 md:grid-cols-2">
         <div>
           <p className="text-sm font-bold uppercase tracking-widest text-primary">Notre mission</p>
           <h2 className="mt-3 text-3xl font-bold sm:text-4xl">Une organisation professionnelle au service des chauffeurs</h2>
@@ -100,7 +117,7 @@ function Home() {
 
       {president && <section className="border-y bg-card py-16 md:py-20"><div className="mx-auto max-w-7xl px-5"><PresidentMessage message={president} /></div></section>}
 
-      <section id="services" className="bg-sidebar py-24 text-sidebar-foreground">
+      <section id="services" tabIndex={-1} aria-label="Nos services" className="bg-sidebar py-24 text-sidebar-foreground">
         <div className="mx-auto max-w-7xl px-5">
           <p className="text-sm font-bold uppercase tracking-widest text-sidebar-primary">Nos services</p>
           <h2 className="mt-3 max-w-2xl text-3xl font-bold text-sidebar-accent-foreground sm:text-4xl">Ce que le GIE apporte à ses membres</h2>
@@ -116,7 +133,7 @@ function Home() {
         </div>
       </section>
 
-      <section id="responsables" className="mx-auto max-w-7xl px-5 py-24">
+      <section id="responsables" tabIndex={-1} aria-label="Nos responsables" className="mx-auto max-w-7xl px-5 py-24">
         <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="text-sm font-bold uppercase tracking-widest text-gold">Nos responsables</p>

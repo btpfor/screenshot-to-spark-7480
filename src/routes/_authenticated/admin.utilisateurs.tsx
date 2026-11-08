@@ -13,6 +13,14 @@ import { useAuth, ROLE_LABELS, ROLE_PERMISSIONS, type AppRole } from "@/lib/auth
 import { createStaffAccount, listAppUsers, setUserRoles } from "@/lib/users.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/utilisateurs")({
+  head: () => ({ meta: [
+    { title: "Utilisateurs et rôles — GIE VIP BOK GUIS GUIS" },
+    { name: "description", content: "Gestion des comptes du personnel et de leurs rôles au GIE." },
+    { property: "og:title", content: "Utilisateurs et rôles — GIE VIP BOK GUIS GUIS" },
+    { property: "og:description", content: "Administration des accès du personnel." },
+    { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
+    { name: "robots", content: "noindex" },
+  ] }),
   component: UsersPage,
 });
 

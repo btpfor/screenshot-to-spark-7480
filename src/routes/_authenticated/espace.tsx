@@ -11,7 +11,14 @@ import { Button } from "@/components/ui/button";
 import { ScaledCard } from "@/components/MemberCardDialog";
 
 export const Route = createFileRoute("/_authenticated/espace")({
-  head: () => ({ meta: [{ title: "Mon espace — GIE VIP BOK GUIS GUIS" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [
+    { title: "Mon espace — GIE VIP BOK GUIS GUIS" },
+    { name: "description", content: "Dossier, carte de membre et cotisations personnelles au GIE." },
+    { property: "og:title", content: "Mon espace — GIE VIP BOK GUIS GUIS" },
+    { property: "og:description", content: "Espace personnel des membres du GIE." },
+    { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
+    { name: "robots", content: "noindex" },
+  ] }),
   component: Espace,
 });
 

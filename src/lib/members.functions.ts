@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { matriculeToEmail, genTempPassword, memberIdentifierFromCni } from "./member-ids";
+import { conflictFromDatabaseError, findMemberConflict, memberConflictMessage, normalizeCni } from "./member-duplicates";
 
 const MANAGERS = ["super_admin", "president", "secretaire", "resp_chauffeurs"] as const;
 
@@ -62,19 +63,27 @@ type MemberInput = z.infer<typeof memberSchema>;
 
 async function createOne(a: Awaited<ReturnType<typeof admin>>, m: MemberInput) {
   const clean = (v?: string | null) => (v && v.trim() ? v.trim() : null);
+  const identifier = memberIdentifierFromCni(m.cni_number);
+  const conflict = await findMemberConflict(m.cni_number, identifier, async (field, value) => {
+    const { data, error } = await a.from("drivers").select("id").ilike(field, value).limit(1);
+    if (error) throw new Error("Impossible de vérifier les doublons. Réessayez avant de créer le membre.");
+    return (data?.length ?? 0) > 0;
+  });
+  if (conflict) throw new Error(memberConflictMessage(conflict, identifier));
   const row: Record<string, unknown> = {
     first_name: m.first_name, last_name: m.last_name, phone: m.phone.replace(/\s/g, ""),
-    address: clean(m.address), cni_number: clean(m.cni_number), birth_date: clean(m.birth_date),
+    address: clean(m.address), cni_number: normalizeCni(m.cni_number), birth_date: clean(m.birth_date),
     license_number: clean(m.license_number), license_expiry: clean(m.license_expiry),
     platform: m.platform || "Yango", status: m.status, photo_url: clean(m.photo_url),
     allow_shared_phone: m.allow_shared_phone, must_change_password: true,
   };
   if (clean(m.join_date)) row["join_date"] = clean(m.join_date);
-  row["matricule"] = memberIdentifierFromCni(m.cni_number);
+  row["matricule"] = identifier;
 
   const { data: d, error } = await a.from("drivers").insert(row as never).select("id, matricule").single();
   if (error) {
-    if (error.message.includes("matricule")) throw new Error("Cet identifiant est déjà attribué : une autre carte d’identité se termine par les mêmes trois caractères. Aucun compte n’a été créé.");
+    const conflict = conflictFromDatabaseError(error);
+    if (conflict) throw new Error(memberConflictMessage(conflict, identifier));
     if (error.message.includes("phone")) throw new Error("Ce numéro de téléphone est déjà utilisé.");
     throw new Error(error.message);
   }

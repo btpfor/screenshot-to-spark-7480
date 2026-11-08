@@ -18,6 +18,7 @@ import { createMember, importMembers, resetMemberPassword, setAccountStatus } fr
 import { dateFr, downloadCsv, parseCsv } from "@/lib/format";
 import { useAuth, CAN } from "@/lib/auth";
 import { memberIdentifierFromCni } from "@/lib/member-ids";
+import { normalizeCni } from "@/lib/member-duplicates";
 
 export const Route = createFileRoute("/_authenticated/admin/membres")({
   head: () => ({ meta: [
@@ -170,12 +171,14 @@ function AddMember({ onClose, onCreated }: { onClose: () => void; onCreated: (c:
   const create = useServerFn(createMember);
   const [busy, setBusy] = useState(false);
   const [cni, setCni] = useState("");
+  const [error, setError] = useState<string | null>(null);
   let identifier = "";
   try { identifier = memberIdentifierFromCni(cni); } catch { /* Incomplete number. */ }
   const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const f = new FormData(e.currentTarget);
     const g = (k: string) => String(f.get(k) ?? "");
+    setError(null);
     setBusy(true);
     try {
       let photo_url: string | null = null;
@@ -194,14 +197,14 @@ function AddMember({ onClose, onCreated }: { onClose: () => void; onCreated: (c:
         vehicle: { brand: g("v_brand"), model: g("v_model"), plate: g("v_plate") },
       } });
       onCreated({ title: "Membre créé", list: [{ name: `${g("first_name")} ${g("last_name")}`, matricule: r.matricule, password: r.password }] });
-    } catch (err) { toast.error((err as Error).message); }
+    } catch (err) { setError((err as Error).message); }
     setBusy(false);
   };
   return (
     <Dialog open onOpenChange={onClose}>
       <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
         <DialogHeader><DialogTitle>Ajouter un membre</DialogTitle></DialogHeader>
-        <form onSubmit={submit} className="space-y-5">
+        <form onSubmit={submit} onChange={() => setError(null)} className="space-y-5">
           <div className="grid gap-3 sm:grid-cols-2">
             <Field label="Prénom" name="first_name" required />
             <Field label="Nom" name="last_name" required />
@@ -224,6 +227,7 @@ function AddMember({ onClose, onCreated }: { onClose: () => void; onCreated: (c:
             <div className="grid gap-3 sm:grid-cols-3"><Field label="Marque" name="v_brand" /><Field label="Modèle" name="v_model" /><Field label="Immatriculation" name="v_plate" /></div>
           </fieldset>
           <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="allow_shared_phone" /> Autoriser exceptionnellement un téléphone déjà utilisé</label>
+          {error && <p role="alert" className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">{error}</p>}
           <DialogFooter><Button type="button" variant="outline" onClick={onClose}>Annuler</Button><Button disabled={busy}>{busy ? "Création…" : "Créer le membre et son compte"}</Button></DialogFooter>
         </form>
       </DialogContent>
@@ -240,7 +244,7 @@ function ImportMembers({ onClose, onDone }: { onClose: () => void; onDone: (c: C
 
   const load = async (file: File) => {
     const raw = parseCsv(await file.text());
-    const seenPhone = new Set<string>(), seenMat = new Set<string>();
+    const seenPhone = new Set<string>(), seenMat = new Set<string>(), seenCni = new Set<string>();
     setRows(raw.map((r) => {
       const row: Row & { error?: string } = {
         first_name: r["prenom"] ?? r["prénom"] ?? "", last_name: r["nom"] ?? "", phone: (r["telephone"] ?? r["téléphone"] ?? "").replace(/\s/g, ""),
@@ -251,9 +255,11 @@ function ImportMembers({ onClose, onDone }: { onClose: () => void; onDone: (c: C
       catch { row.error = "Numéro CNI manquant ou invalide"; }
       if (!row.first_name || !row.last_name) row.error = "Nom ou prénom manquant";
       else if (!/^\+?[0-9]{7,20}$/.test(row.phone)) row.error = "Téléphone invalide";
+      else if (row.cni_number && seenCni.has(normalizeCni(row.cni_number))) row.error = "CNI en double dans le fichier";
+      else if (row.matricule && seenMat.has(row.matricule.toUpperCase())) row.error = `L’identifiant ${row.matricule} est déjà généré par une autre CNI du fichier`;
       else if (seenPhone.has(row.phone)) row.error = "Téléphone en double dans le fichier";
-      else if (row.matricule && seenMat.has(row.matricule.toUpperCase())) row.error = "Matricule en double dans le fichier";
       seenPhone.add(row.phone); if (row.matricule) seenMat.add(row.matricule.toUpperCase());
+      if (row.cni_number) seenCni.add(normalizeCni(row.cni_number));
       return row;
     }));
   };

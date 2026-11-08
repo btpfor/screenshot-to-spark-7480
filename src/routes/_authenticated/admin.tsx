@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Navigate, Outlet, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Car, LayoutDashboard, LogOut, Menu, ShieldCheck, Users, Wallet, X } from "lucide-react";
+import { LayoutDashboard, LogOut, Menu, X } from "lucide-react";
 import { useAuth, ROLE_LABELS } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Logo } from "@/components/Logo";
@@ -14,10 +14,6 @@ export const Route = createFileRoute("/_authenticated/admin")({
 
 const nav = [
   { to: "/admin", label: "Tableau de bord", icon: LayoutDashboard, exact: true },
-  { to: "/admin/chauffeurs", label: "Chauffeurs", icon: Users },
-  { to: "/admin/vehicules", label: "Véhicules", icon: Car },
-  { to: "/admin/cotisations", label: "Finances & cotisations", icon: Wallet },
-  { to: "/admin/utilisateurs", label: "Utilisateurs & rôles", icon: ShieldCheck },
 ] as const;
 
 function AdminLayout() {

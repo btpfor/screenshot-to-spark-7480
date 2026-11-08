@@ -1,4 +1,4 @@
-type PublicConfig = { url?: string; key?: string };
+type PublicConfig = { url?: string | undefined; key?: string | undefined };
 
 // Select a complete pair: mixing server and browser deployments can target the wrong backend.
 export function publicCloudConfig(server: PublicConfig, browser: PublicConfig) {

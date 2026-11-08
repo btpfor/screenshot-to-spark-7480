@@ -245,6 +245,39 @@ export type Database = {
         }
         Relationships: []
       }
+      president_message: {
+        Row: {
+          body: string
+          id: number
+          name: string
+          photo_path: string | null
+          published: boolean
+          role_label: string
+          signature_path: string | null
+          updated_at: string
+        }
+        Insert: {
+          body: string
+          id?: number
+          name: string
+          photo_path?: string | null
+          published?: boolean
+          role_label: string
+          signature_path?: string | null
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          id?: number
+          name?: string
+          photo_path?: string | null
+          published?: boolean
+          role_label?: string
+          signature_path?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       transactions: {
         Row: {
           amount: number

@@ -1,3 +1,7 @@
+# Navigation au clavier et petites largeurs
+- [ ] Corriger Échap, le retour du focus, les menus fermés encore accessibles au clavier et les libellés des menus/dialogues sans changer leur apparence.
+- [ ] Vérifier les pages et dialogues existants aux huit largeurs, corriger uniquement les débordements constatés, sans modifier les données.
+
 # Affichage tous écrans
 - [x] Adapter navigation publique, administration, listes, formulaires et fenêtres pour téléphone/tablette/ordinateur sans changement de données.
 - [x] Vérifier toutes les pages aux largeurs 320, 375, 390, 430, 768, 1024, 1366 et 1920 ; menus tactiles, ajout membre/personnel/message, aucun débordement global et 14 tests réussis.

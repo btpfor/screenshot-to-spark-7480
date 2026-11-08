@@ -1,0 +1,148 @@
+import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { matriculeToEmail, genTempPassword } from "./member-ids";
+
+const MANAGERS = ["super_admin", "president", "secretaire", "resp_chauffeurs"] as const;
+
+async function admin() {
+  return (await import("@/integrations/supabase/client.server")).supabaseAdmin;
+}
+
+async function assertManager(ctx: { supabase: any; userId: string }) {
+  const { data } = await ctx.supabase.rpc("has_any_role", { _user_id: ctx.userId, _roles: [...MANAGERS] });
+  if (!data) throw new Error("Accès refusé");
+}
+
+/* ---------- Bootstrap: first super admin (only when none exists) ---------- */
+export const hasSuperAdmin = createServerFn({ method: "GET" }).handler(async () => {
+  const a = await admin();
+  const { count } = await a.from("user_roles").select("id", { count: "exact", head: true }).eq("role", "super_admin");
+  return (count ?? 0) > 0;
+});
+
+export const bootstrapSuperAdmin = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => z.object({ email: z.string().email(), password: z.string().min(8) }).parse(d))
+  .handler(async ({ data }) => {
+    const a = await admin();
+    const { count } = await a.from("user_roles").select("id", { count: "exact", head: true }).eq("role", "super_admin");
+    if ((count ?? 0) > 0) throw new Error("Un administrateur existe déjà.");
+    const { data: u, error } = await a.auth.admin.createUser({ email: data.email, password: data.password, email_confirm: true });
+    if (error || !u.user) throw new Error(error?.message ?? "Création impossible");
+    await a.from("user_roles").insert({ user_id: u.user.id, role: "super_admin" });
+    return { ok: true };
+  });
+
+/* ---------- Member creation ---------- */
+const memberSchema = z.object({
+  first_name: z.string().trim().min(1).max(80),
+  last_name: z.string().trim().min(1).max(80),
+  phone: z.string().trim().regex(/^\+?[0-9 ]{7,20}$/, "Téléphone invalide"),
+  address: z.string().max(200).optional().nullable(),
+  cni_number: z.string().max(40).optional().nullable(),
+  birth_date: z.string().optional().nullable(),
+  join_date: z.string().optional().nullable(),
+  matricule: z.string().trim().max(30).optional().nullable(),
+  platform: z.string().max(40).default("Yango"),
+  status: z.enum(["actif", "inactif", "suspendu"]).default("actif"),
+  license_number: z.string().max(40).optional().nullable(),
+  license_expiry: z.string().optional().nullable(),
+  photo_url: z.string().optional().nullable(),
+  allow_shared_phone: z.boolean().default(false),
+  vehicle: z.object({ brand: z.string(), model: z.string(), plate: z.string() }).partial().optional().nullable(),
+});
+type MemberInput = z.infer<typeof memberSchema>;
+
+async function createOne(a: Awaited<ReturnType<typeof admin>>, m: MemberInput) {
+  const clean = (v?: string | null) => (v && v.trim() ? v.trim() : null);
+  const row: Record<string, unknown> = {
+    first_name: m.first_name, last_name: m.last_name, phone: m.phone.replace(/\s/g, ""),
+    address: clean(m.address), cni_number: clean(m.cni_number), birth_date: clean(m.birth_date),
+    license_number: clean(m.license_number), license_expiry: clean(m.license_expiry),
+    platform: m.platform || "Yango", status: m.status, photo_url: clean(m.photo_url),
+    allow_shared_phone: m.allow_shared_phone, must_change_password: true,
+  };
+  if (clean(m.join_date)) row.join_date = clean(m.join_date);
+  if (clean(m.matricule)) row.matricule = clean(m.matricule)!.toUpperCase();
+
+  const { data: d, error } = await a.from("drivers").insert(row as never).select("id, matricule").single();
+  if (error) {
+    if (error.message.includes("matricule")) throw new Error("Ce matricule est déjà attribué.");
+    if (error.message.includes("phone")) throw new Error("Ce numéro de téléphone est déjà utilisé.");
+    throw new Error(error.message);
+  }
+  const password = genTempPassword();
+  const { data: u, error: ue } = await a.auth.admin.createUser({
+    email: matriculeToEmail(d.matricule), password, email_confirm: true,
+    app_metadata: { gie_role: "chauffeur" }, user_metadata: { matricule: d.matricule },
+  });
+  if (ue || !u.user) {
+    await a.from("drivers").delete().eq("id", d.id);
+    throw new Error(ue?.message ?? "Création du compte impossible");
+  }
+  await a.from("drivers").update({ user_id: u.user.id }).eq("id", d.id);
+  const v = m.vehicle;
+  if (v?.plate && v.brand && v.model) {
+    await a.from("vehicles").insert({ brand: v.brand, model: v.model, plate: v.plate.toUpperCase(), driver_id: d.id, status: "en_circulation" });
+  }
+  return { id: d.id, matricule: d.matricule, password };
+}
+
+export const createMember = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => memberSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    await assertManager(context);
+    return createOne(await admin(), data);
+  });
+
+export const importMembers = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object({ rows: z.array(memberSchema).max(1000) }).parse(d))
+  .handler(async ({ data, context }) => {
+    await assertManager(context);
+    const a = await admin();
+    const results: { line: number; ok: boolean; matricule?: string; password?: string; name: string; error?: string }[] = [];
+    for (const [i, r] of data.rows.entries()) {
+      try {
+        const res = await createOne(a, r);
+        results.push({ line: i + 2, ok: true, matricule: res.matricule, password: res.password, name: `${r.first_name} ${r.last_name}` });
+      } catch (e) {
+        results.push({ line: i + 2, ok: false, name: `${r.first_name} ${r.last_name}`, error: (e as Error).message });
+      }
+    }
+    return results;
+  });
+
+/* ---------- Account actions ---------- */
+export const resetMemberPassword = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object({ driverId: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    await assertManager(context);
+    const a = await admin();
+    const { data: d } = await a.from("drivers").select("user_id, matricule").eq("id", data.driverId).single();
+    if (!d?.user_id) throw new Error("Compte introuvable");
+    const password = genTempPassword();
+    const { error } = await a.auth.admin.updateUserById(d.user_id, { password });
+    if (error) throw new Error(error.message);
+    await a.from("drivers").update({ must_change_password: true }).eq("id", data.driverId);
+    await a.from("audit_log").insert({ user_id: context.userId, action: "RESET_PASSWORD", table_name: "drivers", record_id: data.driverId });
+    return { matricule: d.matricule, password };
+  });
+
+export const setAccountStatus = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z.object({ driverId: z.string().uuid(), status: z.enum(["actif", "inactif", "suspendu"]), account: z.enum(["actif", "desactive", "bloque"]) }).parse(d))
+  .handler(async ({ data, context }) => {
+    await assertManager(context);
+    const a = await admin();
+    const { data: d } = await a.from("drivers").select("user_id").eq("id", data.driverId).single();
+    if (d?.user_id) {
+      await a.auth.admin.updateUserById(d.user_id, { ban_duration: data.account === "actif" ? "none" : "876000h" });
+    }
+    await a.from("drivers").update({ status: data.status, account_status: data.account }).eq("id", data.driverId);
+    await a.from("audit_log").insert({ user_id: context.userId, action: `ACCOUNT_${data.account.toUpperCase()}`, table_name: "drivers", record_id: data.driverId });
+    return { ok: true };
+  });

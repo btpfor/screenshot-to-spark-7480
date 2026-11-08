@@ -38,6 +38,19 @@ const pillars = [
 function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuTrigger = useRef<HTMLButtonElement>(null);
+  const missionStatsRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const stats = missionStatsRef.current;
+    if (!stats || !('IntersectionObserver' in window)) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry?.isIntersecting) {
+        stats.setAttribute("data-revealed", "true");
+        observer.disconnect();
+      }
+    }, { threshold: 0.25 });
+    observer.observe(stats);
+    return () => observer.disconnect();
+  }, []);
   const servicesRef = useRef<HTMLElement>(null);
   const [servicesVisible, setServicesVisible] = useState(false);
   useEffect(() => {
@@ -128,11 +141,14 @@ function Home() {
         <div className="space-y-4 text-muted-foreground">
           <p>Le GIE VIP BOK GUIS GUIS rassemble les chauffeurs actifs sur les plateformes numériques comme Yango et dans le transport traditionnel.</p>
           <p>Notre objectif : digitaliser nos activités, faciliter la gestion administrative et ouvrir de nouvelles opportunités économiques à chaque membre.</p>
-          <div className="grid grid-cols-1 gap-4 pt-4 min-[375px]:grid-cols-3">
+          <div ref={missionStatsRef} className="mission-stats grid grid-cols-1 gap-3 pt-4 min-[375px]:grid-cols-3 sm:gap-4">
             {[["300", "chauffeurs"], ["100%", "solidaires"], ["3", "responsables"]].map(([n, l]) => (
-              <div key={l} className="rounded-xl border bg-card p-4">
-                <div className="font-display text-2xl font-bold text-primary">{n}</div>
-                <div className="text-xs">{l}</div>
+              <div key={l} className="mission-stat min-w-0">
+                <div className="mission-stat-surface flex min-h-28 flex-col justify-center gap-2 rounded-lg border bg-card px-2 py-5 text-center shadow-card sm:px-4">
+                  <div className="mission-stat-number font-display text-3xl font-bold leading-none tabular-nums text-primary">{n}</div>
+                  <div className="text-xs font-semibold leading-relaxed text-muted-foreground">{l}</div>
+                  <span aria-hidden="true" className="mx-auto mt-1 h-0.5 w-6 bg-gold" />
+                </div>
               </div>
             ))}
           </div>

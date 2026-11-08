@@ -1,3 +1,8 @@
+# Diagnostic du chargement
+- [ ] Reproduire et corriger le refus de chargement des pages publiques sans changer Lovable Cloud, les comptes ou les données.
+- [ ] Vérifier les pages existantes, les accès administratifs, les lectures/enregistrements et les images sur ordinateur et tailles mobiles.
+- [ ] Identifier les limites de vérification du déploiement externe et des comptes membres réels.
+
 # Le mot du Président
 - [x] Vérifier les boutons d’ajout/remplacement/retrait de signature, leur enregistrement et l’affichage sur l’accueil et la page dédiée (images temporaires supprimées, téléphone sans débordement).
 - [x] Ajouter le portrait intact, la rubrique d’accueil, le menu et la page indépendante.

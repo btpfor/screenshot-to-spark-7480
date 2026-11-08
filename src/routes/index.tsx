@@ -71,7 +71,7 @@ function Home() {
           event.preventDefault(); setMenuOpen(false); menuTrigger.current?.focus();
         }
       }}>
-        <div className="safe-top mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-5 py-5 lg:flex lg:justify-between">
+        <div className="safe-top mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-4 py-3 sm:gap-3 sm:px-5 sm:py-5 lg:flex lg:justify-between">
           <Logo />
           <nav aria-label="Navigation principale" className="hidden items-center gap-5 text-sm font-medium lg:flex">
             <a href="#mission" className="opacity-80 hover:opacity-100">Mission</a>

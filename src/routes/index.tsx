@@ -7,11 +7,12 @@ import { Logo } from "@/components/Logo";
 import { Leaders } from "@/components/Leaders";
 import { InstallAppButton } from "@/components/InstallApp";
 import hero from "@/assets/hero-dakar.jpg";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { presidentQuery } from "@/lib/president";
 import { PresidentMessage } from "@/components/PresidentMessage";
 import { countAtProgress, missionStats } from "@/lib/mission-stats";
 import { bureauQuery } from "@/lib/bureau";
+import { gieQuery } from "@/lib/gie";
 
 export const Route = createFileRoute("/")({
   loader: ({ context }) => Promise.all([
@@ -96,6 +97,7 @@ function Home() {
   }, []);
   const { data: president } = useSuspenseQuery(presidentQuery);
   const { data: bureau } = useSuspenseQuery(bureauQuery);
+  const { data: gie } = useQuery(gieQuery);
   return (
     <div className="min-h-screen bg-background">
       <Collapsible asChild open={menuOpen} onOpenChange={setMenuOpen}>
@@ -229,7 +231,7 @@ function Home() {
               <p className="mt-4 leading-relaxed text-muted-foreground">
                 Le GIE VIP BOK GUIS GUIS TRANSPORT SENEGAL est dirigé par une équipe engagée qui œuvre pour la défense des intérêts de ses membres, le développement des partenariats et la modernisation du secteur du transport.
               </p>
-              <p className="mt-4 text-sm font-semibold">Président : <span className="text-primary">{data?.settings?.president_name ?? "Badara Ndiaye"}</span></p>
+              <p className="mt-4 text-sm font-semibold">Président : <span className="text-primary">{gie?.settings?.president_name ?? "Badara Ndiaye"}</span></p>
               <Button asChild size="lg" className="mt-7 bg-accent text-accent-foreground hover:bg-accent/90">
                 <Link to="/membres-du-bureau">Découvrir les membres du bureau <ArrowRight className="ml-1 h-4 w-4" /></Link>
               </Button>

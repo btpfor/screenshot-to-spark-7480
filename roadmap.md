@@ -1,4 +1,10 @@
 # Accès administrateur
+# Le mot du Président
+- [ ] Ajouter le portrait intact, la rubrique d’accueil, le menu et la page indépendante.
+- [ ] Permettre aux responsables autorisés de modifier et publier/dépublier le message, le nom, la fonction, la photo et la signature.
+- [ ] Vérifier l’enregistrement authentifié et l’affichage public sur ordinateur et mobile.
+
+# Accès administrateur
 - [x] Créer le compte administrateur demandé avec un mot de passe accepté.
 - [x] Proposer le changement du mot de passe après connexion.
 - [x] Vérifier les règles de mot de passe et l’accès authentifié à l’administration.

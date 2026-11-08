@@ -44,7 +44,7 @@ function Home() {
     if (!stats || !('IntersectionObserver' in window)) return;
     const observer = new IntersectionObserver(([entry]) => {
       if (entry?.isIntersecting) {
-        stats.dataset.revealed = "true";
+        stats.setAttribute("data-revealed", "true");
         observer.disconnect();
       }
     }, { threshold: 0.25 });

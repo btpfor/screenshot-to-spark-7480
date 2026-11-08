@@ -54,10 +54,11 @@ function AuthPage() {
     setBusy(true);
     try {
       if (needsAdmin) {
-        await bootstrap({ data: { email: id.trim(), password } });
+        const email = loginToEmail(id);
+        await bootstrap({ data: { email, password } });
         toast.success("Compte super administrateur créé.");
         setNeedsAdmin(false);
-        await signIn(id.trim());
+        await signIn(email);
       } else await signIn(loginToEmail(id));
     } catch (err) {
       toast.error((err as Error).message);
@@ -85,8 +86,8 @@ function AuthPage() {
             </p>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="id">{needsAdmin ? "Email de l'administrateur" : "Numéro matricule"}</Label>
-            <Input id="id" required autoComplete="username" type={needsAdmin ? "email" : "text"} value={id} onChange={(e) => setId(e.target.value)} placeholder={needsAdmin ? "" : "BGG-2026-0001"} />
+            <Label htmlFor="id">{needsAdmin ? "Numéro matricule de l'administrateur" : "Numéro matricule"}</Label>
+            <Input id="id" required autoComplete="username" type="text" value={id} onChange={(e) => setId(e.target.value)} placeholder="BGG-2026-0001" />
           </div>
           <div className="space-y-2">
             <Label htmlFor="pw">Mot de passe</Label>

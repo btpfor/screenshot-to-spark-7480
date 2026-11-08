@@ -106,7 +106,7 @@ function PresidentEditor() {
           <Label htmlFor="president-signature">Signature du Président</Label>
           <MediaPreview path={form.signature_path} signature />
           {!form.signature_path && <p className="text-sm text-muted-foreground">Aucune signature enregistrée.</p>}
-          <Input ref={signatureInput} id="president-signature" className="sr-only" tabIndex={-1} type="file" accept="image/png,image/jpeg,image/webp" disabled={busy} onChange={(e) => { const file = e.target.files?.[0]; e.target.value = ""; void upload(file, "signature_path"); }} />
+          <Input ref={signatureInput} id="president-signature" className="hidden" tabIndex={-1} type="file" accept="image/png,image/jpeg,image/webp" disabled={busy} onChange={(e) => { const file = e.target.files?.[0]; e.target.value = ""; void upload(file, "signature_path"); }} />
           <div className="flex flex-wrap gap-2">
             <Button type="button" size="sm" variant="outline" disabled={busy} onClick={() => signatureInput.current?.click()}><Upload />{form.signature_path ? "Remplacer la signature" : "Ajouter la signature"}</Button>
             {form.signature_path && <Button type="button" size="sm" variant="ghost" disabled={busy} onClick={() => setForm({ ...form, signature_path: null })}><Trash2 />Retirer la signature</Button>}

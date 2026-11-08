@@ -21,8 +21,8 @@ function ChangePassword() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (pw !== pw2) return toast.error("Les mots de passe ne correspondent pas.");
-    if (pw.length < 8) return toast.error("8 caractères minimum.");
+    if (pw !== pw2) { toast.error("Les mots de passe ne correspondent pas."); return; }
+    if (pw.length < 8) { toast.error("8 caractères minimum."); return; }
     setBusy(true);
     const { error } = await supabase.auth.updateUser({ password: pw, current_password: current } as never);
     if (error) { toast.error(error.message); setBusy(false); return; }

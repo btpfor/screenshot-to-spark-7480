@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Download, FileUp, KeyRound, MoreHorizontal, Plus, Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -296,7 +296,7 @@ function Profile({ driver: d, onClose }: { driver: { id: string; [k: string]: an
       <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto">
         <DialogHeader><DialogTitle>{d.first_name} {d.last_name}</DialogTitle></DialogHeader>
         <MemberPhoto path={d.photo_url} className="h-20 w-20" />
-        <dl className="grid grid-cols-3 gap-y-2 text-sm">{rows.map(([k, v]) => <><dt key={k} className="text-muted-foreground">{k}</dt><dd className="col-span-2">{v}</dd></>)}</dl>
+        <dl className="grid grid-cols-3 gap-y-2 text-sm">{rows.map(([k, v]) => <Fragment key={k}><dt className="text-muted-foreground">{k}</dt><dd className="col-span-2">{v}</dd></Fragment>)}</dl>
         <h3 className="mt-2 font-semibold">Historique</h3>
         <ul className="space-y-1 text-xs text-muted-foreground">
           {history.length === 0 && <li>Aucune opération visible.</li>}

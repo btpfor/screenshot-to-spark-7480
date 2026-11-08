@@ -17,6 +17,7 @@ import { Route as AuthenticatedChangerMotDePasseRouteImport } from './routes/_au
 import { Route as AuthenticatedEspaceRouteImport } from './routes/_authenticated/espace'
 import { Route as AuthenticatedTableauRouteImport } from './routes/_authenticated/tableau'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
+import { Route as AuthenticatedAdminMembresRouteImport } from './routes/_authenticated/admin.membres'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -58,6 +59,12 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminMembresRoute =
+  AuthenticatedAdminMembresRouteImport.update({
+    id: '/membres',
+    path: '/membres',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -66,6 +73,7 @@ export interface FileRoutesByFullPath {
   '/changer-mot-de-passe': typeof AuthenticatedChangerMotDePasseRoute
   '/espace': typeof AuthenticatedEspaceRoute
   '/tableau': typeof AuthenticatedTableauRoute
+  '/admin/membres': typeof AuthenticatedAdminMembresRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesByTo {
@@ -74,6 +82,7 @@ export interface FileRoutesByTo {
   '/changer-mot-de-passe': typeof AuthenticatedChangerMotDePasseRoute
   '/espace': typeof AuthenticatedEspaceRoute
   '/tableau': typeof AuthenticatedTableauRoute
+  '/admin/membres': typeof AuthenticatedAdminMembresRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesById {
@@ -85,6 +94,7 @@ export interface FileRoutesById {
   '/_authenticated/changer-mot-de-passe': typeof AuthenticatedChangerMotDePasseRoute
   '/_authenticated/espace': typeof AuthenticatedEspaceRoute
   '/_authenticated/tableau': typeof AuthenticatedTableauRoute
+  '/_authenticated/admin/membres': typeof AuthenticatedAdminMembresRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRouteTypes {
@@ -96,10 +106,17 @@ export interface FileRouteTypes {
     | '/changer-mot-de-passe'
     | '/espace'
     | '/tableau'
+    | '/admin/membres'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    '/' | '/auth' | '/changer-mot-de-passe' | '/espace' | '/tableau' | '/admin'
+    | '/'
+    | '/auth'
+    | '/changer-mot-de-passe'
+    | '/espace'
+    | '/tableau'
+    | '/admin/membres'
+    | '/admin'
   id:
     | '__root__'
     | '/'
@@ -109,6 +126,7 @@ export interface FileRouteTypes {
     | '/_authenticated/changer-mot-de-passe'
     | '/_authenticated/espace'
     | '/_authenticated/tableau'
+    | '/_authenticated/admin/membres'
     | '/_authenticated/admin/'
   fileRoutesById: FileRoutesById
 }
@@ -176,14 +194,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/membres': {
+      id: '/_authenticated/admin/membres'
+      path: '/membres'
+      fullPath: '/admin/membres'
+      preLoaderRoute: typeof AuthenticatedAdminMembresRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
   }
 }
 
 interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminMembresRoute: typeof AuthenticatedAdminMembresRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminMembresRoute: AuthenticatedAdminMembresRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
 }
 

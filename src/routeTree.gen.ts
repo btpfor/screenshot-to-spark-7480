@@ -13,9 +13,11 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedChangerMotDePasseRouteImport } from './routes/_authenticated/changer-mot-de-passe'
 import { Route as AuthenticatedEspaceRouteImport } from './routes/_authenticated/espace'
 import { Route as AuthenticatedTableauRouteImport } from './routes/_authenticated/tableau'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
+import { Route as AuthenticatedAdminMembresRouteImport } from './routes/_authenticated/admin.membres'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -36,6 +38,12 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedChangerMotDePasseRoute =
+  AuthenticatedChangerMotDePasseRouteImport.update({
+    id: '/changer-mot-de-passe',
+    path: '/changer-mot-de-passe',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedEspaceRoute = AuthenticatedEspaceRouteImport.update({
   id: '/espace',
   path: '/espace',
@@ -51,20 +59,30 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminMembresRoute =
+  AuthenticatedAdminMembresRouteImport.update({
+    id: '/membres',
+    path: '/membres',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/changer-mot-de-passe': typeof AuthenticatedChangerMotDePasseRoute
   '/espace': typeof AuthenticatedEspaceRoute
   '/tableau': typeof AuthenticatedTableauRoute
+  '/admin/membres': typeof AuthenticatedAdminMembresRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/changer-mot-de-passe': typeof AuthenticatedChangerMotDePasseRoute
   '/espace': typeof AuthenticatedEspaceRoute
   '/tableau': typeof AuthenticatedTableauRoute
+  '/admin/membres': typeof AuthenticatedAdminMembresRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesById {
@@ -73,23 +91,42 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/_authenticated/changer-mot-de-passe': typeof AuthenticatedChangerMotDePasseRoute
   '/_authenticated/espace': typeof AuthenticatedEspaceRoute
   '/_authenticated/tableau': typeof AuthenticatedTableauRoute
+  '/_authenticated/admin/membres': typeof AuthenticatedAdminMembresRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/admin' | '/espace' | '/tableau' | '/admin/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/admin'
+    | '/changer-mot-de-passe'
+    | '/espace'
+    | '/tableau'
+    | '/admin/membres'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/espace' | '/tableau' | '/admin'
+  to:
+    | '/'
+    | '/auth'
+    | '/changer-mot-de-passe'
+    | '/espace'
+    | '/tableau'
+    | '/admin/membres'
+    | '/admin'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/admin'
+    | '/_authenticated/changer-mot-de-passe'
     | '/_authenticated/espace'
     | '/_authenticated/tableau'
+    | '/_authenticated/admin/membres'
     | '/_authenticated/admin/'
   fileRoutesById: FileRoutesById
 }
@@ -129,6 +166,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/changer-mot-de-passe': {
+      id: '/_authenticated/changer-mot-de-passe'
+      path: '/changer-mot-de-passe'
+      fullPath: '/changer-mot-de-passe'
+      preLoaderRoute: typeof AuthenticatedChangerMotDePasseRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/espace': {
       id: '/_authenticated/espace'
       path: '/espace'
@@ -150,14 +194,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/membres': {
+      id: '/_authenticated/admin/membres'
+      path: '/membres'
+      fullPath: '/admin/membres'
+      preLoaderRoute: typeof AuthenticatedAdminMembresRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
   }
 }
 
 interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminMembresRoute: typeof AuthenticatedAdminMembresRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminMembresRoute: AuthenticatedAdminMembresRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
 }
 
@@ -166,12 +219,14 @@ const AuthenticatedAdminRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
+  AuthenticatedChangerMotDePasseRoute: typeof AuthenticatedChangerMotDePasseRoute
   AuthenticatedEspaceRoute: typeof AuthenticatedEspaceRoute
   AuthenticatedTableauRoute: typeof AuthenticatedTableauRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
+  AuthenticatedChangerMotDePasseRoute: AuthenticatedChangerMotDePasseRoute,
   AuthenticatedEspaceRoute: AuthenticatedEspaceRoute,
   AuthenticatedTableauRoute: AuthenticatedTableauRoute,
 }

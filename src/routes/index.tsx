@@ -122,7 +122,7 @@ function Home() {
           </div>
           <Button asChild variant="outline"><Link to="/contact">Page contact <ArrowRight className="ml-1 h-4 w-4" /></Link></Button>
         </div>
-        <Leaders />
+        <Leaders excludedContactIds={["d50c2589-b69d-45d8-8479-f3dd8a97b5ca"]} />
       </section>
 
       <footer className="border-t py-8">

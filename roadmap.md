@@ -1,3 +1,7 @@
+# Les membres du Bureau
+- [ ] Terminer les essais authentifiés : ajout, modification, publication, photos et suppression d’une entrée temporaire ; conserver les informations officielles.
+- [ ] Vérifier les photographies et les pages publiques aux huit largeurs et corriger les défauts constatés.
+
 # Correction du logo officiel
 - [x] Reproduire le logo cassé sur Cloudflare : ancienne URL /__l5e/assets-v1 renvoie 404 ; intégrer le fichier original dans public/images/logo-gie.png et partager son chemin pour le site et les cartes sans changer les données.
 - [x] Vérifier le nouveau chemin dans l’aperçu : 200 image/png, accueil/pied de page/contact/Président aux huit largeurs sans débordement, administration desktop et menu mobile authentifié avec logo chargé ; compilation automatique réussie.

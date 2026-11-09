@@ -1,0 +1,1 @@
+CREATE POLICY bureau_settings_editor_read ON public.bureau_settings FOR SELECT TO authenticated USING (public.has_any_role(auth.uid(), ARRAY['super_admin','president','secretaire']::public.app_role[]));

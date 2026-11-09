@@ -10,6 +10,7 @@ export type PublicBureauMember = {
   phone: string | null;
   photoUrl: string | null;
   sort_order: number;
+  contact_enabled: boolean;
 };
 
 export type PublicBureau = {
@@ -38,7 +39,7 @@ export const getPublicBureau = createServerFn({ method: "GET" }).handler(async (
   });
   const [settings, members] = await Promise.all([
     client.from("bureau_settings").select("group_photo_path").eq("id", 1).maybeSingle(),
-    client.from("bureau_members").select("id, full_name, role_label, phone, photo_path, sort_order").eq("published", true).order("sort_order"),
+    client.from("bureau_members").select("id, full_name, role_label, phone, photo_path, sort_order, contact_enabled").eq("published", true).order("sort_order"),
   ]);
   if (settings.error || members.error) {
     console.error("[bureau-public] Public read failed", { code: (settings.error ?? members.error)?.code });
@@ -60,6 +61,7 @@ export const getPublicBureau = createServerFn({ method: "GET" }).handler(async (
     role_label: m.role_label,
     phone: m.phone,
     sort_order: m.sort_order,
+    contact_enabled: m.contact_enabled,
     photoUrl: await mediaUrl(m.photo_path),
   })));
   return { groupPhotoUrl, members: resolved };

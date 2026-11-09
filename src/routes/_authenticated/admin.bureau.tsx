@@ -32,6 +32,7 @@ type MemberRow = {
   photo_path: string | null;
   sort_order: number;
   published: boolean;
+  contact_enabled: boolean;
 };
 
 async function uploadPhoto(file: File, prefix: string) {
@@ -47,13 +48,14 @@ function BureauAdmin() {
   const qc = useQueryClient();
   const groupInput = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
-  const { data } = useQuery({
+  const { data, error: readError, isPending } = useQuery({
     queryKey: ["bureau-admin"],
     queryFn: async () => {
       const [s, m] = await Promise.all([
         supabase.from("bureau_settings").select("group_photo_path").eq("id", 1).single(),
         supabase.from("bureau_members").select("*").order("sort_order"),
       ]);
+      if (s.error || m.error) throw s.error ?? m.error;
       return { groupPhotoPath: s.data?.group_photo_path ?? null, members: (m.data ?? []) as MemberRow[] };
     },
   });
@@ -62,6 +64,8 @@ function BureauAdmin() {
   if (!canEditPresident(roles) && !can(["super_admin"])) {
     return <p className="text-muted-foreground">Accès réservé au Président, au Secrétaire général et au super administrateur.</p>;
   }
+  if (isPending) return <p role="status" className="text-muted-foreground">Chargement du bureau…</p>;
+  if (readError) return <div role="alert" className="space-y-3"><p>Impossible de charger le bureau. Veuillez réessayer.</p><Button variant="outline" onClick={() => void qc.invalidateQueries({ queryKey: ["bureau-admin"] })}>Réessayer</Button></div>;
 
   const refresh = async () => {
     await qc.invalidateQueries({ queryKey: ["bureau-admin"] });
@@ -70,25 +74,38 @@ function BureauAdmin() {
 
   const changeGroupPhoto = async (file: File) => {
     setBusy(true);
+    let uploaded: string | null = null;
     try {
       const path = await uploadPhoto(file, "groupe");
+      uploaded = path;
       const { error } = await supabase.from("bureau_settings").update({ group_photo_path: path, updated_at: new Date().toISOString() }).eq("id", 1);
       if (error) throw error;
+      uploaded = null;
       await refresh();
       toast.success("Photographie officielle du bureau mise à jour.");
-    } catch (e) { toast.error((e as Error).message); }
+    } catch (e) {
+      if (uploaded) await supabase.storage.from("president-media").remove([uploaded]);
+      toast.error((e as Error).message);
+    }
     setBusy(false);
   };
 
-  const updateMember = async (m: MemberRow, patch: Partial<MemberRow>) => {
+  const persistMember = async (m: MemberRow, patch: Partial<MemberRow>) => {
     const { error } = await supabase.from("bureau_members").update({ ...patch, updated_at: new Date().toISOString() }).eq("id", m.id);
-    if (error) { toast.error(error.message); return; }
+    if (error) throw error;
     await refresh();
   };
 
+  const updateMember = async (m: MemberRow, patch: Partial<MemberRow>) => {
+    setBusy(true);
+    try { await persistMember(m, patch); }
+    catch (e) { toast.error((e as Error).message); }
+    finally { setBusy(false); }
+  };
+
   const addMember = async () => {
-    const next = (data?.members.length ?? 0) + 1;
-    const { error } = await supabase.from("bureau_members").insert({ role_label: "Membre du bureau", sort_order: next });
+    const next = Math.max(0, ...(data?.members ?? []).map((m) => m.sort_order)) + 1;
+    const { error } = await supabase.from("bureau_members").insert({ role_label: "Membre du bureau", sort_order: next, published: false });
     if (error) { toast.error(error.message); return; }
     await refresh();
     toast.success("Membre ajouté — complétez ses informations.");
@@ -104,11 +121,17 @@ function BureauAdmin() {
 
   const changeMemberPhoto = async (m: MemberRow, file: File) => {
     setBusy(true);
+    let uploaded: string | null = null;
     try {
       const path = await uploadPhoto(file, "membre");
-      await updateMember(m, { photo_path: path });
+      uploaded = path;
+      await persistMember(m, { photo_path: path });
+      uploaded = null;
       toast.success("Photographie mise à jour.");
-    } catch (e) { toast.error((e as Error).message); }
+    } catch (e) {
+      if (uploaded) await supabase.storage.from("president-media").remove([uploaded]);
+      toast.error((e as Error).message);
+    }
     setBusy(false);
   };
 
@@ -132,7 +155,7 @@ function BureauAdmin() {
       <section className="space-y-4 rounded-xl border bg-card p-4 shadow-card sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="font-semibold">Membres du bureau</h2>
-          <Button size="sm" variant="outline" onClick={addMember}><Plus className="mr-1 h-4 w-4" /> Ajouter un membre</Button>
+           <Button size="sm" variant="outline" disabled={busy} onClick={addMember}><Plus className="mr-1 h-4 w-4" /> Ajouter un membre</Button>
         </div>
         {(data?.members ?? []).map((m) => (
           <MemberEditor key={m.id} member={m} busy={busy} onUpdate={updateMember} onPhoto={changeMemberPhoto} onRemove={removeMember} />
@@ -152,6 +175,9 @@ function MemberEditor({ member: m, busy, onUpdate, onPhoto, onRemove }: {
   const photoInput = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState({ full_name: m.full_name ?? "", role_label: m.role_label, phone: m.phone ?? "", sort_order: m.sort_order });
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  useEffect(() => {
+    setForm({ full_name: m.full_name ?? "", role_label: m.role_label, phone: m.phone ?? "", sort_order: m.sort_order });
+  }, [m.full_name, m.role_label, m.phone, m.sort_order]);
   useEffect(() => {
     if (!m.photo_path) { setPhotoUrl(null); return; }
     if (m.photo_path.startsWith("/__l5e/")) { setPhotoUrl(m.photo_path); return; }
@@ -173,10 +199,14 @@ function MemberEditor({ member: m, busy, onUpdate, onPhoto, onRemove }: {
             onChange={(e) => { const f = e.target.files?.[0]; if (f) void onPhoto(m, f); e.target.value = ""; }} />
           <Button size="sm" variant="outline" disabled={busy} onClick={() => photoInput.current?.click()}><ImagePlus className="mr-1 h-4 w-4" /> Photo</Button>
           <label className="flex items-center gap-2 text-sm">
-            <Switch checked={m.published} onCheckedChange={(v) => void onUpdate(m, { published: v })} aria-label="Visible sur le site public" />
+            <Switch disabled={busy} checked={m.published} onCheckedChange={(v) => void onUpdate(m, { published: v })} aria-label="Visible sur le site public" />
             Visible sur le site
           </label>
-          <Button size="sm" variant="ghost" className="ml-auto text-destructive" aria-label={`Retirer ${m.full_name || m.role_label}`} onClick={() => void onRemove(m)}><Trash2 className="h-4 w-4" /></Button>
+          <label className="flex items-center gap-2 text-sm">
+            <Switch disabled={busy} checked={m.contact_enabled} onCheckedChange={(v) => void onUpdate(m, { contact_enabled: v })} aria-label="Autoriser les boutons de contact" />
+            Boutons de contact
+          </label>
+          <Button disabled={busy} size="sm" variant="ghost" className="ml-auto text-destructive" aria-label={`Retirer ${m.full_name || m.role_label}`} onClick={() => void onRemove(m)}><Trash2 className="h-4 w-4" /></Button>
         </div>
       </div>
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -186,7 +216,7 @@ function MemberEditor({ member: m, busy, onUpdate, onPhoto, onRemove }: {
         <div className="space-y-1.5"><Label>Ordre d'affichage</Label><Input type="number" min={1} value={form.sort_order} onChange={(e) => setForm({ ...form, sort_order: Number(e.target.value) || 0 })} /></div>
       </div>
       {dirty && (
-        <Button size="sm" className="w-fit" onClick={() => void onUpdate(m, { full_name: form.full_name.trim() || null, role_label: form.role_label.trim() || m.role_label, phone: form.phone.trim() || null, sort_order: form.sort_order })}>
+        <Button disabled={busy} size="sm" className="w-fit" onClick={() => void onUpdate(m, { full_name: form.full_name.trim() || null, role_label: form.role_label.trim() || m.role_label, phone: form.phone.trim() || null, sort_order: form.sort_order })}>
           Enregistrer ce membre
         </Button>
       )}

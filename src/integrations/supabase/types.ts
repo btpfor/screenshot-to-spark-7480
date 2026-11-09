@@ -43,6 +43,7 @@ export type Database = {
       }
       bureau_members: {
         Row: {
+          contact_enabled: boolean
           full_name: string | null
           id: string
           phone: string | null
@@ -53,6 +54,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          contact_enabled?: boolean
           full_name?: string | null
           id?: string
           phone?: string | null
@@ -63,6 +65,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          contact_enabled?: boolean
           full_name?: string | null
           id?: string
           phone?: string | null

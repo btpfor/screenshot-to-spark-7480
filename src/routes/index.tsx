@@ -217,14 +217,14 @@ function Home() {
         </div>
       </section>
 
-      {bureau.groupPhotoUrl && (
+      {(
         <section aria-label="Notre bureau" className="border-y bg-card py-16 md:py-20">
           <div className="mx-auto grid max-w-7xl items-center gap-10 px-5 md:grid-cols-2">
-            <figure className="bureau-photo-reveal">
+            {bureau.groupPhotoUrl && <figure className="bureau-photo-reveal">
               <div className="bg-gold-gradient rounded-2xl p-1.5 shadow-card">
                 <img src={bureau.groupPhotoUrl} alt="Photographie officielle des membres du bureau du GIE" className="w-full rounded-xl object-cover" loading="lazy" />
               </div>
-            </figure>
+            </figure>}
             <div>
               <p className="flex items-center gap-3 text-sm font-bold uppercase tracking-widest text-gold"><span aria-hidden="true" className="h-px w-8 bg-gold" />Notre bureau</p>
               <h2 className="mt-4 text-3xl font-bold leading-tight sm:text-4xl">Une équipe dirigeante engagée</h2>

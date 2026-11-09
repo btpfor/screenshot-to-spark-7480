@@ -54,7 +54,10 @@ export function useAuth() {
     };
     load();
     const { data: sub } = supabase.auth.onAuthStateChange((e) => {
-      if (e === "SIGNED_IN" || e === "SIGNED_OUT" || e === "USER_UPDATED") load();
+      if (e === "SIGNED_IN" || e === "SIGNED_OUT" || e === "USER_UPDATED") {
+        // Auth callbacks run while the session lock is held; defer Auth reads.
+        setTimeout(() => { if (active) void load(); }, 0);
+      }
     });
     return () => {
       active = false;

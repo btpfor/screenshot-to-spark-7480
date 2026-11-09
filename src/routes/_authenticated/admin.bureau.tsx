@@ -50,7 +50,6 @@ function BureauAdmin() {
   const [busy, setBusy] = useState(false);
   const { data, error: readError, isPending } = useQuery({
     queryKey: ["bureau-admin"],
-    enabled: !loading && canEditPresident(roles),
     queryFn: async () => {
       const [s, m] = await Promise.all([
         supabase.from("bureau_settings").select("group_photo_path").eq("id", 1).single(),

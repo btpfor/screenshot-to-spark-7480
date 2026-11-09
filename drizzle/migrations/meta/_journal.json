@@ -71,6 +71,13 @@
       "when": 1794185769744,
       "tag": "0009_bureau_media_and_contact",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1794186262026,
+      "tag": "0010_bureau_settings_editor_read",
+      "breakpoints": true
     }
   ]
 }

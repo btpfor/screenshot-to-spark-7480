@@ -5,6 +5,7 @@ import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { bureauQuery } from "@/lib/bureau";
 import { telHref, waHref } from "@/lib/gie";
+import { bureauContactAllowed } from "@/lib/bureau-rules";
 
 export const Route = createFileRoute("/membres-du-bureau")({
   loader: ({ context }) => context.queryClient.ensureQueryData(bureauQuery),
@@ -74,12 +75,12 @@ function BureauPage() {
                   <a href={telHref(m.phone)} className="mt-3 flex items-center justify-center gap-2 font-mono text-base font-semibold text-primary hover:underline">
                     <Phone className="h-4 w-4" /> {m.phone}
                   </a>
-                  <div className="mt-5 flex gap-2">
+                  {bureauContactAllowed(m.phone, m.contact_enabled) && <div className="mt-5 flex gap-2">
                     <Button asChild size="sm" className="flex-1"><a href={telHref(m.phone)}><Phone className="mr-1 h-4 w-4" /> Appeler</a></Button>
                     <Button asChild size="sm" variant="outline" className="flex-1">
                       <a href={waHref(m.phone)} target="_blank" rel="noreferrer"><MessageCircle className="mr-1 h-4 w-4" /> WhatsApp</a>
                     </Button>
-                  </div>
+                  </div>}
                 </>
               )}
             </article>

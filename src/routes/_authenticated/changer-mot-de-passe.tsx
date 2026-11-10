@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -27,6 +28,7 @@ function ChangePassword() {
   const [pw, setPw] = useState("");
   const [pw2, setPw2] = useState("");
   const [busy, setBusy] = useState(false);
+  const [visible, setVisible] = useState<Record<string, boolean>>({});
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,9 +55,21 @@ function ChangePassword() {
           <h1 className="text-2xl font-bold">Choisissez votre mot de passe</h1>
           <p className="mt-1 text-sm text-muted-foreground">Pour votre sécurité, remplacez le mot de passe temporaire remis par l'administration.</p>
         </div>
-        <div className="space-y-2"><Label htmlFor="c">Mot de passe actuel</Label><Input id="c" type="password" autoComplete="current-password" required value={current} onChange={(e) => setCurrent(e.target.value)} /></div>
-        <div className="space-y-2"><Label htmlFor="n">Nouveau mot de passe</Label><Input id="n" type="password" required minLength={6} value={pw} onChange={(e) => setPw(e.target.value)} /></div>
-        <div className="space-y-2"><Label htmlFor="n2">Confirmer</Label><Input id="n2" type="password" required value={pw2} onChange={(e) => setPw2(e.target.value)} /></div>
+        {[
+          { id: "c", label: "Mot de passe actuel", value: current, onChange: setCurrent, autoComplete: "current-password" },
+          { id: "n", label: "Nouveau mot de passe", value: pw, onChange: setPw, autoComplete: "new-password", minLength: 6 },
+          { id: "n2", label: "Confirmer", value: pw2, onChange: setPw2, autoComplete: "new-password" },
+        ].map((field) => (
+          <div key={field.id} className="space-y-2">
+            <Label htmlFor={field.id}>{field.label}</Label>
+            <div className="relative">
+              <Input id={field.id} className="h-11 pr-12" type={visible[field.id] ? "text" : "password"} autoComplete={field.autoComplete} required minLength={field.minLength} value={field.value} onChange={(e) => field.onChange(e.target.value)} />
+              <Button type="button" variant="ghost" size="icon" className="absolute right-0 top-0 h-11 w-11 text-muted-foreground" aria-controls={field.id} aria-pressed={!!visible[field.id]} aria-label={`${visible[field.id] ? "Masquer" : "Afficher"} le mot de passe — ${field.label}`} title={`${visible[field.id] ? "Masquer" : "Afficher"} le mot de passe`} onClick={() => setVisible((previous) => ({ ...previous, [field.id]: !previous[field.id] }))}>
+                {visible[field.id] ? <EyeOff aria-hidden="true" /> : <Eye aria-hidden="true" />}
+              </Button>
+            </div>
+          </div>
+        ))}
         <Button className="w-full" disabled={busy}>Enregistrer</Button>
       </form>
     </div>

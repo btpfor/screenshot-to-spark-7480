@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, cleanup } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 vi.mock('@tanstack/react-router', async (original) => ({ ...await original<typeof import('@tanstack/react-router')>(), useNavigate: () => vi.fn() }));
+vi.mock('@/components/Logo', () => ({ Logo: () => null }));
 import { Route } from '@/routes/_authenticated/changer-mot-de-passe';
 afterEach(cleanup);
 describe('Password visibility', () => {

@@ -57,6 +57,7 @@ const memberSchema = z.object({
   license_expiry: z.string().optional().nullable(),
   photo_url: z.string().optional().nullable(),
   allow_shared_phone: z.boolean().default(false),
+  password: z.string().trim().regex(/^\d{6}$/, "Le mot de passe provisoire doit contenir exactement 6 chiffres.").optional().nullable().or(z.literal("")),
   vehicle: z.object({ brand: z.string(), model: z.string(), plate: z.string() }).partial().optional().nullable(),
 });
 type MemberInput = z.infer<typeof memberSchema>;
@@ -87,13 +88,14 @@ async function createOne(a: Awaited<ReturnType<typeof admin>>, m: MemberInput) {
     if (error.message.includes("phone")) throw new Error("Ce numéro de téléphone est déjà utilisé.");
     throw new Error(error.message);
   }
-  const password = genTempPassword();
+  const password = m.password && m.password.trim() ? m.password.trim() : genTempPassword();
   const { data: u, error: ue } = await a.auth.admin.createUser({
     email: matriculeToEmail(d.matricule), password, email_confirm: true,
     user_metadata: { matricule: d.matricule, must_change_password: true },
   });
   if (ue || !u.user) {
     await a.from("drivers").delete().eq("id", d.id);
+    if (ue?.code === "weak_password") throw new Error("Ce mot de passe provisoire est trop facile à deviner (ex. 123456). Choisissez 6 autres chiffres.");
     throw new Error(ue?.message ?? "Création du compte impossible");
   }
   const { error: linkError } = await a.from("drivers").update({ user_id: u.user.id }).eq("id", d.id);

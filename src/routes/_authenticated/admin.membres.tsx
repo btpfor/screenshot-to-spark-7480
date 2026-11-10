@@ -208,6 +208,7 @@ function AddMember({ onClose, onCreated }: { onClose: () => void; onCreated: (c:
         birth_date: g("birth_date"), join_date: g("join_date"), platform: g("platform") || "Yango",
         status: g("status") as "actif", license_number: g("license_number"), license_expiry: g("license_expiry"), photo_url,
         allow_shared_phone: f.get("allow_shared_phone") === "on",
+        password: g("password"),
         vehicle: { brand: g("v_brand"), model: g("v_model"), plate: g("v_plate") },
       } });
       onCreated({ title: "Membre créé", list: [{ name: `${g("first_name")} ${g("last_name")}`, matricule: r.matricule, password: r.password }] });
@@ -228,6 +229,7 @@ function AddMember({ onClose, onCreated }: { onClose: () => void; onCreated: (c:
             <Field label="Date de naissance" name="birth_date" type="date" />
             <Field label="Date d'adhésion" name="join_date" type="date" defaultValue={new Date().toISOString().slice(0, 10)} />
             <div className="space-y-1.5"><Label htmlFor="matricule">Identifiant</Label><Input id="matricule" readOnly value={identifier} placeholder="vipbgg-123" /></div>
+            <div className="space-y-1.5 sm:col-span-2"><Label htmlFor="password">Mot de passe provisoire (6 chiffres)</Label><Input id="password" name="password" inputMode="numeric" autoComplete="new-password" pattern="[0-9]{6}" maxLength={6} placeholder="ex. 482916" title="Exactement 6 chiffres" /><p className="text-xs text-muted-foreground">Laissez vide pour en générer un automatiquement. Le membre devra le changer à sa première connexion.</p></div>
             <div className="space-y-1.5"><Label htmlFor="platform">Plateforme</Label>
               <select id="platform" name="platform" className="h-9 w-full rounded-md border bg-background px-3 text-sm"><option>Yango</option><option>Heetch</option><option>Taxi traditionnel</option><option>Autre</option></select></div>
             <div className="space-y-1.5"><Label htmlFor="status">Statut</Label>

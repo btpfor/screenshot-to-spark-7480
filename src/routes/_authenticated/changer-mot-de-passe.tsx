@@ -54,7 +54,7 @@ function ChangePassword() {
           <p className="mt-1 text-sm text-muted-foreground">Pour votre sécurité, remplacez le mot de passe temporaire remis par l'administration.</p>
         </div>
         <div className="space-y-2"><Label htmlFor="c">Mot de passe actuel</Label><Input id="c" type="password" autoComplete="current-password" required value={current} onChange={(e) => setCurrent(e.target.value)} /></div>
-        <div className="space-y-2"><Label htmlFor="n">Nouveau mot de passe</Label><Input id="n" type="password" required minLength={8} value={pw} onChange={(e) => setPw(e.target.value)} /></div>
+        <div className="space-y-2"><Label htmlFor="n">Nouveau mot de passe</Label><Input id="n" type="password" required minLength={6} value={pw} onChange={(e) => setPw(e.target.value)} /></div>
         <div className="space-y-2"><Label htmlFor="n2">Confirmer</Label><Input id="n2" type="password" required value={pw2} onChange={(e) => setPw2(e.target.value)} /></div>
         <Button className="w-full" disabled={busy}>Enregistrer</Button>
       </form>

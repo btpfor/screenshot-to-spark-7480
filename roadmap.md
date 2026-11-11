@@ -1,3 +1,8 @@
+# Pont Cloudflare ↔ Lovable Cloud
+- [x] Créer les routes sécurisées /api/public/membres, /import et /compte (création, import, réinitialisation, suspension) avec vérification du jeton de connexion, contrôle des rôles, journalisation et CORS limité au site Cloudflare.
+- [x] Faire appeler ces routes par la page d'administration quand VITE_API_URL est défini (déploiement Cloudflare), sinon fonctions serveur habituelles.
+- [ ] Configurer VITE_API_URL=https://screenshot-to-spark-7480.lovable.app dans les variables du build Cloudflare, redéployer, puis tester la création d'un membre depuis workers.dev : déploiement Cloudflare hors de portée des outils du projet.
+
 # Les membres du Bureau
 - [ ] Terminer les essais authentifiés : ajout, modification, publication, photos et suppression d’une entrée temporaire ; conserver les informations officielles.
 - [ ] Vérifier les photographies et les pages publiques aux huit largeurs et corriger les défauts constatés.

@@ -80,9 +80,14 @@ export async function authenticateApiRequest(request: Request): Promise<ApiAuthC
     },
     auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
   });
-  const { data, error } = await supabase.auth.getClaims(token);
-  if (error || !data?.claims?.sub) throw new ApiError(401, "Session expirée. Reconnectez-vous.");
-  return { supabase, userId: data.claims.sub };
+  try {
+    const { data, error } = await supabase.auth.getClaims(token);
+    if (error || !data?.claims?.sub) throw new ApiError(401, "Session expirée. Reconnectez-vous.");
+    return { supabase, userId: data.claims.sub };
+  } catch (e) {
+    if (e instanceof ApiError) throw e;
+    throw new ApiError(401, "Session expirée. Reconnectez-vous.");
+  }
 }
 
 type AppRole = Database["public"]["Enums"]["app_role"];

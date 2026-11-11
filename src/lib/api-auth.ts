@@ -85,7 +85,9 @@ export async function authenticateApiRequest(request: Request): Promise<ApiAuthC
   return { supabase, userId: data.claims.sub };
 }
 
-export async function requireRoles(ctx: ApiAuthContext, roles: readonly string[]) {
+type AppRole = Database["public"]["Enums"]["app_role"];
+
+export async function requireRoles(ctx: ApiAuthContext, roles: readonly AppRole[]) {
   const { data } = await ctx.supabase.rpc("has_any_role", { _user_id: ctx.userId, _roles: [...roles] });
   if (!data) throw new ApiError(403, "Accès refusé");
 }

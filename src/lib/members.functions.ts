@@ -4,13 +4,13 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { matriculeToEmail, genTempPassword, memberIdentifierFromCni } from "./member-ids";
 import { conflictFromDatabaseError, findMemberConflict, memberConflictMessage, normalizeCni } from "./member-duplicates";
 
-const MANAGERS = ["super_admin", "president", "secretaire", "resp_chauffeurs"] as const;
+export const MANAGERS = ["super_admin", "president", "secretaire", "resp_chauffeurs"] as const;
 
-async function admin() {
+export async function admin() {
   return (await import("@/integrations/supabase/client.server")).supabaseAdmin;
 }
 
-async function assertManager(ctx: { supabase: any; userId: string }) {
+export async function assertManager(ctx: { supabase: any; userId: string }) {
   const { data } = await ctx.supabase.rpc("has_any_role", { _user_id: ctx.userId, _roles: [...MANAGERS] });
   if (!data) throw new Error("Accès refusé");
 }
@@ -42,7 +42,7 @@ export const bootstrapSuperAdmin = createServerFn({ method: "POST" })
   });
 
 /* ---------- Member creation ---------- */
-const memberSchema = z.object({
+export const memberSchema = z.object({
   first_name: z.string().trim().min(1).max(80),
   last_name: z.string().trim().min(1).max(80),
   phone: z.string().trim().regex(/^\+?[0-9 ]{7,20}$/, "Téléphone invalide"),
@@ -60,9 +60,9 @@ const memberSchema = z.object({
   password: z.string().trim().regex(/^\d{6}$/, "Le mot de passe provisoire doit contenir exactement 6 chiffres.").optional().nullable().or(z.literal("")),
   vehicle: z.object({ brand: z.string(), model: z.string(), plate: z.string() }).partial().optional().nullable(),
 });
-type MemberInput = z.infer<typeof memberSchema>;
+export type MemberInput = z.infer<typeof memberSchema>;
 
-async function createOne(a: Awaited<ReturnType<typeof admin>>, m: MemberInput) {
+export async function createOne(a: Awaited<ReturnType<typeof admin>>, m: MemberInput) {
   const clean = (v?: string | null) => (v && v.trim() ? v.trim() : null);
   const identifier = memberIdentifierFromCni(m.cni_number);
   const conflict = await findMemberConflict(m.cni_number, identifier, async (field, value) => {

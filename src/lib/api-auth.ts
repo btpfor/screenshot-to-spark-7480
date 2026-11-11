@@ -54,7 +54,10 @@ export function apiError(request: Request, e: unknown): Response {
   if (e instanceof ApiError) return json(request, { error: e.message }, e.status);
   if (e instanceof ZodError) return json(request, { error: e.issues[0]?.message ?? "Données invalides." }, 400);
   console.error("[api-public]", e);
-  return json(request, { error: e instanceof Error ? e.message : "Erreur serveur." }, 500);
+  // Plain Errors from the member helpers are user-facing rule refusals
+  // (duplicate CNI, weak password, phone already used), not server failures.
+  if (e instanceof Error) return json(request, { error: e.message }, 400);
+  return json(request, { error: "Erreur serveur." }, 500);
 }
 
 export type ApiAuthContext = { supabase: SupabaseClient<Database>; userId: string };

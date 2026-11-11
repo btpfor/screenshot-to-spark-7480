@@ -120,39 +120,63 @@ export const createMember = createServerFn({ method: "POST" })
     return createOne(await admin(), data);
   });
 
+export type ImportResult = { line: number; ok: boolean; matricule?: string; password?: string; name: string; error?: string };
+
+export async function importMemberRows(a: Awaited<ReturnType<typeof admin>>, rows: MemberInput[]): Promise<ImportResult[]> {
+  const results: ImportResult[] = [];
+  for (const [i, r] of rows.entries()) {
+    try {
+      const res = await createOne(a, r);
+      results.push({ line: i + 2, ok: true, matricule: res.matricule, password: res.password, name: `${r.first_name} ${r.last_name}` });
+    } catch (e) {
+      results.push({ line: i + 2, ok: false, name: `${r.first_name} ${r.last_name}`, error: (e as Error).message });
+    }
+  }
+  return results;
+}
+
 export const importMembers = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => z.object({ rows: z.array(memberSchema).max(1000) }).parse(d))
   .handler(async ({ data, context }) => {
     await assertManager(context);
-    const a = await admin();
-    const results: { line: number; ok: boolean; matricule?: string; password?: string; name: string; error?: string }[] = [];
-    for (const [i, r] of data.rows.entries()) {
-      try {
-        const res = await createOne(a, r);
-        results.push({ line: i + 2, ok: true, matricule: res.matricule, password: res.password, name: `${r.first_name} ${r.last_name}` });
-      } catch (e) {
-        results.push({ line: i + 2, ok: false, name: `${r.first_name} ${r.last_name}`, error: (e as Error).message });
-      }
-    }
-    return results;
+    return importMemberRows(await admin(), data.rows);
   });
 
 /* ---------- Account actions ---------- */
+export async function resetPasswordFor(a: Awaited<ReturnType<typeof admin>>, driverId: string, actorId: string) {
+  const { data: d } = await a.from("drivers").select("user_id, matricule").eq("id", driverId).single();
+  if (!d?.user_id) throw new Error("Compte introuvable");
+  const password = genTempPassword();
+  const { error } = await a.auth.admin.updateUserById(d.user_id, { password });
+  if (error) throw new Error(error.message);
+  await a.from("drivers").update({ must_change_password: true }).eq("id", driverId);
+  await a.from("audit_log").insert({ user_id: actorId, action: "RESET_PASSWORD", table_name: "drivers", record_id: driverId });
+  return { matricule: d.matricule, password };
+}
+
+export async function setStatusFor(
+  a: Awaited<ReturnType<typeof admin>>,
+  driverId: string,
+  status: "actif" | "inactif" | "suspendu",
+  account: "actif" | "desactive" | "bloque",
+  actorId: string,
+) {
+  const { data: d } = await a.from("drivers").select("user_id").eq("id", driverId).single();
+  if (d?.user_id) {
+    await a.auth.admin.updateUserById(d.user_id, { ban_duration: account === "actif" ? "none" : "876000h" });
+  }
+  await a.from("drivers").update({ status, account_status: account }).eq("id", driverId);
+  await a.from("audit_log").insert({ user_id: actorId, action: `ACCOUNT_${account.toUpperCase()}`, table_name: "drivers", record_id: driverId });
+  return { ok: true };
+}
+
 export const resetMemberPassword = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => z.object({ driverId: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     await assertManager(context);
-    const a = await admin();
-    const { data: d } = await a.from("drivers").select("user_id, matricule").eq("id", data.driverId).single();
-    if (!d?.user_id) throw new Error("Compte introuvable");
-    const password = genTempPassword();
-    const { error } = await a.auth.admin.updateUserById(d.user_id, { password });
-    if (error) throw new Error(error.message);
-    await a.from("drivers").update({ must_change_password: true }).eq("id", data.driverId);
-    await a.from("audit_log").insert({ user_id: context.userId, action: "RESET_PASSWORD", table_name: "drivers", record_id: data.driverId });
-    return { matricule: d.matricule, password };
+    return resetPasswordFor(await admin(), data.driverId, context.userId);
   });
 
 export const setAccountStatus = createServerFn({ method: "POST" })
@@ -161,12 +185,5 @@ export const setAccountStatus = createServerFn({ method: "POST" })
     z.object({ driverId: z.string().uuid(), status: z.enum(["actif", "inactif", "suspendu"]), account: z.enum(["actif", "desactive", "bloque"]) }).parse(d))
   .handler(async ({ data, context }) => {
     await assertManager(context);
-    const a = await admin();
-    const { data: d } = await a.from("drivers").select("user_id").eq("id", data.driverId).single();
-    if (d?.user_id) {
-      await a.auth.admin.updateUserById(d.user_id, { ban_duration: data.account === "actif" ? "none" : "876000h" });
-    }
-    await a.from("drivers").update({ status: data.status, account_status: data.account }).eq("id", data.driverId);
-    await a.from("audit_log").insert({ user_id: context.userId, action: `ACCOUNT_${data.account.toUpperCase()}`, table_name: "drivers", record_id: data.driverId });
-    return { ok: true };
+    return setStatusFor(await admin(), data.driverId, data.status, data.account, context.userId);
   });

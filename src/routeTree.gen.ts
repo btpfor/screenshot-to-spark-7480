@@ -27,6 +27,9 @@ import { Route as AuthenticatedAdminMessagesRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminMotDuPresidentRouteImport } from './routes/_authenticated/admin.mot-du-president'
 import { Route as AuthenticatedAdminParametresRouteImport } from './routes/_authenticated/admin.parametres'
 import { Route as AuthenticatedAdminUtilisateursRouteImport } from './routes/_authenticated/admin.utilisateurs'
+import { Route as ApiPublicMembresRouteImport } from './routes/api/public/membres'
+import { Route as ApiPublicMembresCompteRouteImport } from './routes/api/public/membres.compte'
+import { Route as ApiPublicMembresImportRouteImport } from './routes/api/public/membres.import'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -124,6 +127,21 @@ const AuthenticatedAdminUtilisateursRoute =
     path: '/utilisateurs',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const ApiPublicMembresRoute = ApiPublicMembresRouteImport.update({
+  id: '/api/public/membres',
+  path: '/api/public/membres',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicMembresCompteRoute = ApiPublicMembresCompteRouteImport.update({
+  id: '/compte',
+  path: '/compte',
+  getParentRoute: () => ApiPublicMembresRoute,
+} as any)
+const ApiPublicMembresImportRoute = ApiPublicMembresImportRouteImport.update({
+  id: '/import',
+  path: '/import',
+  getParentRoute: () => ApiPublicMembresRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -142,7 +160,10 @@ export interface FileRoutesByFullPath {
   '/admin/mot-du-president': typeof AuthenticatedAdminMotDuPresidentRoute
   '/admin/parametres': typeof AuthenticatedAdminParametresRoute
   '/admin/utilisateurs': typeof AuthenticatedAdminUtilisateursRoute
+  '/api/public/membres': typeof ApiPublicMembresRouteWithChildren
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/api/public/membres/compte': typeof ApiPublicMembresCompteRoute
+  '/api/public/membres/import': typeof ApiPublicMembresImportRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -160,7 +181,10 @@ export interface FileRoutesByTo {
   '/admin/mot-du-president': typeof AuthenticatedAdminMotDuPresidentRoute
   '/admin/parametres': typeof AuthenticatedAdminParametresRoute
   '/admin/utilisateurs': typeof AuthenticatedAdminUtilisateursRoute
+  '/api/public/membres': typeof ApiPublicMembresRouteWithChildren
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/api/public/membres/compte': typeof ApiPublicMembresCompteRoute
+  '/api/public/membres/import': typeof ApiPublicMembresImportRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -181,7 +205,10 @@ export interface FileRoutesById {
   '/_authenticated/admin/mot-du-president': typeof AuthenticatedAdminMotDuPresidentRoute
   '/_authenticated/admin/parametres': typeof AuthenticatedAdminParametresRoute
   '/_authenticated/admin/utilisateurs': typeof AuthenticatedAdminUtilisateursRoute
+  '/api/public/membres': typeof ApiPublicMembresRouteWithChildren
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/api/public/membres/compte': typeof ApiPublicMembresCompteRoute
+  '/api/public/membres/import': typeof ApiPublicMembresImportRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -202,7 +229,10 @@ export interface FileRouteTypes {
     | '/admin/mot-du-president'
     | '/admin/parametres'
     | '/admin/utilisateurs'
+    | '/api/public/membres'
     | '/admin/'
+    | '/api/public/membres/compte'
+    | '/api/public/membres/import'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -220,7 +250,10 @@ export interface FileRouteTypes {
     | '/admin/mot-du-president'
     | '/admin/parametres'
     | '/admin/utilisateurs'
+    | '/api/public/membres'
     | '/admin'
+    | '/api/public/membres/compte'
+    | '/api/public/membres/import'
   id:
     | '__root__'
     | '/'
@@ -240,7 +273,10 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/mot-du-president'
     | '/_authenticated/admin/parametres'
     | '/_authenticated/admin/utilisateurs'
+    | '/api/public/membres'
     | '/_authenticated/admin/'
+    | '/api/public/membres/compte'
+    | '/api/public/membres/import'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -251,6 +287,7 @@ export interface RootRouteChildren {
   MembresDuBureauRoute: typeof MembresDuBureauRoute
   MotDuPresidentRoute: typeof MotDuPresidentRoute
   VerifierMatriculeRoute: typeof VerifierMatriculeRoute
+  ApiPublicMembresRoute: typeof ApiPublicMembresRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -381,6 +418,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminUtilisateursRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/api/public/membres': {
+      id: '/api/public/membres'
+      path: '/api/public/membres'
+      fullPath: '/api/public/membres'
+      preLoaderRoute: typeof ApiPublicMembresRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/membres/compte': {
+      id: '/api/public/membres/compte'
+      path: '/compte'
+      fullPath: '/api/public/membres/compte'
+      preLoaderRoute: typeof ApiPublicMembresCompteRouteImport
+      parentRoute: typeof ApiPublicMembresRoute
+    }
+    '/api/public/membres/import': {
+      id: '/api/public/membres/import'
+      path: '/import'
+      fullPath: '/api/public/membres/import'
+      preLoaderRoute: typeof ApiPublicMembresImportRouteImport
+      parentRoute: typeof ApiPublicMembresRoute
+    }
   }
 }
 
@@ -424,6 +482,19 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface ApiPublicMembresRouteChildren {
+  ApiPublicMembresCompteRoute: typeof ApiPublicMembresCompteRoute
+  ApiPublicMembresImportRoute: typeof ApiPublicMembresImportRoute
+}
+
+const ApiPublicMembresRouteChildren: ApiPublicMembresRouteChildren = {
+  ApiPublicMembresCompteRoute: ApiPublicMembresCompteRoute,
+  ApiPublicMembresImportRoute: ApiPublicMembresImportRoute,
+}
+
+const ApiPublicMembresRouteWithChildren =
+  ApiPublicMembresRoute._addFileChildren(ApiPublicMembresRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
@@ -432,6 +503,7 @@ const rootRouteChildren: RootRouteChildren = {
   MembresDuBureauRoute: MembresDuBureauRoute,
   MotDuPresidentRoute: MotDuPresidentRoute,
   VerifierMatriculeRoute: VerifierMatriculeRoute,
+  ApiPublicMembresRoute: ApiPublicMembresRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

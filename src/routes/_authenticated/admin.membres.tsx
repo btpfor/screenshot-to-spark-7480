@@ -15,6 +15,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { MemberPhoto } from "@/components/MemberPhoto";
 import { ScaledCard } from "@/components/MemberCardDialog";
 import { createMember, importMembers, resetMemberPassword, setAccountStatus } from "@/lib/members.functions";
+import type { ImportResult, MemberInput } from "@/lib/members.functions";
+import { apiPost, externalApiUrl } from "@/lib/api-client";
 import { dateFr, downloadCsv, parseCsv } from "@/lib/format";
 import { useAuth, CAN } from "@/lib/auth";
 import { memberIdentifierFromCni } from "@/lib/member-ids";
@@ -63,11 +65,20 @@ function Members() {
   const refresh = () => qc.invalidateQueries({ queryKey: ["drivers"] });
 
   const act = async (id: string, status: "actif" | "inactif" | "suspendu", account: "actif" | "desactive" | "bloque") => {
-    try { await setStatus({ data: { driverId: id, status, account } }); toast.success("Compte mis à jour"); refresh(); }
+    try {
+      if (externalApiUrl()) await apiPost("/api/public/membres/compte", { action: "set_status", driverId: id, status, account });
+      else await setStatus({ data: { driverId: id, status, account } });
+      toast.success("Compte mis à jour"); refresh();
+    }
     catch (e) { toast.error((e as Error).message); }
   };
   const doReset = async (id: string, name: string) => {
-    try { const r = await reset({ data: { driverId: id } }); setCreds({ title: "Mot de passe réinitialisé", list: [{ name, ...r }] }); refresh(); }
+    try {
+      const r = externalApiUrl()
+        ? await apiPost<{ matricule: string; password: string }>("/api/public/membres/compte", { action: "reset_password", driverId: id })
+        : await reset({ data: { driverId: id } });
+      setCreds({ title: "Mot de passe réinitialisé", list: [{ name, ...r }] }); refresh();
+    }
     catch (e) { toast.error((e as Error).message); }
   };
   const selected = drivers.find((d) => d.id === view);
@@ -203,14 +214,17 @@ function AddMember({ onClose, onCreated }: { onClose: () => void; onCreated: (c:
         if (error) throw error;
         photo_url = path;
       }
-      const r = await create({ data: {
+      const input: MemberInput = {
         first_name: g("first_name"), last_name: g("last_name"), phone: g("phone"), address: g("address"), cni_number: g("cni_number"),
         birth_date: g("birth_date"), join_date: g("join_date"), platform: g("platform") || "Yango",
         status: g("status") as "actif", license_number: g("license_number"), license_expiry: g("license_expiry"), photo_url,
         allow_shared_phone: f.get("allow_shared_phone") === "on",
         password: g("password"),
         vehicle: { brand: g("v_brand"), model: g("v_model"), plate: g("v_plate") },
-      } });
+      };
+      const r = externalApiUrl()
+        ? await apiPost<{ matricule: string; password: string }>("/api/public/membres", input)
+        : await create({ data: input });
       onCreated({ title: "Membre créé", list: [{ name: `${g("first_name")} ${g("last_name")}`, matricule: r.matricule, password: r.password }] });
     } catch (err) { setError((err as Error).message); }
     setBusy(false);
@@ -283,7 +297,10 @@ function ImportMembers({ onClose, onDone }: { onClose: () => void; onDone: (c: C
   const confirm = async () => {
     setBusy(true);
     try {
-      const res = await run({ data: { rows: valid.map(({ error: _e, ...r }) => ({ ...r, cni_number: r.cni_number ?? "" })) } });
+      const rows = valid.map(({ error: _e, ...r }) => ({ ...r, cni_number: r.cni_number ?? "" }));
+      const res = externalApiUrl()
+        ? await apiPost<ImportResult[]>("/api/public/membres/import", { rows })
+        : await run({ data: { rows } });
       const failed = res.filter((r) => !r.ok);
       if (failed.length) toast.error(`${failed.length} ligne(s) refusée(s) : ${failed.map((f) => `${f.name} (${f.error})`).join(", ")}`, { duration: 15000 });
       onDone({ title: `${res.length - failed.length} membre(s) importé(s)`, list: res.flatMap((r) => r.ok && r.matricule && r.password ? [{ name: r.name, matricule: r.matricule, password: r.password }] : []) });

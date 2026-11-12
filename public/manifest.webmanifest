@@ -4,7 +4,7 @@
   "short_name": "VIP BOK GUIS GUIS",
   "lang": "fr",
   "description": "Espace des membres et des responsables du GIE VIP BOK GUIS GUIS.",
-  "start_url": "/?source=pwa",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "theme_color": "#172d52",

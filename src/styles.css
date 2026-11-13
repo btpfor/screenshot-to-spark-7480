@@ -307,3 +307,21 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
   .service-icon { transform: none; }
   .service-item:hover .service-surface, .service-item:hover .service-icon { transform: none; }
 }
+
+/* Auth page: 3D logo + driving sedan */
+.auth-glow{position:absolute;inset:-20%;background:radial-gradient(circle at 30% 40%,color-mix(in oklab,var(--accent) 22%,transparent),transparent 55%);pointer-events:none}
+.auth-logo-3d{perspective:900px;position:relative;width:11rem;height:11rem}
+.auth-logo-face{width:100%;height:100%;border-radius:9999px;object-fit:contain;transform-style:preserve-3d;animation:auth-spin 9s ease-in-out infinite;box-shadow:0 0 0 4px color-mix(in oklab,var(--accent) 60%,transparent),0 25px 50px -15px rgb(0 0 0/.6)}
+.auth-logo-shadow{position:absolute;left:15%;right:15%;bottom:-1.5rem;height:.75rem;border-radius:50%;background:rgb(0 0 0/.35);filter:blur(6px);animation:auth-shadow 9s ease-in-out infinite}
+@keyframes auth-spin{0%,100%{transform:rotateY(-18deg) rotateX(6deg) translateY(0)}25%{transform:rotateY(0) rotateX(0) translateY(-8px)}50%{transform:rotateY(18deg) rotateX(-4deg) translateY(0)}75%{transform:rotateY(360deg) translateY(-8px)}}
+@keyframes auth-shadow{0%,50%,100%{transform:scaleX(1);opacity:.5}25%,75%{transform:scaleX(.8);opacity:.3}}
+.auth-road{position:relative;height:9rem;overflow:hidden;perspective:700px}
+.auth-car{position:absolute;bottom:1.1rem;width:15rem;height:auto;filter:drop-shadow(0 12px 10px rgb(0 0 0/.5));animation:auth-drive 7s cubic-bezier(.45,.05,.35,1) infinite}
+.auth-lane{position:absolute;left:0;right:0;bottom:.5rem;height:.6rem;border-radius:4px;background:color-mix(in oklab,var(--sidebar-foreground) 12%,transparent);transform:rotateX(55deg)}
+.auth-lane::after{content:"";position:absolute;inset:40% 0 auto;height:2px;background:repeating-linear-gradient(90deg,var(--accent) 0 28px,transparent 28px 56px);animation:auth-lane .6s linear infinite}
+@keyframes auth-drive{0%{transform:translateX(-110%)}35%,65%{transform:translateX(calc(50cqw - 7.5rem))}100%{transform:translateX(calc(100cqw + 10%))}}
+.auth-road{container-type:inline-size}
+@keyframes auth-lane{to{background-position:-56px 0}}
+.auth-card{animation:auth-card-in .7s cubic-bezier(.2,.8,.2,1) both}
+@keyframes auth-card-in{from{opacity:0;transform:perspective(900px) rotateX(10deg) translateY(16px)}}
+@media (prefers-reduced-motion:reduce){.auth-logo-face,.auth-logo-shadow,.auth-car,.auth-lane::after,.auth-card{animation:none}.auth-car{left:50%;transform:translateX(-50%)}}

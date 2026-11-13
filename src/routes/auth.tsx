@@ -107,8 +107,8 @@ function AuthPage() {
           <div className="flag-bar mt-6 h-1.5 w-24 rounded-full" />
         </div>
       </div>
-      <div className="flex items-center justify-center bg-muted/40 p-4 sm:p-6">
-        <form onSubmit={submit} className="auth-card w-full max-w-sm space-y-5 rounded-2xl border bg-card p-6 shadow-xl sm:p-8">
+      <div className="flex min-w-0 items-center justify-center bg-muted/40 p-4 sm:p-6">
+        <form onSubmit={submit} className="auth-card min-w-0 w-full max-w-sm space-y-5 rounded-2xl border bg-card p-6 shadow-xl sm:p-8">
           <div className="md:hidden">
             <Logo />
             <div className="auth-hero-mobile mt-4 overflow-hidden rounded-xl bg-sidebar p-4 text-sidebar-foreground">
@@ -118,7 +118,7 @@ function AuthPage() {
                 </div>
                 <div className="min-w-0">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-accent">Transport VIP · Sénégal</p>
-                  <p className="mt-1 truncate text-sm font-bold text-sidebar-accent-foreground">Votre GIE, dans votre poche.</p>
+                  <p className="mt-1 text-sm font-bold text-sidebar-accent-foreground">Votre GIE, dans votre poche.</p>
                 </div>
               </div>
               <div className="auth-road auth-road-sm mt-2 w-full" aria-hidden="true">
@@ -141,15 +141,19 @@ function AuthPage() {
           <div className="space-y-2">
             <Label htmlFor="pw">Mot de passe</Label>
             <div className="relative">
-              <Input id="pw" type={showPassword ? "text" : "password"} required minLength={needsAdmin ? 8 : 6} autoComplete="current-password" value={password} onChange={(e) => { setPassword(e.target.value); setError(""); }} className="pr-10" />
-              <button
+              <Input id="pw" type={showPassword ? "text" : "password"} required minLength={needsAdmin ? 8 : 6} autoComplete="current-password" value={password} onChange={(e) => { setPassword(e.target.value); setError(""); }} className="pr-12" />
+              <Button
                 type="button"
+                variant="ghost"
+                size="icon"
                 onClick={() => setShowPassword((v) => !v)}
                 aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                aria-controls="pw"
+                aria-pressed={showPassword}
+                className="absolute right-0 top-0 h-full w-11 text-muted-foreground hover:text-foreground"
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </button>
+              </Button>
             </div>
           </div>
           {error && (

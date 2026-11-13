@@ -322,6 +322,12 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
 @keyframes auth-drive{0%{transform:translateX(-110%)}35%,65%{transform:translateX(calc(50cqw - 7.5rem))}100%{transform:translateX(calc(100cqw + 10%))}}
 .auth-road{container-type:inline-size}
 @keyframes auth-lane{to{background-position:-56px 0}}
+.auth-hero-mobile{position:relative}
+.auth-logo-3d-sm{width:4.5rem;height:4.5rem}
+.auth-logo-3d-sm .auth-logo-face{box-shadow:0 0 0 2px color-mix(in oklab,var(--accent) 60%,transparent),0 12px 24px -10px rgb(0 0 0/.6)}
+.auth-road-sm{height:4.5rem;perspective:400px}
+.auth-car-sm{width:7rem;bottom:.7rem;animation-name:auth-drive-sm}
+@keyframes auth-drive-sm{0%{transform:translateX(-110%)}35%,65%{transform:translateX(calc(50cqw - 3.5rem))}100%{transform:translateX(calc(100cqw + 10%))}}
 .auth-card{animation:auth-card-in .7s cubic-bezier(.2,.8,.2,1) both}
 @keyframes auth-card-in{from{opacity:0;transform:perspective(900px) rotateX(10deg) translateY(16px)}}
 @media (prefers-reduced-motion:reduce){.auth-logo-face,.auth-logo-shadow,.auth-car,.auth-lane::after,.auth-card{animation:none}.auth-car{left:50%;transform:translateX(-50%)}}

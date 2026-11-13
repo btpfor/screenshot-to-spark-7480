@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/Logo";
+import { officialLogoUrl } from "@/lib/branding";
+import sedan from "@/assets/auth-sedan.png";
 import { isMatricule, loginToEmail } from "@/lib/member-ids";
 import { bootstrapSuperAdmin, hasSuperAdmin } from "@/lib/members.functions";
 
@@ -85,16 +87,31 @@ function AuthPage() {
 
   return (
     <div className="grid min-h-screen md:grid-cols-2">
-      <div className="hidden flex-col justify-between bg-sidebar p-10 text-sidebar-foreground md:flex">
-        <Link to="/"><Logo /></Link>
-        <div>
-          <h2 className="text-3xl font-bold text-sidebar-accent-foreground">Votre GIE, dans votre poche.</h2>
-          <p className="mt-3 max-w-sm opacity-75">Les comptes membres sont créés par l'administration. Vos identifiants vous sont remis par le secrétariat.</p>
+      <div className="auth-stage relative hidden flex-col justify-between overflow-hidden bg-sidebar p-10 text-sidebar-foreground md:flex">
+        <div className="auth-glow" aria-hidden="true" />
+        <Link to="/" className="relative z-10"><Logo /></Link>
+        <div className="relative z-10 flex flex-col items-center">
+          <div className="auth-logo-3d" aria-hidden="true">
+            <img src={officialLogoUrl} alt="" className="auth-logo-face" />
+            <div className="auth-logo-shadow" />
+          </div>
+          <div className="auth-road mt-10 w-full" aria-hidden="true">
+            <img src={sedan} alt="" width={1235} height={380} className="auth-car" />
+            <div className="auth-lane" />
+          </div>
         </div>
-        <div className="flag-bar h-1.5 w-24 rounded-full" />
+        <div className="relative z-10">
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">Transport VIP · Sénégal</p>
+          <h2 className="mt-2 text-3xl font-bold text-sidebar-accent-foreground">Votre GIE, dans votre poche.</h2>
+          <p className="mt-3 max-w-sm opacity-75">Les comptes membres sont créés par l'administration. Vos identifiants vous sont remis par le secrétariat.</p>
+          <div className="mt-6 grid max-w-md grid-cols-3 gap-3 text-center text-xs">
+            {[["+300", "Chauffeurs"], ["24h/24", "Disponibles"], ["100%", "Sécurisé"]].map(([v, l]) => <div key={l} className="rounded-lg border border-sidebar-border bg-sidebar-accent/40 px-2 py-3"><div className="text-lg font-bold text-accent">{v}</div><div className="opacity-75">{l}</div></div>)}
+          </div>
+          <div className="flag-bar mt-6 h-1.5 w-24 rounded-full" />
+        </div>
       </div>
-      <div className="flex items-center justify-center p-6">
-        <form onSubmit={submit} className="w-full max-w-sm space-y-5">
+      <div className="flex items-center justify-center bg-muted/40 p-4 sm:p-6">
+        <form onSubmit={submit} className="auth-card w-full max-w-sm space-y-5 rounded-2xl border bg-card p-6 shadow-xl sm:p-8">
           <div className="md:hidden"><Logo /></div>
           <div>
             <h1 className="text-2xl font-bold">{needsAdmin ? "Configuration initiale" : "Connexion"}</h1>

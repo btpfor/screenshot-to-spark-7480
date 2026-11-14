@@ -309,6 +309,21 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
 }
 
 /* Auth page: 3D logo + driving sedan */
+.auth-page{--auth-keyboard-space:0px}
+@media (max-width:767px){
+  .auth-form-area{padding-top:max(1rem,env(safe-area-inset-top));padding-bottom:calc(max(1rem,env(safe-area-inset-bottom)) + var(--auth-keyboard-space));padding-left:max(1rem,env(safe-area-inset-left));padding-right:max(1rem,env(safe-area-inset-right))}
+  .auth-card{padding:1.25rem;overflow-wrap:anywhere}
+  .auth-card input{font-size:16px;scroll-margin-block:1rem}
+  .auth-card [data-auth-controls]{scroll-margin-block:1rem}
+  .auth-card:focus-within{animation:none}
+  .auth-card:has([data-auth-controls]:focus-within) .auth-mobile-heading{display:none}
+  .auth-card:has([data-auth-controls]:focus-within) .auth-hero-mobile{display:grid;grid-template-columns:3rem minmax(0,1fr);align-items:center;gap:.75rem;margin-top:0;padding:.75rem}
+  .auth-card:has([data-auth-controls]:focus-within) .auth-mobile-copy,.auth-card:has([data-auth-controls]:focus-within) .auth-hero-mobile>.flag-bar{display:none}
+  .auth-card:has([data-auth-controls]:focus-within) .auth-logo-3d-sm{width:3rem;height:3rem}
+  .auth-card:has([data-auth-controls]:focus-within) .auth-road-sm{margin-top:0;height:3rem}
+  .auth-card:has([data-auth-controls]:focus-within) .auth-car-sm{width:6rem;animation:none;left:50%;transform:translateX(-50%)}
+  .auth-card:has([data-auth-controls]:focus-within) .auth-logo-face,.auth-card:has([data-auth-controls]:focus-within) .auth-lane::after{animation:none}
+}
 .auth-glow{position:absolute;inset:-20%;background:radial-gradient(circle at 30% 40%,color-mix(in oklab,var(--accent) 22%,transparent),transparent 55%);pointer-events:none}
 .auth-logo-3d{perspective:900px;position:relative;width:11rem;height:11rem}
 .auth-logo-face{width:100%;height:100%;border-radius:9999px;object-fit:contain;transform-style:preserve-3d;animation:auth-spin 9s ease-in-out infinite;box-shadow:0 0 0 4px color-mix(in oklab,var(--accent) 60%,transparent),0 25px 50px -15px rgb(0 0 0/.6)}

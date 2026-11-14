@@ -1,3 +1,7 @@
+# Connexion en portrait et clavier mobile
+- [ ] Adapter la page et le défilement au clavier Android/iPhone, en gardant logo et voiture compacts.
+- [ ] Vérifier les petits formats portrait, la saisie, la visibilité du mot de passe et le bouton avec une hauteur réduite ; appareils physiques indisponibles.
+
 # Pont Cloudflare ↔ Lovable Cloud
 - [x] Créer les routes sécurisées /api/public/membres, /import et /compte (création, import, réinitialisation, suspension) avec vérification du jeton de connexion, contrôle des rôles, journalisation et CORS limité au site Cloudflare.
 - [x] Faire appeler ces routes par la page d'administration quand VITE_API_URL est défini (déploiement Cloudflare), sinon fonctions serveur habituelles.

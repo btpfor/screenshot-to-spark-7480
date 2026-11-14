@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/Logo";
 import { officialLogoUrl } from "@/lib/branding";
 import sedan from "@/assets/auth-sedan.png";
+import { useAuthViewport } from "@/hooks/use-auth-viewport";
 import { isMatricule, loginToEmail } from "@/lib/member-ids";
 import { bootstrapSuperAdmin, hasSuperAdmin } from "@/lib/members.functions";
 
@@ -28,6 +29,7 @@ export const Route = createFileRoute("/auth")({
 });
 
 function AuthPage() {
+  const viewportRef = useAuthViewport();
   const navigate = useNavigate();
   const checkAdmin = useServerFn(hasSuperAdmin);
   const bootstrap = useServerFn(bootstrapSuperAdmin);
@@ -86,7 +88,7 @@ function AuthPage() {
   };
 
   return (
-    <div className="grid min-h-screen md:grid-cols-2">
+    <div ref={viewportRef} className="auth-page grid min-h-dvh md:grid-cols-2">
       <div className="auth-stage relative hidden flex-col justify-between overflow-hidden bg-sidebar p-10 text-sidebar-foreground md:flex">
         <div className="auth-glow" aria-hidden="true" />
         <Link to="/" className="relative z-10"><Logo /></Link>
@@ -107,16 +109,16 @@ function AuthPage() {
           <div className="flag-bar mt-6 h-1.5 w-24 rounded-full" />
         </div>
       </div>
-      <div className="flex min-w-0 items-center justify-center bg-muted/40 p-4 sm:p-6">
+      <div className="auth-form-area flex min-w-0 items-start justify-center bg-muted/40 p-4 sm:p-6 md:items-center">
         <form onSubmit={submit} className="auth-card min-w-0 w-full max-w-sm space-y-5 rounded-2xl border bg-card p-6 shadow-xl sm:p-8">
-          <div className="md:hidden">
-            <Logo />
+          <div className="auth-mobile-brand md:hidden">
+            <div className="auth-mobile-heading"><Logo /></div>
             <div className="auth-hero-mobile mt-4 overflow-hidden rounded-xl bg-sidebar p-4 text-sidebar-foreground">
-              <div className="flex items-center gap-4">
+              <div className="auth-mobile-identity grid grid-cols-[auto_minmax(0,1fr)] items-center gap-4">
                 <div className="auth-logo-3d auth-logo-3d-sm shrink-0" aria-hidden="true">
                   <img src={officialLogoUrl} alt="" className="auth-logo-face" />
                 </div>
-                <div className="min-w-0">
+                <div className="auth-mobile-copy min-w-0">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-accent">Transport VIP · Sénégal</p>
                   <p className="mt-1 text-sm font-bold text-sidebar-accent-foreground">Votre GIE, dans votre poche.</p>
                 </div>
@@ -134,14 +136,15 @@ function AuthPage() {
               {needsAdmin ? "Créez le compte du super administrateur. Cette étape n'apparaît qu'une seule fois." : "Saisissez votre identifiant : adresse email ou numéro matricule."}
             </p>
           </div>
+          <div data-auth-controls className="space-y-5">
           <div className="space-y-2">
             <Label htmlFor="id">Identifiant</Label>
-            <Input id="id" required autoComplete="username" type="text" value={id} onChange={(e) => { setId(e.target.value); setError(""); }} placeholder="vipbgg-123 ou email" />
+            <Input id="id" required autoComplete="username" autoCapitalize="none" autoCorrect="off" enterKeyHint="next" onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); document.getElementById("pw")?.focus(); } }} type="text" value={id} onChange={(e) => { setId(e.target.value); setError(""); }} placeholder="vipbgg-123 ou email" />
           </div>
           <div className="space-y-2">
             <Label htmlFor="pw">Mot de passe</Label>
             <div className="relative">
-              <Input id="pw" type={showPassword ? "text" : "password"} required minLength={needsAdmin ? 8 : 6} autoComplete="current-password" value={password} onChange={(e) => { setPassword(e.target.value); setError(""); }} className="pr-12" />
+              <Input id="pw" type={showPassword ? "text" : "password"} required minLength={needsAdmin ? 8 : 6} autoComplete="current-password" enterKeyHint="go" value={password} onChange={(e) => { setPassword(e.target.value); setError(""); }} className="pr-12" />
               <Button
                 type="button"
                 variant="ghost"
@@ -160,6 +163,7 @@ function AuthPage() {
             <p role="alert" className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">{error}</p>
           )}
           <Button type="submit" className="w-full" disabled={busy}>Se connecter</Button>
+          </div>
         </form>
       </div>
     </div>

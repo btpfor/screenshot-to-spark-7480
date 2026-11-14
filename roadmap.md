@@ -1,6 +1,7 @@
 # Connexion en portrait et clavier mobile
-- [ ] Adapter la page et le défilement au clavier Android/iPhone, en gardant logo et voiture compacts.
-- [ ] Vérifier les petits formats portrait, la saisie, la visibilité du mot de passe et le bouton avec une hauteur réduite ; appareils physiques indisponibles.
+- [x] Adapter la page et le défilement au clavier Android/iPhone, en gardant logo et voiture compacts.
+- [x] Vérifier cinq petits formats portrait (320, 360, 375, 390, 430), la saisie, la visibilité du mot de passe et le bouton avec une hauteur réduite ; quatre tests réussis, aucune erreur navigateur.
+- [ ] Confirmer le clavier natif sur téléphones physiques Android/iPhone : appareils indisponibles ; essais simulés et comportement visualViewport vérifiés.
 
 # Pont Cloudflare ↔ Lovable Cloud
 - [x] Créer les routes sécurisées /api/public/membres, /import et /compte (création, import, réinitialisation, suspension) avec vérification du jeton de connexion, contrôle des rôles, journalisation et CORS limité au site Cloudflare.

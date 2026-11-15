@@ -19,7 +19,6 @@ import type { ImportResult, MemberInput } from "@/lib/members.functions";
 import { apiPost, externalApiUrl } from "@/lib/api-client";
 import { dateFr, downloadCsv, parseCsv } from "@/lib/format";
 import { useAuth, CAN } from "@/lib/auth";
-import { memberIdentifierFromCni } from "@/lib/member-ids";
 import { normalizeCni } from "@/lib/member-duplicates";
 
 export const Route = createFileRoute("/_authenticated/admin/membres")({
@@ -197,8 +196,6 @@ function AddMember({ onClose, onCreated }: { onClose: () => void; onCreated: (c:
   const [busy, setBusy] = useState(false);
   const [cni, setCni] = useState("");
   const [error, setError] = useState<string | null>(null);
-  let identifier = "";
-  try { identifier = memberIdentifierFromCni(cni); } catch { /* Incomplete number. */ }
   const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const f = new FormData(e.currentTarget);
@@ -239,10 +236,10 @@ function AddMember({ onClose, onCreated }: { onClose: () => void; onCreated: (c:
             <Field label="Nom" name="last_name" required />
             <Field label="Téléphone" name="phone" type="tel" required />
             <Field label="Adresse" name="address" />
-            <div className="space-y-1.5"><Label htmlFor="cni_number">Numéro de carte d’identité *</Label><Input id="cni_number" name="cni_number" required minLength={3} maxLength={40} pattern="[A-Za-z0-9]{3,40}" value={cni} onChange={(e) => setCni(e.target.value)} /></div>
+            <div className="space-y-1.5"><Label htmlFor="cni_number">Numéro de carte d’identité (facultatif à la création)</Label><Input id="cni_number" name="cni_number" minLength={3} maxLength={40} pattern="[A-Za-z0-9]{3,40}" value={cni} onChange={(e) => setCni(e.target.value)} /></div>
             <Field label="Date de naissance" name="birth_date" type="date" />
             <Field label="Date d'adhésion" name="join_date" type="date" defaultValue={new Date().toISOString().slice(0, 10)} />
-            <div className="space-y-1.5"><Label htmlFor="matricule">Identifiant</Label><Input id="matricule" readOnly value={identifier} placeholder="vipbgg-123" /></div>
+            <div className="space-y-1.5"><Label htmlFor="matricule">Matricule officiel</Label><Input id="matricule" readOnly value="Attribué à la création" /></div>
             <div className="space-y-1.5 sm:col-span-2"><Label htmlFor="password">Mot de passe provisoire (6 chiffres)</Label><Input id="password" name="password" inputMode="numeric" autoComplete="new-password" pattern="[0-9]{6}" maxLength={6} placeholder="ex. 482916" title="Exactement 6 chiffres" /><p className="text-xs text-muted-foreground">Laissez vide pour en générer un automatiquement. Le membre devra le changer à sa première connexion.</p></div>
             <div className="space-y-1.5"><Label htmlFor="platform">Plateforme</Label>
               <select id="platform" name="platform" className="h-9 w-full rounded-md border bg-background px-3 text-sm"><option>Yango</option><option>Heetch</option><option>Taxi traditionnel</option><option>Autre</option></select></div>
@@ -252,10 +249,6 @@ function AddMember({ onClose, onCreated }: { onClose: () => void; onCreated: (c:
             <Field label="Validité du permis" name="license_expiry" type="date" />
             <div className="space-y-1.5 sm:col-span-2"><Label htmlFor="photo">Photo de profil</Label><Input id="photo" name="photo" type="file" accept="image/*" /></div>
           </div>
-          <fieldset className="rounded-lg border p-4">
-            <legend className="px-1 text-sm font-semibold">Véhicule (facultatif)</legend>
-            <div className="grid gap-3 sm:grid-cols-3"><Field label="Marque" name="v_brand" /><Field label="Modèle" name="v_model" /><Field label="Immatriculation" name="v_plate" /></div>
-          </fieldset>
           <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="allow_shared_phone" /> Autoriser exceptionnellement un téléphone déjà utilisé</label>
           {error && <p role="alert" className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">{error}</p>}
           <DialogFooter><Button type="button" variant="outline" onClick={onClose}>Annuler</Button><Button disabled={busy}>{busy ? "Création…" : "Créer le membre et son compte"}</Button></DialogFooter>
@@ -274,21 +267,19 @@ function ImportMembers({ onClose, onDone }: { onClose: () => void; onDone: (c: C
 
   const load = async (file: File) => {
     const raw = parseCsv(await file.text());
-    const seenPhone = new Set<string>(), seenMat = new Set<string>(), seenCni = new Set<string>();
+    const seenPhone = new Set<string>(), seenCni = new Set<string>();
     setRows(raw.map((r) => {
       const row: Row & { error?: string } = {
         first_name: r["prenom"] ?? r["prénom"] ?? "", last_name: r["nom"] ?? "", phone: (r["telephone"] ?? r["téléphone"] ?? "").replace(/\s/g, ""),
         address: r["adresse"], cni_number: r["cni"]?.trim() ?? "", platform: r["plateforme"] || "Yango",
         birth_date: r["naissance"] || undefined, join_date: r["adhesion"] || undefined, status: "actif",
       };
-      try { row.matricule = memberIdentifierFromCni(row.cni_number ?? ""); }
-      catch { row.error = "Numéro CNI manquant ou invalide"; }
+      if (row.cni_number && !/^[a-z0-9]{3,40}$/i.test(row.cni_number)) row.error = "Numéro CNI invalide";
       if (!row.first_name || !row.last_name) row.error = "Nom ou prénom manquant";
       else if (!/^\+?[0-9]{7,20}$/.test(row.phone)) row.error = "Téléphone invalide";
       else if (row.cni_number && seenCni.has(normalizeCni(row.cni_number))) row.error = "CNI en double dans le fichier";
-      else if (row.matricule && seenMat.has(row.matricule.toUpperCase())) row.error = `L’identifiant ${row.matricule} est déjà généré par une autre CNI du fichier`;
       else if (seenPhone.has(row.phone)) row.error = "Téléphone en double dans le fichier";
-      seenPhone.add(row.phone); if (row.matricule) seenMat.add(row.matricule.toUpperCase());
+      seenPhone.add(row.phone);
       if (row.cni_number) seenCni.add(normalizeCni(row.cni_number));
       return row;
     }));
@@ -313,7 +304,7 @@ function ImportMembers({ onClose, onDone }: { onClose: () => void; onDone: (c: C
       <DialogContent className="max-h-[calc(100dvh-2rem)] max-w-3xl overflow-y-auto">
         <DialogHeader><DialogTitle>Importer des membres</DialogTitle></DialogHeader>
         <p className="text-sm text-muted-foreground">
-          Colonnes obligatoires : <b>prenom, nom, telephone, cni</b>. Facultatives : adresse, plateforme, naissance, adhesion.
+          Colonnes obligatoires : <b>prenom, nom, telephone</b>. Facultatives : cni, adresse, plateforme, naissance, adhesion. Matricules attribués par le serveur.
         </p>
         <Button variant="outline" size="sm" className="w-fit" onClick={() => downloadCsv("modele-import.csv", [{ prenom: "", nom: "", telephone: "", adresse: "", cni: "", plateforme: "Yango", naissance: "", adhesion: "" }])}>Télécharger le modèle</Button>
         <Input aria-label="Fichier CSV des membres à importer" type="file" accept=".csv,text/csv" onChange={(e) => e.target.files?.[0] && load(e.target.files[0])} />

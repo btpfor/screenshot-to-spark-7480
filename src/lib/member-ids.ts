@@ -6,7 +6,7 @@ export const matriculeToEmail = (m: string) =>
 
 export const loginToEmail = (id: string) => (id.includes("@") ? id.trim() : matriculeToEmail(id));
 
-export const isMatricule = (id: string) => /^(?:BGG-\d{4}-\d{4}|vipbgg-[a-z0-9]{3})$/i.test(id.trim());
+export const isMatricule = (id: string) => /^(?:BGG-\d{4}-\d{4}|vipbgg-(?:[a-z0-9]{3}|\d{3,}))$/i.test(id.trim());
 
 export function memberIdentifierFromCni(cni: string) {
   const number = cni.trim();

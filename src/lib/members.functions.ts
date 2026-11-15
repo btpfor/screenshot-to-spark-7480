@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { matriculeToEmail, genTempPassword, memberIdentifierFromCni } from "./member-ids";
+import { matriculeToEmail, genTempPassword } from "./member-ids";
 import { conflictFromDatabaseError, findMemberConflict, memberConflictMessage, normalizeCni } from "./member-duplicates";
 
 export const MANAGERS = ["super_admin", "president", "secretaire", "resp_chauffeurs"] as const;
@@ -47,7 +47,7 @@ export const memberSchema = z.object({
   last_name: z.string().trim().min(1).max(80),
   phone: z.string().trim().regex(/^\+?[0-9 ]{7,20}$/, "Téléphone invalide"),
   address: z.string().max(200).optional().nullable(),
-  cni_number: z.string().trim().min(3).max(40).regex(/^[a-z0-9]+$/i, "Numéro de carte d’identité invalide"),
+  cni_number: z.string().trim().max(40).regex(/^(?:[a-z0-9]{3,40})?$/i, "Numéro de carte d’identité invalide").default(""),
   birth_date: z.string().optional().nullable(),
   join_date: z.string().optional().nullable(),
   matricule: z.string().trim().max(30).optional().nullable(),
@@ -64,7 +64,9 @@ export type MemberInput = z.infer<typeof memberSchema>;
 
 export async function createOne(a: Awaited<ReturnType<typeof admin>>, m: MemberInput) {
   const clean = (v?: string | null) => (v && v.trim() ? v.trim() : null);
-  const identifier = memberIdentifierFromCni(m.cni_number);
+  const { data: allocated, error: allocationError } = await a.rpc("next_membership_identifier");
+  if (allocationError || !allocated) throw new Error("Attribution du matricule impossible.");
+  const identifier = allocated;
   const conflict = await findMemberConflict(m.cni_number, identifier, async (field, value) => {
     const { data, error } = await a.from("drivers").select("id").ilike(field, value).limit(1);
     if (error) throw new Error("Impossible de vérifier les doublons. Réessayez avant de créer le membre.");
@@ -73,7 +75,7 @@ export async function createOne(a: Awaited<ReturnType<typeof admin>>, m: MemberI
   if (conflict) throw new Error(memberConflictMessage(conflict, identifier));
   const row: Record<string, unknown> = {
     first_name: m.first_name, last_name: m.last_name, phone: m.phone.replace(/\s/g, ""),
-    address: clean(m.address), cni_number: normalizeCni(m.cni_number), birth_date: clean(m.birth_date),
+    address: clean(m.address), cni_number: m.cni_number ? normalizeCni(m.cni_number) : null, birth_date: clean(m.birth_date),
     license_number: clean(m.license_number), license_expiry: clean(m.license_expiry),
     platform: m.platform || "Yango", status: m.status, photo_url: clean(m.photo_url),
     allow_shared_phone: m.allow_shared_phone, must_change_password: true,
@@ -104,6 +106,12 @@ export async function createOne(a: Awaited<ReturnType<typeof admin>>, m: MemberI
     await a.auth.admin.deleteUser(u.user.id);
     await a.from("drivers").delete().eq("id", d.id);
     throw new Error("Création de l’accès membre impossible. Réessayez.");
+  }
+  const { error: dossierError } = await a.from("member_dossiers").insert({ driver_id: d.id, first_name: m.first_name, last_name: m.last_name, phone: m.phone, cni_number: m.cni_number || null });
+  if (dossierError) {
+    await a.auth.admin.deleteUser(u.user.id);
+    await a.from("drivers").delete().eq("id", d.id);
+    throw new Error("Création du dossier impossible. Réessayez.");
   }
   const v = m.vehicle;
   if (v?.plate && v.brand && v.model) {
@@ -148,7 +156,7 @@ export async function resetPasswordFor(a: Awaited<ReturnType<typeof admin>>, dri
   const { data: d } = await a.from("drivers").select("user_id, matricule").eq("id", driverId).single();
   if (!d?.user_id) throw new Error("Compte introuvable");
   const password = genTempPassword();
-  const { error } = await a.auth.admin.updateUserById(d.user_id, { password });
+  const { error } = await a.auth.admin.updateUserById(d.user_id, { password, user_metadata: { must_change_password: true } });
   if (error) throw new Error(error.message);
   await a.from("drivers").update({ must_change_password: true }).eq("id", driverId);
   await a.from("audit_log").insert({ user_id: actorId, action: "RESET_PASSWORD", table_name: "drivers", record_id: driverId });

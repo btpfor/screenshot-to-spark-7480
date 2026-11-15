@@ -13,7 +13,8 @@ describe("member login ids", () => {
     expect(isMatricule(" VIPBGG-123 ")).toBe(true);
     expect(isMatricule("BGG-2026-0001")).toBe(true);
     expect(isMatricule("vipbgg-12")).toBe(false);
-    expect(isMatricule("vipbgg-1234")).toBe(false);
+    expect(isMatricule("VIPBGG-1000")).toBe(true);
+    expect(loginToEmail("vipbgg-656")).toBe("vipbgg-656@membres.bokguisguis.sn");
     expect(loginToEmail(" VIPBGG-123 ")).toBe("vipbgg-123@membres.bokguisguis.sn");
   });
   it("maps a matricule to one internal email, case-insensitive", () => {

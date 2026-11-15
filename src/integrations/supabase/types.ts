@@ -299,6 +299,299 @@ export type Database = {
         }
         Relationships: []
       }
+      member_documents: {
+        Row: {
+          created_at: string
+          driver_id: string
+          file_name: string
+          id: string
+          kind: string
+          path: string
+        }
+        Insert: {
+          created_at?: string
+          driver_id: string
+          file_name: string
+          id?: string
+          kind: string
+          path: string
+        }
+        Update: {
+          created_at?: string
+          driver_id?: string
+          file_name?: string
+          id?: string
+          kind?: string
+          path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_documents_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "drivers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      member_dossiers: {
+        Row: {
+          address: string
+          adhesion_date: string | null
+          approved_at: string | null
+          birth_date: string | null
+          birth_place: string
+          certified: boolean
+          cni_number: string | null
+          commune: string
+          confirmed_photo_path: string | null
+          department: string
+          driver_id: string
+          email: string
+          first_name: string
+          identity_expiry: string | null
+          identity_issued: string | null
+          identity_type: string
+          internal_comment: string
+          last_name: string
+          license_category: string
+          license_expiry: string | null
+          license_issued: string | null
+          license_number: string
+          member_message: string
+          original_photo_path: string | null
+          phone: string
+          photo_confirmed: boolean
+          public_photo_consent: boolean
+          region: string
+          secondary_phone: string
+          sex: string
+          status: string
+          submitted_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string
+          adhesion_date?: string | null
+          approved_at?: string | null
+          birth_date?: string | null
+          birth_place?: string
+          certified?: boolean
+          cni_number?: string | null
+          commune?: string
+          confirmed_photo_path?: string | null
+          department?: string
+          driver_id: string
+          email?: string
+          first_name?: string
+          identity_expiry?: string | null
+          identity_issued?: string | null
+          identity_type?: string
+          internal_comment?: string
+          last_name?: string
+          license_category?: string
+          license_expiry?: string | null
+          license_issued?: string | null
+          license_number?: string
+          member_message?: string
+          original_photo_path?: string | null
+          phone?: string
+          photo_confirmed?: boolean
+          public_photo_consent?: boolean
+          region?: string
+          secondary_phone?: string
+          sex?: string
+          status?: string
+          submitted_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string
+          adhesion_date?: string | null
+          approved_at?: string | null
+          birth_date?: string | null
+          birth_place?: string
+          certified?: boolean
+          cni_number?: string | null
+          commune?: string
+          confirmed_photo_path?: string | null
+          department?: string
+          driver_id?: string
+          email?: string
+          first_name?: string
+          identity_expiry?: string | null
+          identity_issued?: string | null
+          identity_type?: string
+          internal_comment?: string
+          last_name?: string
+          license_category?: string
+          license_expiry?: string | null
+          license_issued?: string | null
+          license_number?: string
+          member_message?: string
+          original_photo_path?: string | null
+          phone?: string
+          photo_confirmed?: boolean
+          public_photo_consent?: boolean
+          region?: string
+          secondary_phone?: string
+          sex?: string
+          status?: string
+          submitted_at?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_dossiers_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: true
+            referencedRelation: "drivers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      member_notifications: {
+        Row: {
+          created_at: string
+          driver_id: string | null
+          id: string
+          message: string
+          read_at: string | null
+          recipient_id: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          driver_id?: string | null
+          id?: string
+          message?: string
+          read_at?: string | null
+          recipient_id: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          driver_id?: string | null
+          id?: string
+          message?: string
+          read_at?: string | null
+          recipient_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_notifications_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "drivers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      membership_cards: {
+        Row: {
+          adhesion_date: string
+          driver_id: string
+          expires_on: string
+          first_name: string
+          id: string
+          issued_at: string
+          last_name: string
+          loss_instructions: string
+          matricule: string
+          photo_path: string
+          public_photo_consent: boolean
+          reason: string
+          signature_path: string | null
+          stamp_path: string | null
+          starts_on: string
+          status: string
+          terms: string
+          token: string
+        }
+        Insert: {
+          adhesion_date: string
+          driver_id: string
+          expires_on: string
+          first_name: string
+          id?: string
+          issued_at?: string
+          last_name: string
+          loss_instructions?: string
+          matricule: string
+          photo_path: string
+          public_photo_consent?: boolean
+          reason?: string
+          signature_path?: string | null
+          stamp_path?: string | null
+          starts_on: string
+          status?: string
+          terms: string
+          token?: string
+        }
+        Update: {
+          adhesion_date?: string
+          driver_id?: string
+          expires_on?: string
+          first_name?: string
+          id?: string
+          issued_at?: string
+          last_name?: string
+          loss_instructions?: string
+          matricule?: string
+          photo_path?: string
+          public_photo_consent?: boolean
+          reason?: string
+          signature_path?: string | null
+          stamp_path?: string | null
+          starts_on?: string
+          status?: string
+          terms?: string
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "membership_cards_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "drivers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      membership_settings: {
+        Row: {
+          id: number
+          loss_instructions: string
+          photo_height_mm: number
+          photo_width_mm: number
+          signature_path: string | null
+          stamp_path: string | null
+          terms: string
+          validity_months: number | null
+        }
+        Insert: {
+          id?: number
+          loss_instructions?: string
+          photo_height_mm?: number
+          photo_width_mm?: number
+          signature_path?: string | null
+          stamp_path?: string | null
+          terms?: string
+          validity_months?: number | null
+        }
+        Update: {
+          id?: number
+          loss_instructions?: string
+          photo_height_mm?: number
+          photo_width_mm?: number
+          signature_path?: string | null
+          stamp_path?: string | null
+          terms?: string
+          validity_months?: number | null
+        }
+        Relationships: []
+      }
       president_message: {
         Row: {
           body: string
@@ -495,6 +788,8 @@ export type Database = {
       }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
       mark_password_changed: { Args: never; Returns: undefined }
+      membership_manager: { Args: never; Returns: boolean }
+      next_membership_identifier: { Args: never; Returns: string }
       record_login: { Args: never; Returns: undefined }
       update_my_contact: {
         Args: { _address: string; _phone: string }
@@ -508,6 +803,19 @@ export type Database = {
           last_name: string
           matricule: string
           status: string
+        }[]
+      }
+      verify_membership_card: {
+        Args: { _token: string }
+        Returns: {
+          adhesion_date: string
+          card_status: string
+          expires_on: string
+          first_name: string
+          last_name: string
+          matricule: string
+          photo_path: string
+          starts_on: string
         }[]
       }
     }

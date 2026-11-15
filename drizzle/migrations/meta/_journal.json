@@ -78,6 +78,13 @@
       "when": 1794186262026,
       "tag": "0010_bureau_settings_editor_read",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1794701999305,
+      "tag": "0011_membership_workflow",
+      "breakpoints": true
     }
   ]
 }

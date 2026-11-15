@@ -29,6 +29,7 @@ import { Route as AuthenticatedAdminParametresRouteImport } from './routes/_auth
 import { Route as AuthenticatedAdminUtilisateursRouteImport } from './routes/_authenticated/admin.utilisateurs'
 import { Route as ApiPublicMembresRouteImport } from './routes/api/public/membres'
 import { Route as ApiPublicMembresCompteRouteImport } from './routes/api/public/membres.compte'
+import { Route as ApiPublicMembresDossierRouteImport } from './routes/api/public/membres.dossier'
 import { Route as ApiPublicMembresImportRouteImport } from './routes/api/public/membres.import'
 
 const IndexRoute = IndexRouteImport.update({
@@ -137,6 +138,11 @@ const ApiPublicMembresCompteRoute = ApiPublicMembresCompteRouteImport.update({
   path: '/compte',
   getParentRoute: () => ApiPublicMembresRoute,
 } as any)
+const ApiPublicMembresDossierRoute = ApiPublicMembresDossierRouteImport.update({
+  id: '/dossier',
+  path: '/dossier',
+  getParentRoute: () => ApiPublicMembresRoute,
+} as any)
 const ApiPublicMembresImportRoute = ApiPublicMembresImportRouteImport.update({
   id: '/import',
   path: '/import',
@@ -163,6 +169,7 @@ export interface FileRoutesByFullPath {
   '/api/public/membres': typeof ApiPublicMembresRouteWithChildren
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/api/public/membres/compte': typeof ApiPublicMembresCompteRoute
+  '/api/public/membres/dossier': typeof ApiPublicMembresDossierRoute
   '/api/public/membres/import': typeof ApiPublicMembresImportRoute
 }
 export interface FileRoutesByTo {
@@ -184,6 +191,7 @@ export interface FileRoutesByTo {
   '/api/public/membres': typeof ApiPublicMembresRouteWithChildren
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/api/public/membres/compte': typeof ApiPublicMembresCompteRoute
+  '/api/public/membres/dossier': typeof ApiPublicMembresDossierRoute
   '/api/public/membres/import': typeof ApiPublicMembresImportRoute
 }
 export interface FileRoutesById {
@@ -208,6 +216,7 @@ export interface FileRoutesById {
   '/api/public/membres': typeof ApiPublicMembresRouteWithChildren
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/api/public/membres/compte': typeof ApiPublicMembresCompteRoute
+  '/api/public/membres/dossier': typeof ApiPublicMembresDossierRoute
   '/api/public/membres/import': typeof ApiPublicMembresImportRoute
 }
 export interface FileRouteTypes {
@@ -232,6 +241,7 @@ export interface FileRouteTypes {
     | '/api/public/membres'
     | '/admin/'
     | '/api/public/membres/compte'
+    | '/api/public/membres/dossier'
     | '/api/public/membres/import'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -253,6 +263,7 @@ export interface FileRouteTypes {
     | '/api/public/membres'
     | '/admin'
     | '/api/public/membres/compte'
+    | '/api/public/membres/dossier'
     | '/api/public/membres/import'
   id:
     | '__root__'
@@ -276,6 +287,7 @@ export interface FileRouteTypes {
     | '/api/public/membres'
     | '/_authenticated/admin/'
     | '/api/public/membres/compte'
+    | '/api/public/membres/dossier'
     | '/api/public/membres/import'
   fileRoutesById: FileRoutesById
 }
@@ -432,6 +444,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicMembresCompteRouteImport
       parentRoute: typeof ApiPublicMembresRoute
     }
+    '/api/public/membres/dossier': {
+      id: '/api/public/membres/dossier'
+      path: '/dossier'
+      fullPath: '/api/public/membres/dossier'
+      preLoaderRoute: typeof ApiPublicMembresDossierRouteImport
+      parentRoute: typeof ApiPublicMembresRoute
+    }
     '/api/public/membres/import': {
       id: '/api/public/membres/import'
       path: '/import'
@@ -484,11 +503,13 @@ const AuthenticatedRouteRouteWithChildren =
 
 interface ApiPublicMembresRouteChildren {
   ApiPublicMembresCompteRoute: typeof ApiPublicMembresCompteRoute
+  ApiPublicMembresDossierRoute: typeof ApiPublicMembresDossierRoute
   ApiPublicMembresImportRoute: typeof ApiPublicMembresImportRoute
 }
 
 const ApiPublicMembresRouteChildren: ApiPublicMembresRouteChildren = {
   ApiPublicMembresCompteRoute: ApiPublicMembresCompteRoute,
+  ApiPublicMembresDossierRoute: ApiPublicMembresDossierRoute,
   ApiPublicMembresImportRoute: ApiPublicMembresImportRoute,
 }
 

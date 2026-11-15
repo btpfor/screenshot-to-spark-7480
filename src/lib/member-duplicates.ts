@@ -4,7 +4,7 @@ type Lookup = (field: "cni_number" | "matricule", value: string) => Promise<bool
 export const normalizeCni = (cni: string) => cni.trim().toLowerCase();
 
 export async function findMemberConflict(cni: string, identifier: string, exists: Lookup): Promise<MemberConflict | null> {
-  if (await exists("cni_number", normalizeCni(cni))) return "cni";
+  if (cni.trim() && await exists("cni_number", normalizeCni(cni))) return "cni";
   if (await exists("matricule", identifier)) return "identifier";
   return null;
 }
@@ -12,7 +12,7 @@ export async function findMemberConflict(cni: string, identifier: string, exists
 export function memberConflictMessage(conflict: MemberConflict, identifier: string) {
   return conflict === "cni"
     ? "Ce numéro de carte d’identité (CNI) est déjà enregistré pour un membre. Aucun nouveau compte n’a été créé."
-    : `L’identifiant « ${identifier} » existe déjà : une autre CNI se termine par les mêmes trois caractères. Aucun compte n’a été créé. Vérifiez le numéro de CNI ou contactez le super administrateur.`;
+    : `L’identifiant « ${identifier} » existe déjà. Aucun compte n’a été créé. Réessayez ou contactez le super administrateur.`;
 }
 
 export function conflictFromDatabaseError(error: { code?: string; message: string }): MemberConflict | null {

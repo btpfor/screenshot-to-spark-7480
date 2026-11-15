@@ -1,3 +1,11 @@
+# Gestion des adhérents et cartes officielles
+- [ ] Remplacer la dérivation CNI par une numérotation serveur séquentielle sans toucher aux anciens matricules ni aux accès.
+- [ ] Ajouter dossier privé, formulaire en cinq étapes, documents, photo confirmée et suivi des statuts.
+- [ ] Intégrer détection du visage et suppression du fond par IA locale réelle, cadrage et comparaison, sans génération de visage.
+- [ ] Connecter examen administratif, corrections, validation, audit et notifications internes.
+- [ ] Ajouter cartes recto-verso, dates décidées par le GIE, historique, exports et QR opaque avec vérification serveur.
+- [ ] Étendre le pont Cloudflare, tester les parcours authentifiés et les permissions, puis vérifier les petits écrans et l’accueil PWA.
+
 # Connexion en portrait et clavier mobile
 - [x] Adapter la page et le défilement au clavier Android/iPhone, en gardant logo et voiture compacts.
 - [x] Vérifier cinq petits formats portrait (320, 360, 375, 390, 430), la saisie, la visibilité du mot de passe et le bouton avec une hauteur réduite ; quatre tests réussis, aucune erreur navigateur.

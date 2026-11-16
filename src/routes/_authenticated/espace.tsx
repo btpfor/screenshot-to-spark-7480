@@ -8,7 +8,7 @@ import { Logo } from "@/components/Logo";
 import { MemberPhoto } from "@/components/MemberPhoto";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
-import { ScaledCard } from "@/components/MemberCardDialog";
+import { MembershipWorkspace } from "@/components/MembershipWorkspace";
 
 export const Route = createFileRoute("/_authenticated/espace")({
   head: () => ({ meta: [
@@ -30,7 +30,8 @@ function Espace() {
     queryKey: ["espace", user?.id],
     enabled: !!user,
     queryFn: async () => {
-      const { data: d } = await supabase.from("drivers").select("*").eq("user_id", user!.id).maybeSingle();
+      if (!user) return { driver: null, tx: [], vehicles: [] };
+      const { data: d } = await supabase.from("drivers").select("*").eq("user_id", user.id).maybeSingle();
       if (!d) return { driver: null, tx: [], vehicles: [] };
       const [t, v] = await Promise.all([
         supabase.from("transactions").select("*").eq("driver_id", d.id).order("paid_at", { ascending: false }),
@@ -81,10 +82,7 @@ function Espace() {
               </dl>
             </div>
           </div>
-          <div className="rounded-xl border bg-card p-5 shadow-card">
-            <h2 className="mb-3 font-semibold">Ma carte de membre</h2>
-            <ScaledCard member={d} />
-          </div>
+          <MembershipWorkspace />
 
           <div className="no-print grid gap-4 sm:grid-cols-2">
             <div className="rounded-xl border bg-card p-5 shadow-card"><div className="text-xs text-muted-foreground">Total cotisé</div><div className="mt-1 font-display text-2xl font-bold text-primary">{fcfa(paid)}</div></div>
@@ -93,15 +91,15 @@ function Espace() {
 
           <div className="no-print rounded-xl border bg-card p-5 shadow-card">
             <h2 className="mb-3 flex items-center gap-2 font-semibold"><Car className="h-4 w-4 text-primary" /> Mon véhicule</h2>
-            {data!.vehicles.length === 0 ? <p className="text-sm text-muted-foreground">Aucun véhicule affecté.</p> : data!.vehicles.map((v) => (
+            {(data?.vehicles??[]).length === 0 ? <p className="text-sm text-muted-foreground">Aucun véhicule affecté.</p> : (data?.vehicles??[]).map((v) => (
               <div key={v.id} className="text-sm">{v.brand} {v.model} — <b>{v.plate}</b> · assurance jusqu'au {dateFr(v.insurance_expiry)}</div>
             ))}
           </div>
 
           <div className="no-print rounded-xl border bg-card p-5 shadow-card">
             <h2 className="mb-3 font-semibold">Historique des cotisations</h2>
-            {data!.tx.length === 0 ? <p className="text-sm text-muted-foreground">Aucune opération.</p> : (
-              <ul className="divide-y text-sm">{data!.tx.map((t) => (
+            {(data?.tx??[]).length === 0 ? <p className="text-sm text-muted-foreground">Aucune opération.</p> : (
+              <ul className="divide-y text-sm">{(data?.tx??[]).map((t) => (
                 <li key={t.id} className="flex justify-between py-2"><span>{t.receipt_number} · {dateFr(t.paid_at)}</span><span>{fcfa(t.amount)} {t.status === "impaye" && <span className="text-destructive">(impayé)</span>}</span></li>
               ))}</ul>
             )}

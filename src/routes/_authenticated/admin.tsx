@@ -24,6 +24,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
 const nav = [
   { to: "/admin", label: "Tableau de bord", icon: LayoutDashboard, exact: true },
   { to: "/admin/membres", label: "Gestion des membres", icon: Users },
+  { to: "/admin/dossiers", label: "Dossiers & cartes", icon: ShieldCheck },
   { to: "/admin/utilisateurs", label: "Utilisateurs & rôles", icon: ShieldCheck, superOnly: true },
   { to: "/admin/messages", label: "Messages reçus", icon: Inbox },
   { to: "/admin/parametres", label: "Paramètres du GIE", icon: Settings },

@@ -30,7 +30,7 @@ use the editor.
 <!-- LOVABLE:END -->
 
 - Staff password replacement uses the shared password-change page; initial accounts carry a user-metadata reminder, never a role claim, so credentials remain solely in Auth and roles in user_roles.
-- Member identifier derivation and validation live in member-ids.ts and run server-side for both individual creation and imports; store the resulting identifier in matricule to preserve existing card and login paths, and reject collisions via its unique constraint.
+- Member creation/import allocate identifiers using the atomic next_membership_identifier database function; member-ids.ts maps permanent identifiers to existing Auth email paths, preserving legacy logins and uniqueness.
 - Member creation and imports share CNI-first duplicate checks in member-duplicates.ts and database uniqueness safeguards, so conflicts are rejected before Auth creation and concurrent requests cannot create duplicate CNIs.
 - PWA installation is shared through InstallAppProvider; only pwa.ts registers the generated app-shell worker, refusing dev, iframe and preview hosts. Cache static public assets only; NetworkFirst navigations never write responses and fall back to a public offline document, so authenticated SSR and API data remain uncached.
 - Future push notifications must use opt-in Web Push subscriptions with VAPID and authenticated server authorization; capability detection alone must never request permission or send notifications.
@@ -44,3 +44,6 @@ use the editor.
 - Bureau media shares the private president-media bucket; public signing is restricted to the current group photo or published bureau entries, editors can read drafts, and contact buttons follow each entry's authorization. New entries start unpublished to avoid exposing incomplete details.
 - External (Cloudflare) deployments reach admin operations only through the /api/public/membres* bridge hosted on Lovable: callers authenticate with their own login token plus a server-side role check, CORS is restricted to the allowlist in api-auth.ts, and the service-role key never leaves Lovable hosting. The frontend picks the bridge when VITE_API_URL is set, otherwise same-origin server functions.
 - Sign-in keeps native document scrolling and uses a route-scoped visualViewport hook with listener cleanup; mobile focus compacts branding and reveals controls without fixed positioning or disabling pinch zoom, so both keyboard-resizing Android and overlay-keyboard iOS remain usable.
+- MembershipWorkspace shares member and manager dossier flows; membership.functions.ts verifies ownership/roles before privileged operations, and atomic database functions serialize administrative decisions and card issuance.
+- Identity photo processing dynamically loads MediaPipe face detection and segmentation on-device; preserve source facial pixels, store originals privately, and use externalized WASM assets to stay below repository size limits.
+- Official cards use immutable issuance snapshots and opaque tokens; public verification resolves live status while downloadable ID-1 fronts/backs remain historical documents.

@@ -787,10 +787,32 @@ export type Database = {
         Returns: boolean
       }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
+      issue_membership_card: {
+        Args: {
+          _actor: string
+          _driver: string
+          _end: string
+          _reason: string
+          _start: string
+        }
+        Returns: string
+      }
       mark_password_changed: { Args: never; Returns: undefined }
       membership_manager: { Args: never; Returns: boolean }
       next_membership_identifier: { Args: never; Returns: string }
+      public_membership_photo: { Args: { _path: string }; Returns: boolean }
       record_login: { Args: never; Returns: undefined }
+      review_membership_dossier: {
+        Args: {
+          _actor: string
+          _adhesion: string
+          _comment: string
+          _driver: string
+          _message: string
+          _status: string
+        }
+        Returns: undefined
+      }
       update_my_contact: {
         Args: { _address: string; _phone: string }
         Returns: undefined

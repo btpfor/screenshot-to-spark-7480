@@ -2,9 +2,9 @@ import { z } from "zod";
 export const dossierLabels: Record<string,string> = { profil_a_completer: "Profil à compléter", incomplet: "Dossier incomplet", soumis: "Dossier soumis", verification: "En cours de vérification", correction: "Correction demandée", valide: "Dossier validé", rejete: "Dossier rejeté" };
 export const editableDossier = (status: string) => ["profil_a_completer","incomplet","correction"].includes(status);
 const text = z.string().trim().max(200).default("");
-const date = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional();
+const date = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().default(null);
 export const profileSchema = z.object({
- first_name:text,last_name:text,phone:z.string().trim().max(20).default(""),birth_date:date,birth_place:text,sex:text,address:text,region:text,department:text,commune:text,secondary_phone:text,email:z.union([z.string().email(),z.literal("")]).default(""),identity_type:text,cni_number:z.string().trim().regex(/^[a-z0-9]{3,40}$/i).nullable().optional(),identity_issued:date,identity_expiry:date,license_number:text,license_category:text,license_issued:date,license_expiry:date,original_photo_path:z.string().max(250).nullable().optional(),confirmed_photo_path:z.string().max(250).nullable().optional(),photo_confirmed:z.boolean().default(false),public_photo_consent:z.boolean().default(false),certified:z.boolean().default(false)
+ first_name:text,last_name:text,phone:z.string().trim().max(20).default(""),birth_date:date,birth_place:text,sex:text,address:text,region:text,department:text,commune:text,secondary_phone:text,email:z.union([z.string().email(),z.literal("")]).default(""),identity_type:text,cni_number:z.string().trim().regex(/^[a-z0-9]{3,40}$/i).nullable().default(null),identity_issued:date,identity_expiry:date,license_number:text,license_category:text,license_issued:date,license_expiry:date,original_photo_path:z.string().max(250).nullable().default(null),confirmed_photo_path:z.string().max(250).nullable().default(null),photo_confirmed:z.boolean().default(false),public_photo_consent:z.boolean().default(false),certified:z.boolean().default(false)
 });
 export type ProfileInput = z.infer<typeof profileSchema>;
 export function missingProfile(p: Partial<ProfileInput>) {

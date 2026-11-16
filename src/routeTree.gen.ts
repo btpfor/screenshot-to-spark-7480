@@ -19,6 +19,7 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedChangerMotDePasseRouteImport } from './routes/_authenticated/changer-mot-de-passe'
 import { Route as AuthenticatedEspaceRouteImport } from './routes/_authenticated/espace'
 import { Route as AuthenticatedTableauRouteImport } from './routes/_authenticated/tableau'
+import { Route as CarteTokenRouteImport } from './routes/carte.$token'
 import { Route as VerifierMatriculeRouteImport } from './routes/verifier.$matricule'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminBureauRouteImport } from './routes/_authenticated/admin.bureau'
@@ -81,6 +82,11 @@ const AuthenticatedTableauRoute = AuthenticatedTableauRouteImport.update({
   id: '/tableau',
   path: '/tableau',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const CarteTokenRoute = CarteTokenRouteImport.update({
+  id: '/carte/$token',
+  path: '/carte/$token',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const VerifierMatriculeRoute = VerifierMatriculeRouteImport.update({
   id: '/verifier/$matricule',
@@ -159,6 +165,7 @@ export interface FileRoutesByFullPath {
   '/changer-mot-de-passe': typeof AuthenticatedChangerMotDePasseRoute
   '/espace': typeof AuthenticatedEspaceRoute
   '/tableau': typeof AuthenticatedTableauRoute
+  '/carte/$token': typeof CarteTokenRoute
   '/verifier/$matricule': typeof VerifierMatriculeRoute
   '/admin/bureau': typeof AuthenticatedAdminBureauRoute
   '/admin/membres': typeof AuthenticatedAdminMembresRoute
@@ -181,6 +188,7 @@ export interface FileRoutesByTo {
   '/changer-mot-de-passe': typeof AuthenticatedChangerMotDePasseRoute
   '/espace': typeof AuthenticatedEspaceRoute
   '/tableau': typeof AuthenticatedTableauRoute
+  '/carte/$token': typeof CarteTokenRoute
   '/verifier/$matricule': typeof VerifierMatriculeRoute
   '/admin/bureau': typeof AuthenticatedAdminBureauRoute
   '/admin/membres': typeof AuthenticatedAdminMembresRoute
@@ -206,6 +214,7 @@ export interface FileRoutesById {
   '/_authenticated/changer-mot-de-passe': typeof AuthenticatedChangerMotDePasseRoute
   '/_authenticated/espace': typeof AuthenticatedEspaceRoute
   '/_authenticated/tableau': typeof AuthenticatedTableauRoute
+  '/carte/$token': typeof CarteTokenRoute
   '/verifier/$matricule': typeof VerifierMatriculeRoute
   '/_authenticated/admin/bureau': typeof AuthenticatedAdminBureauRoute
   '/_authenticated/admin/membres': typeof AuthenticatedAdminMembresRoute
@@ -231,6 +240,7 @@ export interface FileRouteTypes {
     | '/changer-mot-de-passe'
     | '/espace'
     | '/tableau'
+    | '/carte/$token'
     | '/verifier/$matricule'
     | '/admin/bureau'
     | '/admin/membres'
@@ -253,6 +263,7 @@ export interface FileRouteTypes {
     | '/changer-mot-de-passe'
     | '/espace'
     | '/tableau'
+    | '/carte/$token'
     | '/verifier/$matricule'
     | '/admin/bureau'
     | '/admin/membres'
@@ -277,6 +288,7 @@ export interface FileRouteTypes {
     | '/_authenticated/changer-mot-de-passe'
     | '/_authenticated/espace'
     | '/_authenticated/tableau'
+    | '/carte/$token'
     | '/verifier/$matricule'
     | '/_authenticated/admin/bureau'
     | '/_authenticated/admin/membres'
@@ -298,6 +310,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   MembresDuBureauRoute: typeof MembresDuBureauRoute
   MotDuPresidentRoute: typeof MotDuPresidentRoute
+  CarteTokenRoute: typeof CarteTokenRoute
   VerifierMatriculeRoute: typeof VerifierMatriculeRoute
   ApiPublicMembresRoute: typeof ApiPublicMembresRouteWithChildren
 }
@@ -373,6 +386,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/tableau'
       preLoaderRoute: typeof AuthenticatedTableauRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/carte/$token': {
+      id: '/carte/$token'
+      path: '/carte/$token'
+      fullPath: '/carte/$token'
+      preLoaderRoute: typeof CarteTokenRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/verifier/$matricule': {
       id: '/verifier/$matricule'
@@ -523,6 +543,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   MembresDuBureauRoute: MembresDuBureauRoute,
   MotDuPresidentRoute: MotDuPresidentRoute,
+  CarteTokenRoute: CarteTokenRoute,
   VerifierMatriculeRoute: VerifierMatriculeRoute,
   ApiPublicMembresRoute: ApiPublicMembresRouteWithChildren,
 }

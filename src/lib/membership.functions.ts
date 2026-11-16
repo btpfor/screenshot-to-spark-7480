@@ -47,7 +47,7 @@ export async function runMembership(ctx:ApiAuthContext,input:Action) {
   if(["correction","rejete"].includes(input.status??"")&&!input.message?.trim()) throw new Error("Précisez le motif destiné au membre.");
   if(input.status==="valide" && (missingProfile({...dossier,certified:true}).length || !input.adhesionDate)) throw new Error("Complétez le dossier et choisissez une date d’adhésion.");
   if(input.status==="valide" && !["soumis","verification"].includes(dossier.status)) throw new Error("Le dossier doit être soumis avant validation.");
-  const {error}=await a.rpc("review_membership_dossier",{_driver:driver.id,_status:input.status??"",_message:input.message??"",_comment:input.comment??"",_adhesion:input.adhesionDate||null,_actor:ctx.userId});
+  const {error}=await a.rpc("review_membership_dossier",{_driver:driver.id,_status:input.status??"",_message:input.message??"",_comment:input.comment??"",_adhesion:input.adhesionDate||dossier.adhesion_date||driver.join_date,_actor:ctx.userId});
   if(error) throw new Error(error.message); return {ok:true};
  }
  if(input.action==="issue") {
@@ -64,7 +64,7 @@ export async function runMembership(ctx:ApiAuthContext,input:Action) {
   return {ok:true};
  }
  const [docs,cards,notes,settings]=await Promise.all([a.from("member_documents").select("*").eq("driver_id",driver.id),a.from("membership_cards").select("*").eq("driver_id",driver.id).order("issued_at",{ascending:false}),ctx.supabase.from("member_notifications").select("*").order("created_at",{ascending:false}).limit(50),a.from("membership_settings").select("*").eq("id",1).maybeSingle()]);
- const signed=async(bucket:string,path:string|null)=> {if(!path)return null;const {data}=await a.storage.from(bucket).createSignedUrl(path,300);return data?.signedUrl??null;};
+ const signed=async(bucket:string,path:string|null)=> {if(!path)return null;const {data}=await a.storage.from(bucket).createSignedUrl(path,300);const url=data?.signedUrl;return url?url.replace(new URL(url).origin,import.meta.env["VITE_SUPABASE_URL"]):null;};
  return {driver:{id:driver.id,first_name:driver.first_name,last_name:driver.last_name,matricule:driver.matricule,status:driver.status,account_status:driver.account_status,created_at:driver.created_at},dossier:{...dossier,internal_comment:manager?dossier.internal_comment:""},documents:await Promise.all((docs.data??[]).map(async d=>({...d,url:await signed("member-documents",d.path)}))),cards:await Promise.all((cards.data??[]).map(async c=>({...c,photo:await signed("photos",c.photo_path),signature:await signed("member-documents",c.signature_path),stamp:await signed("member-documents",c.stamp_path)}))),notifications:notes.data??[],settings:settings.data,manager:!!manager,photo:await signed("photos",dossier.confirmed_photo_path),original:await signed("photos",dossier.original_photo_path)};
 }
 export const membershipAction=createServerFn({method:"POST"}).middleware([requireSupabaseAuth]).inputValidator((d:unknown)=>membershipActionSchema.parse(d)).handler(({data,context})=>runMembership(context,data));

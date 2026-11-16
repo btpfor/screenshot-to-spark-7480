@@ -57,7 +57,7 @@ export async function runMembership(ctx:ApiAuthContext,input:Action) {
  }
  if(input.action==="card_status") {
   if(!input.cardId||!["active","suspended","cancelled"].includes(input.status??"")) throw new Error("Carte ou statut invalide");
-  const {error}=await a.from("membership_cards").update({status:input.status}).eq("id",input.cardId).eq("driver_id",driver.id);
+  const {error}=await a.from("membership_cards").update({status:input.status??"cancelled"}).eq("id",input.cardId).eq("driver_id",driver.id);
   if(error) throw new Error("Modification impossible");
   await a.from("audit_log").insert({user_id:ctx.userId,action:"CARD_"+input.status,table_name:"membership_cards",record_id:input.cardId});
   if(driver.user_id) await a.from("member_notifications").insert({recipient_id:driver.user_id,driver_id:driver.id,title:"Statut de carte modifié",message:input.status==="suspended"?"Votre carte est suspendue.":input.status==="cancelled"?"Votre carte est annulée.":"Votre carte est réactivée."});

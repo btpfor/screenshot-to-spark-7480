@@ -57,10 +57,8 @@ export async function runMembership(ctx:ApiAuthContext,input:Action) {
  }
  if(input.action==="card_status") {
   if(!input.cardId||!["active","suspended","cancelled"].includes(input.status??"")) throw new Error("Carte ou statut invalide");
-  const {error}=await a.from("membership_cards").update({status:input.status??"cancelled"}).eq("id",input.cardId).eq("driver_id",driver.id);
-  if(error) throw new Error("Modification impossible");
-  await a.from("audit_log").insert({user_id:ctx.userId,action:"CARD_"+input.status,table_name:"membership_cards",record_id:input.cardId});
-  if(driver.user_id) await a.from("member_notifications").insert({recipient_id:driver.user_id,driver_id:driver.id,title:"Statut de carte modifié",message:input.status==="suspended"?"Votre carte est suspendue.":input.status==="cancelled"?"Votre carte est annulée.":"Votre carte est réactivée."});
+  const {error}=await a.rpc("membership_card_status",{_card:input.cardId,_driver:driver.id,_status:input.status??"cancelled",_actor:ctx.userId});
+  if(error) throw new Error(error.message);
   return {ok:true};
  }
  const [docs,cards,notes,settings]=await Promise.all([a.from("member_documents").select("*").eq("driver_id",driver.id),a.from("membership_cards").select("*").eq("driver_id",driver.id).order("issued_at",{ascending:false}),ctx.supabase.from("member_notifications").select("*").order("created_at",{ascending:false}).limit(50),a.from("membership_settings").select("*").eq("id",1).maybeSingle()]);

@@ -798,6 +798,15 @@ export type Database = {
         Returns: string
       }
       mark_password_changed: { Args: never; Returns: undefined }
+      membership_card_status: {
+        Args: {
+          _actor: string
+          _card: string
+          _driver: string
+          _status: string
+        }
+        Returns: undefined
+      }
       membership_manager: { Args: never; Returns: boolean }
       next_membership_identifier: { Args: never; Returns: string }
       public_membership_photo: { Args: { _path: string }; Returns: boolean }

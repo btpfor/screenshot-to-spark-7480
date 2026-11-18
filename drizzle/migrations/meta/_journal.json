@@ -92,6 +92,13 @@
       "when": 1794787277961,
       "tag": "0012_membership_decisions_atomic",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1795003787584,
+      "tag": "0013_membership_security_guards",
+      "breakpoints": true
     }
   ]
 }

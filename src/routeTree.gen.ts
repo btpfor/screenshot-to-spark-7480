@@ -23,6 +23,7 @@ import { Route as CarteTokenRouteImport } from './routes/carte.$token'
 import { Route as VerifierMatriculeRouteImport } from './routes/verifier.$matricule'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminBureauRouteImport } from './routes/_authenticated/admin.bureau'
+import { Route as AuthenticatedAdminDossiersRouteImport } from './routes/_authenticated/admin.dossiers'
 import { Route as AuthenticatedAdminMembresRouteImport } from './routes/_authenticated/admin.membres'
 import { Route as AuthenticatedAdminMessagesRouteImport } from './routes/_authenticated/admin.messages'
 import { Route as AuthenticatedAdminMotDuPresidentRouteImport } from './routes/_authenticated/admin.mot-du-president'
@@ -104,6 +105,12 @@ const AuthenticatedAdminBureauRoute =
     path: '/bureau',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminDossiersRoute =
+  AuthenticatedAdminDossiersRouteImport.update({
+    id: '/dossiers',
+    path: '/dossiers',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminMembresRoute =
   AuthenticatedAdminMembresRouteImport.update({
     id: '/membres',
@@ -168,6 +175,7 @@ export interface FileRoutesByFullPath {
   '/carte/$token': typeof CarteTokenRoute
   '/verifier/$matricule': typeof VerifierMatriculeRoute
   '/admin/bureau': typeof AuthenticatedAdminBureauRoute
+  '/admin/dossiers': typeof AuthenticatedAdminDossiersRoute
   '/admin/membres': typeof AuthenticatedAdminMembresRoute
   '/admin/messages': typeof AuthenticatedAdminMessagesRoute
   '/admin/mot-du-president': typeof AuthenticatedAdminMotDuPresidentRoute
@@ -191,6 +199,7 @@ export interface FileRoutesByTo {
   '/carte/$token': typeof CarteTokenRoute
   '/verifier/$matricule': typeof VerifierMatriculeRoute
   '/admin/bureau': typeof AuthenticatedAdminBureauRoute
+  '/admin/dossiers': typeof AuthenticatedAdminDossiersRoute
   '/admin/membres': typeof AuthenticatedAdminMembresRoute
   '/admin/messages': typeof AuthenticatedAdminMessagesRoute
   '/admin/mot-du-president': typeof AuthenticatedAdminMotDuPresidentRoute
@@ -217,6 +226,7 @@ export interface FileRoutesById {
   '/carte/$token': typeof CarteTokenRoute
   '/verifier/$matricule': typeof VerifierMatriculeRoute
   '/_authenticated/admin/bureau': typeof AuthenticatedAdminBureauRoute
+  '/_authenticated/admin/dossiers': typeof AuthenticatedAdminDossiersRoute
   '/_authenticated/admin/membres': typeof AuthenticatedAdminMembresRoute
   '/_authenticated/admin/messages': typeof AuthenticatedAdminMessagesRoute
   '/_authenticated/admin/mot-du-president': typeof AuthenticatedAdminMotDuPresidentRoute
@@ -243,6 +253,7 @@ export interface FileRouteTypes {
     | '/carte/$token'
     | '/verifier/$matricule'
     | '/admin/bureau'
+    | '/admin/dossiers'
     | '/admin/membres'
     | '/admin/messages'
     | '/admin/mot-du-president'
@@ -266,6 +277,7 @@ export interface FileRouteTypes {
     | '/carte/$token'
     | '/verifier/$matricule'
     | '/admin/bureau'
+    | '/admin/dossiers'
     | '/admin/membres'
     | '/admin/messages'
     | '/admin/mot-du-president'
@@ -291,6 +303,7 @@ export interface FileRouteTypes {
     | '/carte/$token'
     | '/verifier/$matricule'
     | '/_authenticated/admin/bureau'
+    | '/_authenticated/admin/dossiers'
     | '/_authenticated/admin/membres'
     | '/_authenticated/admin/messages'
     | '/_authenticated/admin/mot-du-president'
@@ -415,6 +428,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminBureauRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/dossiers': {
+      id: '/_authenticated/admin/dossiers'
+      path: '/dossiers'
+      fullPath: '/admin/dossiers'
+      preLoaderRoute: typeof AuthenticatedAdminDossiersRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/membres': {
       id: '/_authenticated/admin/membres'
       path: '/membres'
@@ -483,6 +503,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminBureauRoute: typeof AuthenticatedAdminBureauRoute
+  AuthenticatedAdminDossiersRoute: typeof AuthenticatedAdminDossiersRoute
   AuthenticatedAdminMembresRoute: typeof AuthenticatedAdminMembresRoute
   AuthenticatedAdminMessagesRoute: typeof AuthenticatedAdminMessagesRoute
   AuthenticatedAdminMotDuPresidentRoute: typeof AuthenticatedAdminMotDuPresidentRoute
@@ -493,6 +514,7 @@ interface AuthenticatedAdminRouteChildren {
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminBureauRoute: AuthenticatedAdminBureauRoute,
+  AuthenticatedAdminDossiersRoute: AuthenticatedAdminDossiersRoute,
   AuthenticatedAdminMembresRoute: AuthenticatedAdminMembresRoute,
   AuthenticatedAdminMessagesRoute: AuthenticatedAdminMessagesRoute,
   AuthenticatedAdminMotDuPresidentRoute: AuthenticatedAdminMotDuPresidentRoute,

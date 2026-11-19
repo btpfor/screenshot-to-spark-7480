@@ -1,10 +1,13 @@
 # Gestion des adhérents et cartes officielles
-- [ ] Remplacer la dérivation CNI par une numérotation serveur séquentielle sans toucher aux anciens matricules ni aux accès.
-- [ ] Ajouter dossier privé, formulaire en cinq étapes, documents, photo confirmée et suivi des statuts.
-- [ ] Intégrer détection du visage et suppression du fond par IA locale réelle, cadrage et comparaison, sans génération de visage.
-- [ ] Connecter examen administratif, corrections, validation, audit et notifications internes.
-- [ ] Ajouter cartes recto-verso, dates décidées par le GIE, historique, exports et QR opaque avec vérification serveur.
-- [ ] Étendre le pont Cloudflare, tester les parcours authentifiés et les permissions, puis vérifier les petits écrans et l’accueil PWA.
+- [x] Remplacer la dérivation CNI par une numérotation serveur séquentielle sans toucher aux anciens matricules ni aux accès ; vipbgg-656 conservé.
+- [x] Ajouter dossier privé, formulaire en cinq étapes, documents, photo confirmée et suivi des statuts ; brouillon et soumission relus en session membre temporaire.
+- [x] Intégrer détection du visage et suppression du fond par IA locale réelle, cadrage et comparaison, sans génération de visage ; traitement et confirmation photo réellement testés.
+- [x] Connecter examen administratif, corrections, validation, audit et notifications internes ; examen et validation relus en session administrative.
+- [x] Ajouter cartes recto-verso, dates décidées par le GIE, historique, exports et QR opaque avec vérification serveur ; génération refusée sans signature et cachet officiels, jeton inconnu testé.
+- [x] Étendre le pont Cloudflare et vérifier le dossier sur huit largeurs, l’accueil public connecté et vingt tests de règles ; données et photos temporaires retirées.
+- [ ] Fournir signature et cachet officiels pour émettre une carte réelle et confirmer ses exports PDF/PNG, renouvellement et suspension via QR : fichiers officiels absents ; ne pas inventer de remplacement.
+- [ ] Confirmer création/première connexion d’un nouveau membre réel et droits entre deux comptes membres : informations du nouveau membre non fournies ; compte temporaire utilisé uniquement pour profil/photo/soumission.
+- [ ] Confirmer le module sur le site Cloudflare redéployé et sur appareils physiques : déploiement externe et téléphones non accessibles.
 
 # Connexion en portrait et clavier mobile
 - [x] Adapter la page et le défilement au clavier Android/iPhone, en gardant logo et voiture compacts.

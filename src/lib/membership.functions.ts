@@ -37,8 +37,9 @@ export async function runMembership(ctx:ApiAuthContext,input:Action) {
   if(!input.profile) throw new Error("Profil manquant");
   for(const path of [input.profile.original_photo_path,input.profile.confirmed_photo_path]) if(path && path!==dossier.original_photo_path && path!==dossier.confirmed_photo_path && !path.startsWith(driver.id+"/")) throw new Error("Photo invalide");
   if(input.submit && missingProfile(input.profile).length) throw new Error("Informations manquantes : "+missingProfile(input.profile).join(", "));
-  const {error}=await a.from("member_dossiers").update({...input.profile,status:input.submit?"soumis":dossier.status,submitted_at:input.submit?new Date().toISOString():dossier.submitted_at}).eq("driver_id",driver.id).eq("status",dossier.status);
+  const {data:saved,error}=await a.from("member_dossiers").update({...input.profile,status:input.submit?"soumis":dossier.status,submitted_at:input.submit?new Date().toISOString():dossier.submitted_at}).eq("driver_id",driver.id).eq("status",dossier.status).select("driver_id").maybeSingle();
   if(error) throw new Error(error.code==="23505"?"Cette pièce d’identité est déjà enregistrée.":error.message);
+  if(!saved) throw new Error("Le dossier a changé pendant votre saisie. Rechargez avant de réessayer.");
   return {ok:true};
  }
  if(["review","issue","card_status"].includes(input.action)) await assertManager(ctx);

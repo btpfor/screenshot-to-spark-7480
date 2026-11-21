@@ -1,3 +1,13 @@
+# Connexion à l’API Cloudflare existante
+- [x] Lire les nouvelles instructions et vérifier /api/auth/me : 401 JSON, session absente.
+- [x] Examiner l’accès Cloudflare en lecture seule : compte accessible, paramètres du Worker refusés (403 « No access to the specified resource. »).
+- [ ] Vérifier les contrats de connexion, session, déconnexion et de chaque module : accès au Worker refusé ; code/documentation existants à fournir sans secrets.
+- [ ] Connecter les modules seulement après vérification des contrats et autorisations ; ne pas basculer partiellement l’authentification ni modifier les données.
+- [ ] Vérifier D1/R2 et les essais authentifiés : ressources, sessions et contrats non vérifiés ; aucune migration ni infrastructure de déploiement Cloudflare à générer dans Lovable.
+
+# Création de membre sans véhicule
+- [ ] Retirer les champs véhicule et leur insertion de la création/import des membres, conserver les véhicules existants ; demande précédente interrompue par les nouvelles instructions.
+
 # Gestion des adhérents et cartes officielles
 - [x] Remplacer la dérivation CNI par une numérotation serveur séquentielle sans toucher aux anciens matricules ni aux accès ; vipbgg-656 conservé.
 - [x] Ajouter dossier privé, formulaire en cinq étapes, documents, photo confirmée et suivi des statuts ; brouillon et soumission relus en session membre temporaire.

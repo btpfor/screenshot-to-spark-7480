@@ -48,3 +48,4 @@ use the editor.
 - Identity photo processing dynamically loads MediaPipe face detection and segmentation on-device; preserve source facial pixels, store originals privately, and use externalized WASM assets to stay below repository size limits.
 - Official cards use immutable issuance snapshots and opaque tokens; public verification resolves live status while downloadable ID-1 fronts/backs remain historical documents.
 - Full membership settings are manager-only; authenticated member dossier responses expose only photo dimensions with empty administrative fields, so privileged reads cannot bypass that boundary.
+- Verify the existing external API's request/response, session and authorization contracts before replacing any Cloud-managed module; keep the current implementation active until a complete compatible flow is verified to avoid split authentication.

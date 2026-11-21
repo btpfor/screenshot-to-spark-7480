@@ -1,9 +1,10 @@
 # Connexion à l’API Cloudflare existante
 - [x] Lire les nouvelles instructions et vérifier /api/auth/me : 401 JSON, session absente.
 - [x] Examiner l’accès Cloudflare en lecture seule : compte accessible, paramètres du Worker refusés (403 « No access to the specified resource. »).
-- [ ] Vérifier les contrats de connexion, session, déconnexion et de chaque module : accès au Worker refusé ; code/documentation existants à fournir sans secrets.
+- [x] Lire les cinq fichiers fournis ; inventorier connexion/session/déconnexion, membres, dossiers, photos/documents et QR. Vérifier dix réponses HTTP publiques et deux incompatibilités SQLite en mémoire.
+- [ ] Vérifier les contrats authentifiés et les modules manquants : le code fourni ne contient pas les routes nécessaires pour plusieurs modules ; aucune session Cloudflare disponible.
 - [ ] Connecter les modules seulement après vérification des contrats et autorisations ; ne pas basculer partiellement l’authentification ni modifier les données.
-- [ ] Vérifier D1/R2 et les essais authentifiés : ressources, sessions et contrats non vérifiés ; aucune migration ni infrastructure de déploiement Cloudflare à générer dans Lovable.
+- [ ] Vérifier D1/R2 et les essais authentifiés : ressources de production non vérifiées ; accès publié Lovable non autorisé par CORS, schéma et création incompatibles. Aucune migration ni infrastructure de déploiement Cloudflare à générer dans Lovable.
 
 # Création de membre sans véhicule
 - [ ] Retirer les champs véhicule et leur insertion de la création/import des membres, conserver les véhicules existants ; demande précédente interrompue par les nouvelles instructions.

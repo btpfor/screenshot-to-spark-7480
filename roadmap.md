@@ -1,4 +1,5 @@
 # Connexion à l’API Cloudflare existante
+- [ ] Présenter le plan de correction priorisé (CORS, sessions, D1, membres sans véhicule, CSV, rôles, finances, flotte et documents) ; attendre l’autorisation avant toute correction ou intervention de production.
 - [x] Lire les nouvelles instructions et vérifier /api/auth/me : 401 JSON, session absente.
 - [x] Examiner l’accès Cloudflare en lecture seule : compte accessible, paramètres du Worker refusés (403 « No access to the specified resource. »).
 - [x] Lire les cinq fichiers fournis ; inventorier connexion/session/déconnexion, membres, dossiers, photos/documents et QR. Vérifier dix réponses HTTP publiques et deux incompatibilités SQLite en mémoire.

@@ -23,7 +23,7 @@ Lovable Cloud reste la recommandation pour conserver les fonctionnalités actuel
 - **Tests réellement effectués :** dix requêtes HTTP publiques sans session et deux reproductions SQLite en mémoire ; la lecture de compte et le refus d’accès aux paramètres du Worker proviennent de la vérification précédente.
 - **Tests non effectués :** connexion administrateur, opérations sur membres, import, rôles, téléversements et consultation privée. Aucune session authentifiée à cette API n’est disponible.
 - **Données modifiées :** aucune ; aucun compte créé, supprimé ou réinitialisé.
-- **Compilation/tests applicatifs :** non relancés, car aucun code applicatif n’a changé.
+- **Compilation/tests applicatifs :** aucune commande manuelle lancée, car aucun code applicatif n’a changé ; le dernier journal automatique consulté indique `build OK` le 21 novembre 2026 à 21:33:51 UTC. Aucun essai authentifié Cloudflare n’est validé par cette compilation.
 
 ## Contrats présents dans le fichier fourni
 

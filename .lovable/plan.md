@@ -16,7 +16,7 @@ Conserver **Cloudflare Workers + D1 + R2** comme backend principal cible, avec l
 ### CORS
 **Fichiers :** `wrangler.jsonc` et `src/index.ts` du Worker existant (fourni sous le nom `index.ts`).
 
-Proposer l’ajout de **`https://screenshot-to-spark-7480.lovable.app`** à `ALLOWED_ORIGINS`, sans retirer les domaines déjà autorisés. Cette modification sera à appliquer au service existant uniquement après autorisation ; aucun déploiement automatique.
+Ajouter **`https://screenshot-to-spark-7480.lovable.app`** à `ALLOWED_ORIGINS`, sans retirer les origines existantes, après autorisation uniquement.
 
 Conserver une liste exacte, sans `*`. Vérifier les en-têtes d’origine, de cookies et `Vary: Origin` sur réponses normales, erreurs et OPTIONS. Autoriser uniquement les méthodes/en-têtes utilisés ; conserver les contrôles d’origine et de droits des écritures.
 
@@ -31,8 +31,8 @@ Conserver une liste exacte, sans `*`. Vérifier les en-têtes d’origine, de co
 - Conserver le cookie HttpOnly, Secure et le stockage haché du jeton dans D1. Empêcher la mise en cache des réponses privées.
 - Bloquer côté Worker les opérations métier quand le changement initial est obligatoire, en laissant accessibles l’état de session, le changement de mot de passe et la déconnexion.
 - Préparer la révocation des autres sessions lors des futurs changements/réinitialisations autorisés, sans modifier les mots de passe actuels.
-- Aligner la règle du formulaire et du Worker : mot de passe provisoire choisi ou généré à **six chiffres**, puis remplacement obligatoire ; préserver la règle actuelle d’au moins six caractères pour le remplacement, sans imposer silencieusement les douze caractères du Worker fourni.
-- Tester séparément Safari/iPhone et Chrome/Android : le domaine Lovable et `workers.dev` sont intersites ; **la correction CORS seule ne garantit pas les cookies tiers**. Si les navigateurs bloquent la session, présenter une option de domaine de même site ou un relais sécurisé à approuver avant réalisation ; ne pas exposer de jeton pour contourner le blocage.
+- Aligner formulaire/Worker : provisoire choisi ou généré à **six chiffres**, remplacement obligatoire d’au moins six caractères, au lieu des douze imposés par ce Worker.
+- Tester Safari/iPhone et Chrome/Android : **CORS seul ne garantit pas les cookies tiers** entre Lovable et `workers.dev`. En cas de blocage, proposer domaine de même site ou relais sécurisé à approuver ; jamais un jeton exposé.
 
 **Limite :** aucune connexion administrateur réelle vérifiée ; obtenir une session avec votre accord, sans création de compte, réinitialisation ni exposition de secrets.
 
@@ -57,7 +57,7 @@ Ne pas rejouer les scripts d’initialisation. Comparer le schéma installé en 
 - `src/routes/_authenticated/admin.membres.tsx` : retirer l’objet `vehicle` et les lectures `v_brand`, `v_model`, `v_plate` de l’envoi.
 - `src/lib/members.functions.ts` : retirer `vehicle` de `memberSchema` (donc de `MemberInput`), puis le bloc `m.vehicle` / insertion automatique dans `vehicles`.
 
-**Constat précis :** le formulaire lu ne présente déjà plus de champs véhicule visibles, mais l’objet envoyé et le bloc d’insertion restent présents. Le CSV actuellement lu ne demande pas de véhicule. Vérifier aussi les modèles/imports et les appels qui réutilisent le schéma, sans toucher à la table `vehicles`.
+**Constat :** aucun champ véhicule visible actuellement, mais objet envoyé et insertion présents. Le CSV n’en demande pas. Vérifier les consommateurs du schéma ; ne pas toucher à `vehicles`.
 
 Le Worker crée déjà les membres sans véhicule. Conserver tous les champs personnels et accès ; flotte indépendante.
 
@@ -70,10 +70,10 @@ Routes **proposées**, absentes du fichier fourni ; les 404 constatés ne couvre
 | Module | Endpoints à préparer | Garanties |
 | --- | --- | --- |
 | Membres | `GET /api/membres/:id`, `PATCH /api/membres/:id` | Consultation personnelle ou responsable autorisé ; modification administrative complète sans modifier le matricule/login |
-| CSV | `POST /api/membres/import`, `GET /api/membres/export` | Validation ligne par ligne, doublons, matricules atomiques, résultats détaillés, journal ; aucun véhicule requis ; accès réservé |
-| Personnel et rôles | `GET /api/users`, `POST /api/users`, `PATCH /api/users/:id/roles` | Super administrateur uniquement pour les rôles ; huit rôles ; impossibilité de retirer le dernier super administrateur ; ne pas recréer l’administrateur existant |
-| Transactions | `GET /api/transactions`, `POST /api/transactions`, `PATCH /api/transactions/:id` | Permissions financières actuelles, validation montant FCFA et type, justificatifs privés, historique et totaux cohérents |
-| Véhicules | `GET /api/vehicles`, `POST /api/vehicles`, `PATCH /api/vehicles/:id` | Gestion indépendante, permissions du parc, lien membre facultatif selon le contrat ; aucune création automatique avec un membre |
+| CSV | `POST /api/membres/import`, `GET /api/membres/export` | Validation/doublons, matricules atomiques, résultats/journal ; accès réservé, sans véhicule |
+| Personnel et rôles | `GET /api/users`, `POST /api/users`, `PATCH /api/users/:id/roles` | Huit rôles, gestion super-admin ; protéger le dernier admin, ne pas le recréer |
+| Transactions | `GET /api/transactions`, `POST /api/transactions`, `PATCH /api/transactions/:id` | Droits financiers, FCFA, justificatifs privés et historique |
+| Véhicules | `GET /api/vehicles`, `POST /api/vehicles`, `PATCH /api/vehicles/:id` | Droits du parc ; gestion indépendante, jamais créée avec un membre |
 | Documents | `GET /api/membres/:id/documents`, `GET /api/documents/:id/content` | Propriétaire ou responsable autorisé à chaque lecture, R2 privé, pas de chemin public ni accès par identifiant deviné |
 | Signature/cachet | `POST /api/membership/settings/media` | Téléversement institutionnel autorisé, validation fichier et stockage privé ; ne pas inventer de signature/cachet |
 
@@ -104,4 +104,4 @@ Autres fonctions absentes du Worker : messages/IA, paramètres GIE, contacts, Bu
 4. Parcours authentifiés dans un environnement isolé autorisé, avec lecture de retour : connexion, création, import, rôle, transaction, flotte, document ; Safari/Chrome et petits écrans.
 5. Présenter résultats et limites. **Configuration Cloudflare, migration, bascule d’authentification ou publication de production : autorisation distincte obligatoire.**
 
-**À ce stade :** aucun endpoint authentifié validé en conditions réelles ; schéma D1 de production non inspecté ; lecture des paramètres du Worker précédemment refusée faute de permission/portée. Ce plan ne prétend pas que les corrections sont déjà effectuées.
+**Limites :** sessions réelles et schéma D1 de production non vérifiés ; paramètres Worker refusés faute de permission/portée. Aucune correction effectuée.

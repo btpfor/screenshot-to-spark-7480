@@ -58,7 +58,6 @@ export const memberSchema = z.object({
   photo_url: z.string().optional().nullable(),
   allow_shared_phone: z.boolean().default(false),
   password: z.string().trim().regex(/^\d{6}$/, "Le mot de passe provisoire doit contenir exactement 6 chiffres.").optional().nullable().or(z.literal("")),
-  vehicle: z.object({ brand: z.string(), model: z.string(), plate: z.string() }).partial().optional().nullable(),
 });
 export type MemberInput = z.infer<typeof memberSchema>;
 
@@ -112,10 +111,6 @@ export async function createOne(a: Awaited<ReturnType<typeof admin>>, m: MemberI
     await a.auth.admin.deleteUser(u.user.id);
     await a.from("drivers").delete().eq("id", d.id);
     throw new Error("Création du dossier impossible. Réessayez.");
-  }
-  const v = m.vehicle;
-  if (v?.plate && v.brand && v.model) {
-    await a.from("vehicles").insert({ brand: v.brand, model: v.model, plate: v.plate.toUpperCase(), driver_id: d.id, status: "en_circulation" });
   }
   return { id: d.id, matricule: d.matricule, password };
 }

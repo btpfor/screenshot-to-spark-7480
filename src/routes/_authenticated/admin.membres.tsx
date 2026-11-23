@@ -218,7 +218,6 @@ function AddMember({ onClose, onCreated }: { onClose: () => void; onCreated: (c:
         status: g("status") as "actif", license_number: g("license_number"), license_expiry: g("license_expiry"), photo_url,
         allow_shared_phone: f.get("allow_shared_phone") === "on",
         password: g("password"),
-        vehicle: { brand: g("v_brand"), model: g("v_model"), plate: g("v_plate") },
       };
       const r = externalApiUrl()
         ? await apiPost<{ matricule: string; password: string }>("/api/public/membres", input)

@@ -49,3 +49,5 @@ use the editor.
 - Official cards use immutable issuance snapshots and opaque tokens; public verification resolves live status while downloadable ID-1 fronts/backs remain historical documents.
 - Full membership settings are manager-only; authenticated member dossier responses expose only photo dimensions with empty administrative fields, so privileged reads cannot bypass that boundary.
 - Verify the existing external API's request/response, session and authorization contracts before replacing any Cloud-managed module; keep the current implementation active until a complete compatible flow is verified to avoid split authentication.
+- Member creation/import never writes vehicle records; keep the fleet module independent to prevent accidental registration during enrollment.
+- External API corrections stay in an isolated, non-imported reference folder with local D1/R2 tests; no production deployment or auth switchover occurs through this preparation.

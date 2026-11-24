@@ -1,3 +1,5 @@
+import { extraRoutes } from "./extra-routes";
+
 interface Env {
   DB: D1Database;
   FILES: R2Bucket;
@@ -155,6 +157,16 @@ function allowedOrigins(env: Env): string[] {
     .split(",")
     .map((value) => value.trim())
     .filter(Boolean);
+}
+
+async function snapshotImage(env: Env, sourcePath: string, destination: string): Promise<string> {
+  const object = await env.FILES.get(sourcePath);
+  if (!object || object.size > 5 * 1024 * 1024 ||
+      !["image/jpeg", "image/png", "image/webp"].includes(object.httpMetadata?.contentType ?? "")) {
+    throw new Error("Média officiel absent ou invalide.");
+  }
+  await env.FILES.put(destination, await object.arrayBuffer(), { httpMetadata: object.httpMetadata });
+  return destination;
 }
 
 function corsHeaders(request: Request, env: Env): Headers {
@@ -468,7 +480,7 @@ async function decryptCNI(
   return new TextDecoder().decode(decrypted);
 }
 
-export default {
+const worker = {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
     const path = url.pathname;
@@ -489,6 +501,22 @@ export default {
           return json(request, env, { error: "Changez votre mot de passe avant de continuer.", code: "PASSWORD_CHANGE_REQUIRED" }, 403);
         }
       }
+      if (request.method !== "GET" && !checkOrigin(request, env)) {
+        return json(request, env, { error: "Origine non autorisée." }, 403);
+      }
+      const extra = await extraRoutes(request, {
+        DB: env.DB, FILES: env.FILES, session: await getSession(request, env),
+        json: (data, status = 200) => json(request, env, data, status),
+        headers: () => { const headers = corsHeaders(request, env); headers.set("Cache-Control", "no-store, max-age=0"); return headers; },
+        call: (destination, body) => worker.fetch(new Request(new URL(destination, request.url), {
+          method: body === undefined ? "GET" : "POST", headers: request.headers,
+          ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+        }), env),
+        password: generateTemporaryPassword, hashPassword,
+        checkCni: (cni, excludeId) => checkCniDuplicate(cni, env, excludeId),
+        encryptCni: cni => encryptCNI(cni, env),
+      });
+      if (extra) return extra;
 		// ==========================================
 // LISTE DES MEMBRES
 // GET /api/membres
@@ -825,6 +853,11 @@ if (path === "/api/membres" && request.method === "POST") {
     photo_url?: string;
   };
 
+  if (!body || typeof body !== "object" || Array.isArray(body)) return json(request, env, { error: "Données invalides." }, 400);
+  for (const field of ["first_name", "last_name", "phone", "secondary_phone", "email", "address", "birth_date", "join_date", "license_number", "license_expiry", "cni_number", "notes", "password", "status", "platform", "photo_url"] as const) {
+    if (body[field] !== undefined && body[field] !== null && typeof body[field] !== "string") return json(request, env, { error: `Champ invalide : ${field}` }, 400);
+  }
+  if (body.allow_shared_phone !== undefined && typeof body.allow_shared_phone !== "boolean") return json(request, env, { error: "Autorisation de téléphone invalide." }, 400);
   const firstName = body.first_name?.trim();
   const lastName = body.last_name?.trim();
   const phone = body.phone?.trim().replace(/\s/g, "");
@@ -973,7 +1006,7 @@ if (path === "/api/membres" && request.method === "POST") {
       env.DB.prepare(`
         INSERT INTO user_roles (id, user_id, role)
         VALUES (?, ?, 'chauffeur')
-      ).bind(crypto.randomUUID(), userId),
+      `).bind(crypto.randomUUID(), userId),
       env.DB.prepare(`INSERT INTO audit_logs (id, user_id, action, entity_type, entity_id, details)
         VALUES (?, ?, 'member_created', 'member', ?, ?)`)
         .bind(crypto.randomUUID(), session?.user_id, memberId, JSON.stringify({ matricule })),
@@ -1061,6 +1094,106 @@ if (!supportedActions.includes(body.action ?? "")) {
 }
 
   const manager = isManager(session);
+
+if (body.action === "settings") {
+  if (!manager) {
+    return json(request, env, {
+      error: "Accès réservé aux responsables du GIE.",
+    }, 403);
+  }
+
+  const input = body.settings;
+  if (!input || typeof input !== "object") {
+    return json(request, env, { error: "Paramètres manquants." }, 400);
+  }
+
+  const photoWidth = Number(input.photo_width_mm);
+  const photoHeight = Number(input.photo_height_mm);
+  const validityMonths = input.validity_months == null || input.validity_months === ""
+    ? null
+    : Number(input.validity_months);
+  const terms = typeof input.terms === "string" ? input.terms.trim() : "";
+  const lossInstructions = typeof input.loss_instructions === "string"
+    ? input.loss_instructions.trim()
+    : "";
+
+  if (
+    !Number.isFinite(photoWidth) || photoWidth < 10 || photoWidth > 80 ||
+    !Number.isFinite(photoHeight) || photoHeight < 10 || photoHeight > 100 ||
+    (validityMonths !== null && (!Number.isInteger(validityMonths) || validityMonths < 1 || validityMonths > 120)) ||
+    !terms || !lossInstructions || terms.length > 5000 || lossInstructions.length > 2000
+  ) {
+    return json(request, env, {
+      error: "Vérifiez les dimensions, la durée de validité, les conditions et les consignes de perte.",
+    }, 400);
+  }
+
+  const signaturePath = input.signature_path == null || input.signature_path === ""
+    ? null : String(input.signature_path);
+  const stampPath = input.stamp_path == null || input.stamp_path === ""
+    ? null : String(input.stamp_path);
+
+  for (const objectPath of [signaturePath, stampPath]) {
+    if (objectPath && (!objectPath.startsWith("institution/") || !(await env.FILES.head(objectPath)))) {
+      return json(request, env, {
+        error: "Le fichier de signature ou de cachet est introuvable dans R2.",
+      }, 400);
+    }
+  }
+
+  await env.DB.prepare(`
+    INSERT INTO membership_settings (
+      id, loss_instructions, photo_height_mm, photo_width_mm,
+      signature_path, stamp_path, terms, validity_months
+    ) VALUES (1, ?, ?, ?, ?, ?, ?, ?)
+    ON CONFLICT(id) DO UPDATE SET
+      loss_instructions = excluded.loss_instructions,
+      photo_height_mm = excluded.photo_height_mm,
+      photo_width_mm = excluded.photo_width_mm,
+      signature_path = excluded.signature_path,
+      stamp_path = excluded.stamp_path,
+      terms = excluded.terms,
+      validity_months = excluded.validity_months
+  `).bind(
+    lossInstructions, photoHeight, photoWidth,
+    signaturePath, stampPath, terms, validityMonths
+  ).run();
+
+  return json(request, env, {
+    success: true,
+    message: "Paramètres des cartes enregistrés.",
+  });
+}
+
+
+if (body.action === "read") {
+  const notificationId = body.notificationId?.trim();
+  if (!notificationId) {
+    return json(request, env, { error: "Notification invalide." }, 400);
+  }
+
+  const result = await env.DB.prepare(`
+    UPDATE member_notifications
+    SET read_at = ?
+    WHERE id = ? AND recipient_id = ? AND read_at IS NULL
+  `).bind(new Date().toISOString(), notificationId, session.user_id).run();
+
+  if ((result.meta?.changes ?? 0) === 0) {
+    const exists = await env.DB.prepare(`
+      SELECT id FROM member_notifications WHERE id = ? AND recipient_id = ?
+    `).bind(notificationId, session.user_id).first();
+    if (!exists) {
+      return json(request, env, { error: "Notification introuvable." }, 404);
+    }
+  }
+
+  return json(request, env, {
+    success: true,
+    message: "Notification marquée comme lue.",
+  });
+}
+
+
 
   let driver: any = null;
 
@@ -1624,10 +1757,12 @@ if (body.action === "issue") {
       !(await env.FILES.head(cardSettings.signature_path)) || !(await env.FILES.head(cardSettings.stamp_path))) {
     return json(request, env, { error: "Signature et cachet officiels requis avant émission." }, 409);
   }
-  // Immutable R2 snapshots/atomic replacement require a separate validated correction.
-  return json(request, env, { error: "Émission désactivée dans cette préparation : instantanés et remplacement atomique à valider." }, 503);
   const cardId = crypto.randomUUID();
   const token = randomToken();
+  const snapshotBase = `${driver.id}/cards/${cardId}`;
+  const frozenPhoto = await snapshotImage(env, photoPath, `${snapshotBase}/photo`);
+  const frozenSignature = await snapshotImage(env, cardSettings.signature_path, `${snapshotBase}/signature`);
+  const frozenStamp = await snapshotImage(env, cardSettings.stamp_path, `${snapshotBase}/stamp`);
   const issuedAt = new Date().toISOString();
   const lossInstructions = String(
     cardSettings?.loss_instructions ?? "En cas de perte, contactez le secrétariat du GIE."
@@ -1637,6 +1772,9 @@ if (body.action === "issue") {
   );
 
   await env.DB.batch([
+    env.DB.prepare(`UPDATE membership_cards SET status = 'cancelled'
+      WHERE driver_id = ? AND status = 'active' AND (? <> 'initial' OR expires_on < date('now'))`)
+      .bind(driver.id, reason),
     env.DB.prepare(`
       INSERT INTO membership_cards (
         id, adhesion_date, driver_id, expires_on, first_name,
@@ -1654,11 +1792,11 @@ if (body.action === "issue") {
       dossier.last_name,
       lossInstructions,
       driver.matricule,
-      photoPath,
+      frozenPhoto,
       dossier.public_photo_consent === 1 ? 1 : 0,
       reason,
-      cardSettings?.signature_path ?? null,
-      cardSettings?.stamp_path ?? null,
+      frozenSignature,
+      frozenStamp,
       start,
       terms,
       token
@@ -1748,106 +1886,9 @@ if (body.action === "card_status") {
 // ENREGISTREMENT DES PARAMÈTRES DES CARTES
 // ==========================================
 
-if (body.action === "settings") {
-  if (!manager) {
-    return json(request, env, {
-      error: "Accès réservé aux responsables du GIE.",
-    }, 403);
-  }
-
-  const input = body.settings;
-  if (!input || typeof input !== "object") {
-    return json(request, env, { error: "Paramètres manquants." }, 400);
-  }
-
-  const photoWidth = Number(input.photo_width_mm);
-  const photoHeight = Number(input.photo_height_mm);
-  const validityMonths = input.validity_months == null || input.validity_months === ""
-    ? null
-    : Number(input.validity_months);
-  const terms = typeof input.terms === "string" ? input.terms.trim() : "";
-  const lossInstructions = typeof input.loss_instructions === "string"
-    ? input.loss_instructions.trim()
-    : "";
-
-  if (
-    !Number.isFinite(photoWidth) || photoWidth < 10 || photoWidth > 80 ||
-    !Number.isFinite(photoHeight) || photoHeight < 10 || photoHeight > 100 ||
-    (validityMonths !== null && (!Number.isInteger(validityMonths) || validityMonths < 1 || validityMonths > 120)) ||
-    !terms || !lossInstructions || terms.length > 5000 || lossInstructions.length > 2000
-  ) {
-    return json(request, env, {
-      error: "Vérifiez les dimensions, la durée de validité, les conditions et les consignes de perte.",
-    }, 400);
-  }
-
-  const signaturePath = input.signature_path == null || input.signature_path === ""
-    ? null : String(input.signature_path);
-  const stampPath = input.stamp_path == null || input.stamp_path === ""
-    ? null : String(input.stamp_path);
-
-  for (const objectPath of [signaturePath, stampPath]) {
-    if (objectPath && (!objectPath.startsWith("institution/") || !(await env.FILES.head(objectPath)))) {
-      return json(request, env, {
-        error: "Le fichier de signature ou de cachet est introuvable dans R2.",
-      }, 400);
-    }
-  }
-
-  await env.DB.prepare(`
-    INSERT INTO membership_settings (
-      id, loss_instructions, photo_height_mm, photo_width_mm,
-      signature_path, stamp_path, terms, validity_months
-    ) VALUES (1, ?, ?, ?, ?, ?, ?, ?)
-    ON CONFLICT(id) DO UPDATE SET
-      loss_instructions = excluded.loss_instructions,
-      photo_height_mm = excluded.photo_height_mm,
-      photo_width_mm = excluded.photo_width_mm,
-      signature_path = excluded.signature_path,
-      stamp_path = excluded.stamp_path,
-      terms = excluded.terms,
-      validity_months = excluded.validity_months
-  `).bind(
-    lossInstructions, photoHeight, photoWidth,
-    signaturePath, stampPath, terms, validityMonths
-  ).run();
-
-  return json(request, env, {
-    success: true,
-    message: "Paramètres des cartes enregistrés.",
-  });
-}
-
 // ==========================================
 // MARQUER UNE NOTIFICATION COMME LUE
 // ==========================================
-
-if (body.action === "read") {
-  const notificationId = body.notificationId?.trim();
-  if (!notificationId) {
-    return json(request, env, { error: "Notification invalide." }, 400);
-  }
-
-  const result = await env.DB.prepare(`
-    UPDATE member_notifications
-    SET read_at = ?
-    WHERE id = ? AND recipient_id = ? AND read_at IS NULL
-  `).bind(new Date().toISOString(), notificationId, session.user_id).run();
-
-  if ((result.meta?.changes ?? 0) === 0) {
-    const exists = await env.DB.prepare(`
-      SELECT id FROM member_notifications WHERE id = ? AND recipient_id = ?
-    `).bind(notificationId, session.user_id).first();
-    if (!exists) {
-      return json(request, env, { error: "Notification introuvable." }, 404);
-    }
-  }
-
-  return json(request, env, {
-    success: true,
-    message: "Notification marquée comme lue.",
-  });
-}
 
   const documents = await env.DB.prepare(`
     SELECT id, driver_id, file_name, kind, path, created_at
@@ -1959,12 +2000,15 @@ if (path === "/api/public/membres/photo" && request.method === "POST") {
     return json(request, env, { error: "Format ou taille de photo invalide." }, 400);
   }
 
-  const member = await env.DB.prepare(
-    "SELECT id FROM members WHERE id = ? AND user_id = ?"
-  ).bind(driverId, session.user_id).first();
-
-  if (!member && !isManager(session)) {
+  const member = await env.DB.prepare(`SELECT m.id,m.user_id,d.status FROM members m
+    LEFT JOIN member_dossiers d ON d.driver_id=m.id WHERE m.id=?`)
+    .bind(driverId).first<{ id: string; user_id: string | null; status: string | null }>();
+  if (!member) return json(request, env, { error: "Membre introuvable." }, 404);
+  if (member.user_id !== session.user_id && !isManager(session)) {
     return json(request, env, { error: "Accès interdit." }, 403);
+  }
+  if (!["profil_a_completer", "incomplet", "correction"].includes(member.status ?? "")) {
+    return json(request, env, { error: "Le dossier ne permet plus de téléversement." }, 409);
   }
 
   const originalExt = original.type === "image/png" ? "png" : "jpg";
@@ -2024,12 +2068,15 @@ if (path === "/api/public/membres/document" && request.method === "POST") {
     return json(request, env, { error: "Format ou taille de fichier invalide." }, 400);
   }
 
-  const member = await env.DB.prepare(
-    "SELECT id FROM members WHERE id = ? AND user_id = ?"
-  ).bind(driverId, session.user_id).first();
-
-  if (!member && !isManager(session)) {
+  const member = await env.DB.prepare(`SELECT m.id,m.user_id,d.status FROM members m
+    LEFT JOIN member_dossiers d ON d.driver_id=m.id WHERE m.id=?`)
+    .bind(driverId).first<{ id: string; user_id: string | null; status: string | null }>();
+  if (!member) return json(request, env, { error: "Membre introuvable." }, 404);
+  if (member.user_id !== session.user_id && !isManager(session)) {
     return json(request, env, { error: "Accès interdit." }, 403);
+  }
+  if (!["profil_a_completer", "incomplet", "correction"].includes(member.status ?? "")) {
+    return json(request, env, { error: "Le dossier ne permet plus de téléversement." }, 409);
   }
 
   const ext = file.type === "application/pdf"
@@ -2290,3 +2337,5 @@ if (path === "/api/public/membres/document" && request.method === "POST") {
     }
   },
 };
+
+export default worker;

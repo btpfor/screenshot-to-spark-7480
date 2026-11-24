@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { transform } from "esbuild";
+import { build } from "esbuild";
 import { Miniflare } from "miniflare";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
@@ -27,9 +27,13 @@ async function call(path: string, body?: unknown, cookie = adminCookie, method?:
 
 beforeAll(async () => {
   const source = readFileSync(resolve(root, "src/index.ts"), "utf8");
-  const compiled = await transform(source, { loader: "ts", format: "esm", target: "es2022" });
+  const compiled = await build({ stdin: { contents: source, loader: "ts", resolveDir: resolve(root, "src") }, bundle: true, write: false, format: "esm", platform: "browser", target: "es2022" });
+  const script = compiled.outputFiles?.[0]?.text;
+  if (!script) throw new Error("Compilation Worker absente.");
   mf = new Miniflare({
-    modules: true, script: compiled.code, compatibilityDate: "2026-11-18",
+    // Local workerd supports dates through August; production configuration
+    // is left unchanged. Recheck the actual date before external activation.
+    modules: true, script, compatibilityDate: "2026-08-06",
     d1Databases: ["DB"], r2Buckets: ["FILES"],
     bindings: { ALLOWED_ORIGINS: "https://www.vipbgtransport.com", CNI_ENCRYPTION_KEY: Buffer.alloc(32, 7).toString("base64") },
   });
@@ -50,7 +54,9 @@ beforeAll(async () => {
   const triggerStart = migration.indexOf("CREATE TRIGGER");
   const statements = migration.slice(0, triggerStart).split(";").map(s => s.trim()).filter(Boolean);
   for (const statement of statements) await db.prepare(statement).run();
-  await db.prepare(migration.slice(triggerStart).trim()).run();
+  for (const trigger of migration.slice(triggerStart).split("END;").map(s => s.trim()).filter(Boolean)) {
+    await db.prepare(`${trigger}\nEND;`).run();
+  }
   const response = await call("/api/auth/login", { login_identifier: "local-admin@test.invalid", password: localPassword }, "");
   expect(response.status).toBe(200);
   adminCookie = response.headers.get("set-cookie")?.split(";")[0] ?? "";
@@ -139,5 +145,70 @@ describe("Corrections Worker — D1/R2 entièrement locaux", () => {
   it("déconnecte la session courante", async () => {
     expect((await call("/api/auth/logout", {}, memberCookie)).status).toBe(200);
     expect((await call("/api/auth/me", undefined, memberCookie)).status).toBe(401);
+  });
+
+  it("importe le CSV sans véhicule et exporte sans secrets", async () => {
+    const response = await call("/api/membres/import", { rows: [{ first_name: "CSV", last_name: "Membre", phone: "775555555", platform: "Yango" }] });
+    expect(response.status).toBe(200);
+    const results = await response.json() as { ok: boolean; matricule: string; password: string }[];
+    expect(results[0]).toMatchObject({ ok: true, matricule: "VIPBGG-658" });
+    expect(results[0]?.password).toMatch(/^\d{6}$/);
+    expect(await db.prepare("SELECT COUNT(*) AS n FROM vehicles").first("n")).toBe(0);
+    const csv = await call("/api/membres/export");
+    expect(csv.status).toBe(200);
+    const output = await csv.text();
+    expect(output).toContain("VIPBGG-658");
+    expect(output).not.toContain("cni");
+    expect(output).not.toContain("password");
+  });
+
+  it("conserve le dernier super administrateur lors d'une modification des rôles", async () => {
+    const response = await call("/api/users/local-admin/roles", { roles: ["chauffeur"] }, adminCookie, "PATCH");
+    expect(response.status).toBe(409);
+    expect(await db.prepare("SELECT role FROM user_roles WHERE user_id='local-admin'").first("role")).toBe("super_admin");
+    expect(await db.prepare("SELECT password_hash FROM users WHERE id='local-admin'").first("password_hash")).toBe(initialHash);
+  });
+
+  it("crée un personnel avec un rôle historique sans violer users.role", async () => {
+    const response = await call("/api/users", { email: "local-finance@test.invalid", full_name: "Test local", roles: ["tresorier"] });
+    expect(response.status).toBe(201);
+    const result = await response.json() as { id: string; password: string };
+    expect(result.password).toMatch(/^\d{6}$/);
+    expect(await db.prepare("SELECT role FROM user_roles WHERE user_id=?").bind(result.id).first("role")).toBe("tresorier");
+    expect(await db.prepare("SELECT role FROM users WHERE id=?").bind(result.id).first("role")).toBe("member");
+  });
+
+  it("gère transaction et véhicule comme opérations indépendantes avec journal", async () => {
+    const transaction = await call("/api/transactions", { amount: 5000, kind: "cotisation", paid_at: "2026-11-22", payment_method: "especes", receipt_number: "LOCAL-001", status: "paye", driver_id: memberId });
+    expect(transaction.status).toBe(201);
+    const vehicle = await call("/api/vehicles", { brand: "Test", model: "Local", plate: "LOCAL-001", status: "en_circulation" });
+    expect(vehicle.status).toBe(201);
+    expect(await db.prepare("SELECT COUNT(*) AS n FROM transactions").first("n")).toBe(1);
+    expect(await db.prepare("SELECT COUNT(*) AS n FROM vehicles").first("n")).toBe(1);
+    expect(await db.prepare("SELECT COUNT(*) AS n FROM audit_logs WHERE action='vehicles_created'").first("n")).toBe(1);
+  });
+
+  it("sert un document R2 privé uniquement après contrôle du propriétaire ou du responsable", async () => {
+    const files = await mf.getR2Bucket("FILES");
+    await files.put(`${memberId}/local.pdf`, "Document local", { httpMetadata: { contentType: "application/pdf" } });
+    await db.prepare("INSERT INTO member_documents(id,driver_id,file_name,kind,path) VALUES('local-doc',?,'local.pdf','identity',?)").bind(memberId,`${memberId}/local.pdf`).run();
+    const response = await call("/api/documents/local-doc/content");
+    expect(response.status).toBe(200);
+    expect(response.headers.get("Cache-Control")).toContain("no-store");
+    expect(await response.text()).toBe("Document local");
+    const unauthorized = await call("/api/documents/local-doc/content", undefined, "");
+    expect(unauthorized.status).toBe(401);
+  });
+
+  it("alloue des matricules distincts lorsque les créations sont concurrentes", async () => {
+    const responses = await Promise.all([0, 1, 2].map(index => call("/api/membres", { first_name: "Concurrent", last_name: String(index), phone: `77333333${index}` })));
+    const identifiers: string[] = [];
+    for (const response of responses) {
+      expect(response.status).toBe(201);
+      const result = await response.json() as { matricule: string };
+      identifiers.push(result.matricule);
+    }
+    expect(new Set(identifiers).size).toBe(3);
+    expect(await db.prepare("SELECT matricule FROM members WHERE id='legacy'").first("matricule")).toBe("vipbgg-656");
   });
 });

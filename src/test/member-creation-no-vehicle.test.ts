@@ -27,7 +27,6 @@ function fakeAdmin() {
   const tables: string[] = [];
   const rows: Record<string, unknown>[] = [];
   let next = 656;
-  const existingMatricule = "vipbgg-656";
   const from = (table: string) => {
     tables.push(table);
     const chain = {
@@ -44,7 +43,7 @@ function fakeAdmin() {
     return chain;
   };
   return {
-    tables, rows, existingMatricule,
+    tables, rows,
     client: {
       from,
       rpc: async () => ({ data: `VIPBGG-${++next}`, error: null }),
@@ -68,7 +67,6 @@ describe("Création et import des membres indépendants des véhicules", () => {
     expect(fake.rows[0]).toMatchObject({ must_change_password: true, platform: "Heetch", license_number: "PERMIS123" });
     expect(fake.tables).toContain("member_dossiers");
     expect(fake.tables).not.toContain("vehicles");
-    expect(fake.existingMatricule).toBe("vipbgg-656");
   });
 
   it("importe des lignes sans aucune donnée véhicule", async () => {

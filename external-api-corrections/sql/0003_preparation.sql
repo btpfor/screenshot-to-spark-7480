@@ -17,7 +17,7 @@ CREATE TABLE membership_identifier_counter (
   last_number INTEGER NOT NULL CHECK (last_number >= 0)
 );
 INSERT INTO membership_identifier_counter(id, last_number)
-SELECT 1, COALESCE(MAX(CAST(SUBSTR(matricule, 8) AS INTEGER)), 0)
+SELECT 1, MAX(656, COALESCE(MAX(CAST(SUBSTR(matricule, 8) AS INTEGER)), 0))
 FROM members
 WHERE UPPER(SUBSTR(matricule, 1, 7)) = 'VIPBGG-'
   AND LENGTH(SUBSTR(matricule, 8)) > 0

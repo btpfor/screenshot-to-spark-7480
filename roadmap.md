@@ -1,5 +1,6 @@
 # Connexion à l’API Cloudflare existante
-- [ ] Présenter le plan de correction priorisé (CORS, sessions, D1, membres sans véhicule, CSV, rôles, finances, flotte et documents) ; attendre l’autorisation avant toute correction ou intervention de production.
+- [x] Préparer localement les corrections approuvées (CORS, sessions, D1, CSV, rôles, finances, flotte et documents) ; 16 essais Worker locaux réussis, sans déploiement ni modification de production.
+- [ ] Inspecter le schéma D1 réel, sauvegarder, appliquer la migration et déployer manuellement : autorisation de production et accès Workers Scripts nécessaires.
 - [x] Lire les nouvelles instructions et vérifier /api/auth/me : 401 JSON, session absente.
 - [x] Examiner l’accès Cloudflare en lecture seule : compte accessible, paramètres du Worker refusés (403 « No access to the specified resource. »).
 - [x] Lire les cinq fichiers fournis ; inventorier connexion/session/déconnexion, membres, dossiers, photos/documents et QR. Vérifier dix réponses HTTP publiques et deux incompatibilités SQLite en mémoire.
@@ -8,7 +9,7 @@
 - [ ] Vérifier D1/R2 et les essais authentifiés : ressources de production non vérifiées ; accès publié Lovable non autorisé par CORS, schéma et création incompatibles. Aucune migration ni infrastructure de déploiement Cloudflare à générer dans Lovable.
 
 # Création de membre sans véhicule
-- [ ] Retirer les champs véhicule et leur insertion de la création/import des membres, conserver les véhicules existants ; demande précédente interrompue par les nouvelles instructions.
+- [x] Retirer l’objet véhicule et son insertion de la création/import des membres, sans toucher aux véhicules existants ; 3 tests réussis.
 
 # Gestion des adhérents et cartes officielles
 - [x] Remplacer la dérivation CNI par une numérotation serveur séquentielle sans toucher aux anciens matricules ni aux accès ; vipbgg-656 conservé.

@@ -1,6 +1,7 @@
 # Connexion à l’API Cloudflare existante
+- [x] Vérification seule de la connexion Cloudflare : compte, D1, 3 Workers et R2 accessibles.
 - [x] Préparer localement les corrections approuvées (CORS, sessions, D1, CSV, rôles, finances, flotte et documents) ; 16 essais Worker locaux réussis, sans déploiement ni modification de production.
-- [ ] Inspecter le schéma D1 réel, sauvegarder, appliquer la migration et déployer manuellement : autorisation de production et accès Workers Scripts nécessaires.
+- [x] Schéma D1 inspecté, point de restauration noté, migration additive appliquée et API mise à jour le 26 novembre (CORS Lovable vérifié).
 - [x] Lire les nouvelles instructions et vérifier /api/auth/me : 401 JSON, session absente.
 - [x] Examiner l’accès Cloudflare en lecture seule : compte accessible, paramètres du Worker refusés (403 « No access to the specified resource. »).
 - [x] Lire les cinq fichiers fournis ; inventorier connexion/session/déconnexion, membres, dossiers, photos/documents et QR. Vérifier dix réponses HTTP publiques et deux incompatibilités SQLite en mémoire.
